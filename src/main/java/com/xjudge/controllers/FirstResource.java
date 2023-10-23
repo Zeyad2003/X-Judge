@@ -27,7 +27,7 @@ public class FirstResource {
             "  <body>\n" +
             "    <h1>Welcome to X-Judge</h1>\n" +
             "    <p>The application is under development.</p>\n" +
-            "    <p>Pray that we can finish it soon. \uD83D\uDE04</p>\n" +
+            "    <p>Pray for us that we can finish it soon. \uD83D\uDE04</p>\n" +
             "  </body>\n" +
             "</html>\n";
     @GetMapping("/")
