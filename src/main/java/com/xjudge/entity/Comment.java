@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name="comments")
 public class Comment {
-
-    //user-id many to one ✅
-    //blog-id ✅
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "text")
     private String text;
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

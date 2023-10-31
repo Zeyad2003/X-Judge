@@ -19,9 +19,16 @@ public class Group {
     //roles => leader, manager, member
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "name")
     private String name;
     @ManyToMany
+    @JoinTable(
+            name = "users_groups",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     List<User> users;
     @OneToMany(mappedBy = "group")
     List<Contest> contests;

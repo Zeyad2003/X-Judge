@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="tag")
+@Table(name="tags")
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "name")
     private String name;
 }

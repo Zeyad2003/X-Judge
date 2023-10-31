@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="contest")
+@Table(name="contests")
 public class Contest {
     //standing @one to one
     //problems @many to many ✅
@@ -22,13 +22,23 @@ public class Contest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "begin_time")
     private Date beginTime;
+    @Column(name = "length")
     private int length;
     @ManyToMany
+    @JoinTable(
+            name = "problem_contest",
+            joinColumns = @JoinColumn(name = "contest_id"),
+            inverseJoinColumns = @JoinColumn(name = "problem_id")
+    )
     private List<Problem> problems;
     @ManyToOne
+    @JoinColumn(name = "group_id")
     private Group group;
 //    @OneToMany
 //    private List<Standing> standing; // TODO

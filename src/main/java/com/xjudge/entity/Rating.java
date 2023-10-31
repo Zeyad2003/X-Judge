@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="rating")
+@Table(name="ratings")
 public class Rating {
     //problem
     //Enum
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "value")
     private String value;
 }
