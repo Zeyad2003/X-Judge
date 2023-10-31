@@ -9,16 +9,12 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="groups")
+@Table(name = "groups")
 public class Group {
 
-    //user-id @many to many
-    //contes-id @onetomany
-    //roles => leader, manager, member
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-
-
+  // user-id @many to many
+  // contes-id @onetomany
+  // roles => leader, manager, member
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  private String name;
 }

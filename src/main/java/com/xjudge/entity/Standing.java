@@ -9,19 +9,16 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="standing")
+@Table(name = "standing")
 public class Standing {
-    //user-handle
-    //score
-    //penalty
-    //list of problem
-    //contest @onetoone
+  // user-handle
+  // score
+  // penalty
+  // list of problem
+  // contest @onetoone
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int score;
-    private int penalty;
-    //list of problem
-
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  private int score;
+  private int penalty;
+  // list of problem
 }

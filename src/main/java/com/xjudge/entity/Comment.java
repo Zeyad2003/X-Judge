@@ -9,15 +9,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="comments")
+@Table(name = "comments")
 public class Comment {
 
-    //user-id many to one
-    //blog-id
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(name="test")
-    private String des;
-
+  // user-id many to one
+  // blog-id
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  @Column(name = "test") private String des;
 }

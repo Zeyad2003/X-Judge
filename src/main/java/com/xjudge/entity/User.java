@@ -10,21 +10,14 @@ import lombok.Setter;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="user")
+@Table(name = "user")
 public class User {
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String password;
-    @Column(unique = true)
-    private String handle;
-    @Column(unique = true)
-    private String email;
-    private String codeforcesHandle;
-    private String atcoderHandle;
-    private String photoUrl;
-
-
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  private String password;
+  @Column(unique = true) private String handle;
+  @Column(unique = true) private String email;
+  private String codeforcesHandle;
+  private String atcoderHandle;
+  private String photoUrl;
 }

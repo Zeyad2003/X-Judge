@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="tag")
+@Table(name = "tag")
 public class Tag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  private String name;
 }

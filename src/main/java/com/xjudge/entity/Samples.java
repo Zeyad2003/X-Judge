@@ -9,13 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="samples")
+@Table(name = "samples")
 public class Samples {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String input;
-    private String output;
-    private String notes;
-
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
+  private String input;
+  private String output;
+  private String notes;
 }

@@ -11,20 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "problem")
 public class Problem {
-    /// class  private String samples; @one to many prolem=> samples
-// numof user solved it
-    //contest id
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+  /// class  private String samples; @one to many prolem=> samples
+  // numof user solved it
+  // contest id
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private int id;
 
-    private String title;
-    private String problemStatement;
-    private String constraints;
-    private String input;
-    private String output;
-    private String link;
-    private String note;
-
-
+  private String title;
+  private String problemStatement;
+  private String constraints;
+  private String input;
+  private String output;
+  private String link;
+  private String note;
 }
