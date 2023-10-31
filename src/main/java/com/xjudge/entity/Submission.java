@@ -11,20 +11,27 @@ import java.util.Date;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="submission")
+@Table(name="submissions")
 public class Submission {
 // user-id
 // problem-id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "code")
     private String code;
-    private String language;//Enum
+    @Column(name = "language")
+    private String language; // Enum
+    @Column(name = "date")
     private Date date;  //current time
+    @Column(name = "result")
     private String result;
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne
+    @JoinColumn(name = "problem_id")
     private Problem problem;
 
 }

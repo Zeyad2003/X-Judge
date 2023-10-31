@@ -13,9 +13,13 @@ import lombok.NoArgsConstructor;
 public class Samples {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "input")
     private String input;
+    @Column(name = "output")
     private String output;
+    @Column(name = "notes")
     private String notes;
 
 }

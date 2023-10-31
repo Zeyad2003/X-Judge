@@ -12,14 +12,18 @@ import java.util.List;
 @Data
 @Entity
 @AllArgsConstructor
-@Table(name="blog")
+@Table(name="blogs")
 public class Blog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "title")
     private String title;
+    @Column(name = "time")
     private Date time;
+    @Column(name = "text")
     private String text;
     @OneToMany
     private List<Comment> comments;
