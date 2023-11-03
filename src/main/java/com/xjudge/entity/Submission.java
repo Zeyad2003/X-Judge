@@ -13,13 +13,11 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name="submissions")
 public class Submission {
-// user-id
-// problem-id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Column(name = "code")
+    @Column(name = "code", columnDefinition = "TEXT")
     private String code;
     @Column(name = "language")
     private String language; // Enum
@@ -33,5 +31,4 @@ public class Submission {
     @ManyToOne
     @JoinColumn(name = "problem_id")
     private Problem problem;
-
 }

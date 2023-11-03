@@ -15,11 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name="contests")
 public class Contest {
-    //standing @one to one
-    //problems @many to many ✅
-    //button status for all submission
-    //group id @many to one ✅
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -40,7 +35,4 @@ public class Contest {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
-//    @OneToMany
-//    private List<Standing> standing; // TODO
-
 }
