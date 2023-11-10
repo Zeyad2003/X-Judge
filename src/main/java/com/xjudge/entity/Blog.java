@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name="blogs")
 public class Blog {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -27,6 +26,4 @@ public class Blog {
     private String text;
     @OneToMany
     private List<Comment> comments;
-
-
 }

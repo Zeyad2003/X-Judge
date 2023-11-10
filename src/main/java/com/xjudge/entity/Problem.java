@@ -13,9 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "problems")
 public class Problem {
-    // @one to many prolem=> samples ✅
-    // num of user solved it
-    // contest id ✅
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -44,6 +41,4 @@ public class Problem {
     @ManyToOne
     @JoinColumn(name = "rate_id")
     private Rating rate;
-
-
 }

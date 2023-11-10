@@ -21,5 +21,4 @@ public class Samples {
     private String output;
     @Column(name = "notes")
     private String notes;
-
 }
