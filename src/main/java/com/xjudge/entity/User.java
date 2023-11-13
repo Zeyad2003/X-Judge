@@ -5,32 +5,59 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@NoArgsConstructor
 @Data
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name="users")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "password")
-    private String password;
-    @Column(name = "handle", unique = true)
-    private String handle;
-    @Column(name = "email", unique = true)
-    private String email;
-    @Column(name = "codeforces_handle")
-    private String codeforcesHandle;
-    @Column(name = "atcoder_handle")
-    private String atcoderHandle;
-    @Column(name = "photo_url")
-    private String photoUrl;
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "user_password")
+    private String userPassword;
+
+    @Column(name = "user_handle", unique = true)
+    private String userHandle;
+
+    @Column(name = "user_first_name")
+    private String userFirstName;
+
+    @Column(name = "user_last_name")
+    private String userLastName;
+
+    @Column(name = "user_email", unique = true)
+    private String userEmail;
+
+    @Column(name = "user_school")
+    private String userSchool;
+
+    @Column(name = "user_registration_date", columnDefinition = "DATE")
+    private LocalDate userRegistrationDate;
+
+    @Column(name = "user_photo_url")
+    private String userPhotoUrl;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_statistics_id")
+    private Statistics statistics;
+
+    @ManyToMany
+    @JoinTable(
+            name = "favorite_problems",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "problem_id")
+    )
+    private List<Problem> favoriteProblems;
+
     @OneToMany(mappedBy = "user")
     private List<Submission> submissions;
-    @ManyToMany(mappedBy = "users")
-    private List<Group> groups;
+
+//    @ManyToMany(mappedBy = "users")
+//    private List<Group> groups;
 }

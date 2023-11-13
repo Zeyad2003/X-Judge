@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.Instant;
 
 @NoArgsConstructor
 @Data
@@ -22,7 +22,7 @@ public class Submission {
     @Column(name = "language")
     private String language; // Enum
     @Column(name = "date")
-    private Date date;  //current time
+    private Instant date;  //current time
     @Column(name = "result")
     private String result;
     @ManyToOne

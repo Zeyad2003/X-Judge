@@ -7,38 +7,55 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor
 @Data
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "problems")
+@Table(name = "problem")
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "title")
-    private String title;
+    @Column(name = "problem_id")
+    private Long problemId;
+
+    @Column(name = "problem_title")
+    private String problemTitle;
+
     @Column(name = "problem_statement")
     private String problemStatement;
-    @Column(name = "constrains")
-    private String constrains;
-    @Column(name = "input")
-    private String input;
-    @Column(name = "output")
-    private String output;
-    @Column(name = "link")
-    private String link;
-    @Column(name = "note")
-    private String note;
-    @OneToMany
-    private List<Samples> samples;
-    @OneToMany
+
+    @Column(name = "problem_input")
+    private String problemInput;
+
+    @Column(name = "problem_output")
+    private String problemOutput;
+
+    @Column(name = "problem_sample_input")
+    private String problemSampleInput;
+
+    @Column(name = "problem_sample_output")
+    private String problemSampleOutput;
+
+    @Column(name = "problem_source")
+    private String problemSource;
+
+    @Column(name = "problem_note")
+    private String problemNote;
+
+    @Column(name = "problem_time_limit")
+    private String problemTimeLimit;
+
+    @Column(name = "problem_memory_limit")
+    private String problemMemoryLimit;
+
+    @Column(name = "problem_tutorial")
+    private String problemTutorial;
+
+    @ManyToMany
+    @JoinTable(
+            name = "problem_tags",
+            joinColumns = @JoinColumn(name = "problem_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
     private List<Tag> tags;
-    @OneToOne
-    @JoinColumn(name = "tutorial_id")
-    private Tutorial tutorial;
-    @ManyToOne
-    @JoinColumn(name = "rate_id")
-    private Rating rate;
 }
