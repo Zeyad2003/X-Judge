@@ -4,10 +4,16 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * <strong>User Entity</strong>
+ * <p>User entity is used to store all user information</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor
@@ -19,33 +25,32 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_password")
     private String userPassword;
 
-    @Column(name = "user_handle", unique = true)
+    @Column(unique = true)
     private String userHandle;
 
-    @Column(name = "user_first_name")
     private String userFirstName;
 
-    @Column(name = "user_last_name")
     private String userLastName;
 
-    @Column(name = "user_email", unique = true)
+    @Column(unique = true)
     private String userEmail;
 
-    @Column(name = "user_school")
     private String userSchool;
 
-    @Column(name = "user_registration_date", columnDefinition = "DATE")
+    @Column(columnDefinition = "DATE")
     private LocalDate userRegistrationDate;
 
-    @Column(name = "user_photo_url")
     private String userPhotoUrl;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_statistics_id")
-    private Statistics statistics;
+    @JoinColumn(name = "statistics_id")
+    private UserStatistics userStatistics;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    List<Submission> userSubmission;
 
     @ManyToMany
     @JoinTable(
@@ -53,11 +58,11 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
-    private List<Problem> favoriteProblems;
+    private List<Problem> userFavoriteProblems;
 
-    @OneToMany(mappedBy = "user")
-    private List<Submission> submissions;
+    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.EAGER)
+    private List<Contest> userContests;
 
-//    @ManyToMany(mappedBy = "users")
-//    private List<Group> groups;
+    @ManyToMany(mappedBy = "groupUsers", fetch = FetchType.EAGER)
+    private List<Group> userGroups;
 }

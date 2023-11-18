@@ -6,18 +6,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * <strong>Tag entity.</strong>
- * <p>Tag entity holds the tags of the problems.</p>
+ * <strong>Sample Entity</strong>
+ * <p>Sample entity is used to store sample input and output for a problem</p>
  */
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+@Table(name = "sample")
+public class Sample {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tagId;
+    private Long sampleId;
 
-    private String tagName;
+    private String sampleInput;
+
+    private String sampleOutput;
 }

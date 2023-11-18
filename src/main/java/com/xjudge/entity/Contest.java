@@ -1,38 +1,59 @@
-//package com.xjudge.entity;
-//
-//
-//import jakarta.persistence.*;
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//
-//import java.util.Date;
-//import java.util.List;
-//
-//@NoArgsConstructor
-//@Data
-//@Entity
-//@AllArgsConstructor
-//@Table(name="contests")
-//public class Contest {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id")
-//    private int id;
-//    @Column(name = "name")
-//    private String name;
-//    @Column(name = "begin_time")
-//    private Date beginTime;
-//    @Column(name = "length")
-//    private int length;
-//    @ManyToMany
-//    @JoinTable(
-//            name = "problem_contest",
-//            joinColumns = @JoinColumn(name = "contest_id"),
-//            inverseJoinColumns = @JoinColumn(name = "problem_id")
-//    )
-//    private List<Problem> problems;
-//    @ManyToOne
-//    @JoinColumn(name = "group_id")
-//    private Group group;
-//}
+package com.xjudge.entity;
+
+
+import com.xjudge.enums.ContestType;
+import com.xjudge.enums.ContestVisibility;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
+
+@Data
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name="contest")
+public class Contest {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long contestId;
+
+    private String contestTitle;
+
+    private Instant contestBeginTime;
+
+    private Duration contestLength;
+
+    @Column(columnDefinition = "TEXT")
+    private String contestDescription;
+
+    @Enumerated(EnumType.STRING)
+    private ContestType contestType;
+
+    @Enumerated(EnumType.STRING)
+    private ContestVisibility contestVisibility;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "contest_id")
+    private List<Submission> contestSubmissions;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_contest",
+            joinColumns = @JoinColumn(name = "contest_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> contestUsers;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "contest_problem",
+            joinColumns = @JoinColumn(name = "contest_id"),
+            inverseJoinColumns = @JoinColumn(name = "problem_id")
+    )
+    private List<Problem> problems;
+}

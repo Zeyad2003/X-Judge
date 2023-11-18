@@ -5,8 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * <strong>Problem Entity</strong>
+ * <p>Problem entity is used to store all problem details</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor
@@ -15,41 +20,33 @@ import java.util.List;
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "problem_id")
     private Long problemId;
 
-    @Column(name = "problem_title")
     private String problemTitle;
 
-    @Column(name = "problem_statement")
+    @Column(columnDefinition = "TEXT")
     private String problemStatement;
 
-    @Column(name = "problem_input")
+    @Column(columnDefinition = "TEXT")
     private String problemInput;
 
-    @Column(name = "problem_output")
+    @Column(columnDefinition = "TEXT")
     private String problemOutput;
 
-    @Column(name = "problem_sample_input")
-    private String problemSampleInput;
-
-    @Column(name = "problem_sample_output")
-    private String problemSampleOutput;
-
-    @Column(name = "problem_source")
     private String problemSource;
 
-    @Column(name = "problem_note")
+    @Column(columnDefinition = "TEXT")
     private String problemNote;
 
-    @Column(name = "problem_time_limit")
-    private String problemTimeLimit;
+    private BigDecimal problemTimeLimit;
 
-    @Column(name = "problem_memory_limit")
-    private String problemMemoryLimit;
+    private BigDecimal problemMemoryLimit;
 
-    @Column(name = "problem_tutorial")
     private String problemTutorial;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    List<Sample> problemSamples;
 
     @ManyToMany
     @JoinTable(
@@ -58,4 +55,8 @@ public class Problem {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    List<Submission> problemSubmission;
 }
