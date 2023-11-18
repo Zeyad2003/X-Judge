@@ -1,14 +1,13 @@
 package com.xjudge.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * <strong>User Entity</strong>
@@ -20,49 +19,44 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "user")
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "user_id")
+  private Long userId;
 
-    private String userPassword;
+  private String userPassword;
 
-    @Column(unique = true)
-    private String userHandle;
+  @Column(unique = true) private String userHandle;
 
-    private String userFirstName;
+  private String userFirstName;
 
-    private String userLastName;
+  private String userLastName;
 
-    @Column(unique = true)
-    private String userEmail;
+  @Column(unique = true) private String userEmail;
 
-    private String userSchool;
+  private String userSchool;
 
-    @Column(columnDefinition = "DATE")
-    private LocalDate userRegistrationDate;
+  @Column(columnDefinition = "DATE") private LocalDate userRegistrationDate;
 
-    private String userPhotoUrl;
+  private String userPhotoUrl;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "statistics_id")
-    private UserStatistics userStatistics;
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "statistics_id")
+  private UserStatistics userStatistics;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    List<Submission> userSubmission;
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id")
+  List<Submission> userSubmission;
 
-    @ManyToMany
-    @JoinTable(
-            name = "favorite_problems",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_id")
-    )
-    private List<Problem> userFavoriteProblems;
+  @ManyToMany
+  @JoinTable(name = "favorite_problems",
+             joinColumns = @JoinColumn(name = "user_id"),
+             inverseJoinColumns = @JoinColumn(name = "problem_id"))
+  private List<Problem> userFavoriteProblems;
 
-    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.EAGER)
-    private List<Contest> userContests;
+  @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.EAGER)
+  private List<Contest> userContests;
 
-    @ManyToMany(mappedBy = "groupUsers", fetch = FetchType.EAGER)
-    private List<Group> userGroups;
+  @ManyToMany(mappedBy = "groupUsers", fetch = FetchType.EAGER)
+  private List<Group> userGroups;
 }

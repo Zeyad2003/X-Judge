@@ -1,6 +1,3 @@
 package com.xjudge.enums;
 
-public enum ContestType {
-    CLASSIC,
-    GROUP
-}
+public enum ContestType { CLASSIC, GROUP }

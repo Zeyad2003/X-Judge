@@ -1,6 +1,3 @@
 package com.xjudge.enums;
 
-public enum GroupVisibility {
-    PUBLIC,
-    PRIVATE
-}
+public enum GroupVisibility { PUBLIC, PRIVATE }

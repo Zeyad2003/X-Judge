@@ -1,12 +1,11 @@
 package com.xjudge.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.Instant;
 
 /**
  * <strong>Submission Entity</strong>
@@ -16,26 +15,25 @@ import java.time.Instant;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="submission")
+@Table(name = "submission")
 public class Submission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long submissionId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long submissionId;
 
-    private String submissionUserHandle;
+  private String submissionUserHandle;
 
-    private String submissionProblemId;
+  private String submissionProblemId;
 
-    @Column(columnDefinition = "TEXT")
-    private String submissionCode;
+  @Column(columnDefinition = "TEXT") private String submissionCode;
 
-    private String submissionLanguage;
+  private String submissionLanguage;
 
-    private Instant submissionTime;
+  private Instant submissionTime;
 
-    private String submissionVerdict;
+  private String submissionVerdict;
 
-    private BigDecimal submissionMemoryUsage;
+  private BigDecimal submissionMemoryUsage;
 
-    private BigDecimal submissionTimeUsage;
+  private BigDecimal submissionTimeUsage;
 }

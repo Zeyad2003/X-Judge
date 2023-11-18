@@ -18,13 +18,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "user_contest")
 public class UserContest {
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+  @Id @Column(name = "user_id") private Long userId;
 
-    @Id
-    @Column(name = "contest_id")
-    private Long contestId;
+  @Id @Column(name = "contest_id") private Long contestId;
 
-    private Boolean isFavorite;
+  private Boolean isFavorite;
 }

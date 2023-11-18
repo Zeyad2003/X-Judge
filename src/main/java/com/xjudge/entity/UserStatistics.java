@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 /**
  * <strong>UserStatistics entity.</strong>
- * <p style="color: aqua;">In the future, we may modify or add more fields or tables related to statistics like (CodeForces or AtCoder solved problems count, etc.)</p>
+ * <p style="color: aqua;">In the future, we may modify or add more fields or
+ * tables related to statistics like (CodeForces or AtCoder solved problems
+ * count, etc.)</p>
  */
 @Data
 @Entity
@@ -16,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_statistics")
 public class UserStatistics {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userStatisticsId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long userStatisticsId;
 
-    Long userSolvedCount;
+  Long userSolvedCount;
 
-    Long userAttemptedCount;
+  Long userAttemptedCount;
 }

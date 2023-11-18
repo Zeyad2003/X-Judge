@@ -16,11 +16,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "sample")
 public class Sample {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sampleId;
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long sampleId;
 
-    private String sampleInput;
+  private String sampleInput;
 
-    private String sampleOutput;
+  private String sampleOutput;
 }

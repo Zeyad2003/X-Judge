@@ -2,11 +2,10 @@ package com.xjudge.entity;
 
 import com.xjudge.enums.UserRole;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 /**
  * <strong>UserGroup Entity</strong>
@@ -18,16 +17,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Table(name = "user_group")
 public class UserGroup {
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+  @Id @Column(name = "user_id") private Long userId;
 
-    @Id
-    @Column(name = "group_id")
-    private Long groupId;
+  @Id @Column(name = "group_id") private Long groupId;
 
-    LocalDate userGroupJoinDate;
+  LocalDate userGroupJoinDate;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+  @Enumerated(EnumType.STRING) private UserRole userRole;
 }

@@ -1,12 +1,11 @@
 package com.xjudge.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * <strong>Problem Entity</strong>
@@ -18,45 +17,39 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "problem")
 public class Problem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long problemId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long problemId;
 
-    private String problemTitle;
+  private String problemTitle;
 
-    @Column(columnDefinition = "TEXT")
-    private String problemStatement;
+  @Column(columnDefinition = "TEXT") private String problemStatement;
 
-    @Column(columnDefinition = "TEXT")
-    private String problemInput;
+  @Column(columnDefinition = "TEXT") private String problemInput;
 
-    @Column(columnDefinition = "TEXT")
-    private String problemOutput;
+  @Column(columnDefinition = "TEXT") private String problemOutput;
 
-    private String problemSource;
+  private String problemSource;
 
-    @Column(columnDefinition = "TEXT")
-    private String problemNote;
+  @Column(columnDefinition = "TEXT") private String problemNote;
 
-    private BigDecimal problemTimeLimit;
+  private BigDecimal problemTimeLimit;
 
-    private BigDecimal problemMemoryLimit;
+  private BigDecimal problemMemoryLimit;
 
-    private String problemTutorial;
+  private String problemTutorial;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    List<Sample> problemSamples;
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "problem_id")
+  List<Sample> problemSamples;
 
-    @ManyToMany
-    @JoinTable(
-            name = "problem_tags",
-            joinColumns = @JoinColumn(name = "problem_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private List<Tag> tags;
+  @ManyToMany
+  @JoinTable(name = "problem_tags",
+             joinColumns = @JoinColumn(name = "problem_id"),
+             inverseJoinColumns = @JoinColumn(name = "tag_id"))
+  private List<Tag> tags;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    List<Submission> problemSubmission;
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinColumn(name = "problem_id")
+  List<Submission> problemSubmission;
 }
