@@ -8,6 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * <strong>UserContest Entity</strong>
+ * <p>Represents a user's data in a contest. {Favorite}</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor

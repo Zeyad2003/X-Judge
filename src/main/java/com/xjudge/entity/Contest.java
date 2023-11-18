@@ -12,6 +12,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * <strong>Contest Entity</strong>
+ * <p>Represents a contest with a list of problems and submissions.</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor

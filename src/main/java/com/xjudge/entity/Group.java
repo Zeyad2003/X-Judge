@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * <strong>Group Entity</strong>
+ * <p>Represents a group of users and the contests they are participating in with roles for those users.</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor

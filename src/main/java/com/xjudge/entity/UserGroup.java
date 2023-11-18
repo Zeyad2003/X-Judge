@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * <strong>UserGroup Entity</strong>
+ * <p>Represents a user's data in a group. {Role, Date Joined}</p>
+ */
 @Data
 @Entity
 @NoArgsConstructor
