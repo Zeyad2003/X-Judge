@@ -5,40 +5,58 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-@NoArgsConstructor
+/**
+ * <strong>Problem Entity</strong>
+ * <p>Problem entity is used to store all problem details</p>
+ */
 @Data
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "problems")
+@Table(name = "problem")
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "title")
-    private String title;
-    @Column(name = "problem_statement")
+    private Long problemId;
+
+    private String problemTitle;
+
+    @Column(columnDefinition = "TEXT")
     private String problemStatement;
-    @Column(name = "constrains")
-    private String constrains;
-    @Column(name = "input")
-    private String input;
-    @Column(name = "output")
-    private String output;
-    @Column(name = "link")
-    private String link;
-    @Column(name = "note")
-    private String note;
-    @OneToMany
-    private List<Samples> samples;
-    @OneToMany
+
+    @Column(columnDefinition = "TEXT")
+    private String problemInput;
+
+    @Column(columnDefinition = "TEXT")
+    private String problemOutput;
+
+    private String problemSource;
+
+    @Column(columnDefinition = "TEXT")
+    private String problemNote;
+
+    private BigDecimal problemTimeLimit;
+
+    private BigDecimal problemMemoryLimit;
+
+    private String problemTutorial;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    List<Sample> problemSamples;
+
+    @ManyToMany
+    @JoinTable(
+            name = "problem_tags",
+            joinColumns = @JoinColumn(name = "problem_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
     private List<Tag> tags;
-    @OneToOne
-    @JoinColumn(name = "tutorial_id")
-    private Tutorial tutorial;
-    @ManyToOne
-    @JoinColumn(name = "rate_id")
-    private Rating rate;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    List<Submission> problemSubmission;
 }
