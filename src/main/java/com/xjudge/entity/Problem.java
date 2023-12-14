@@ -59,4 +59,5 @@ public class Problem {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id")
     List<Submission> problemSubmission;
+
 }
