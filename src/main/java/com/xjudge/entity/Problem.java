@@ -22,25 +22,37 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long problemId;
 
+    private String problemCode;
+
+    private int problemRate;
+
     private String problemTitle;
 
-    @Column(columnDefinition = "TEXT")
+    private String inputFile;
+
+    private String outputFile;
+
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String problemStatement;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String problemInput;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String problemOutput;
 
     private String problemSource;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String problemNote;
 
-    private BigDecimal problemTimeLimit;
+    private String problemTimeLimit;
 
-    private BigDecimal problemMemoryLimit;
+    private String problemMemoryLimit;
 
     private String problemTutorial;
 
