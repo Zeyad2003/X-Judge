@@ -1,9 +1,11 @@
 package com.xjudge.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class FirstResource {
     String hello = """
             <!DOCTYPE html>
@@ -32,7 +34,7 @@ public class FirstResource {
               </body>
             </html>
             """;
-    @GetMapping("/")
+    @GetMapping
     public String welcome() {
         return hello;
     }
