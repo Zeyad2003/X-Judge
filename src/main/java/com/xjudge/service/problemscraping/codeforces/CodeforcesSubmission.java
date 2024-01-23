@@ -1,8 +1,8 @@
 package com.xjudge.service.problemscraping.codeforces;
 
 import com.xjudge.exception.SubmitException;
-import com.xjudge.model.SubmissionInfo;
-import com.xjudge.model.SubmissionResult;
+import com.xjudge.model.submission.SubmissionInfo;
+import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.service.problemscraping.SubmissionAutomation;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;

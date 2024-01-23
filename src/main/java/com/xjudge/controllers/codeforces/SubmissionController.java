@@ -1,7 +1,7 @@
 package com.xjudge.controllers.codeforces;
 
-import com.xjudge.model.SubmissionInfo;
-import com.xjudge.model.SubmissionResult;
+import com.xjudge.model.submission.SubmissionInfo;
+import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.service.problemscraping.SubmissionAutomation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

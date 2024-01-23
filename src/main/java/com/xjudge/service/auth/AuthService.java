@@ -1,8 +1,8 @@
 package com.xjudge.service.auth;
 
-import com.xjudge.models.AuthRequest;
-import com.xjudge.models.AuthResponse;
-import com.xjudge.models.UserRegisterRequest;
+import com.xjudge.model.auth.AuthRequest;
+import com.xjudge.model.auth.AuthResponse;
+import com.xjudge.model.auth.UserRegisterRequest;
 
 public interface AuthService {
     AuthResponse register(UserRegisterRequest registerRequest);

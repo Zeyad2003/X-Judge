@@ -1,4 +1,4 @@
-package com.xjudge.models;
+package com.xjudge.model.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

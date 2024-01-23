@@ -1,4 +1,4 @@
-package com.xjudge.models;
+package com.xjudge.model.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

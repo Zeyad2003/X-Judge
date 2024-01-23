@@ -1,4 +1,4 @@
-package com.xjudge.repos;
+package com.xjudge.repository;
 
 import com.xjudge.entity.User;
 import org.mapstruct.control.MappingControl;

@@ -1,4 +1,4 @@
-package com.xjudge.securityconfig;
+package com.xjudge.config.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

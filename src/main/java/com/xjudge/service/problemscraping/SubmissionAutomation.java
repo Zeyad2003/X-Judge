@@ -1,7 +1,7 @@
 package com.xjudge.service.problemscraping;
 
-import com.xjudge.model.SubmissionInfo;
-import com.xjudge.model.SubmissionResult;
+import com.xjudge.model.submission.SubmissionInfo;
+import com.xjudge.model.submission.SubmissionResult;
 
 public interface SubmissionAutomation {
     void login();

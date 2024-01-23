@@ -1,4 +1,4 @@
-package com.xjudge.model;
+package com.xjudge.model.submission;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

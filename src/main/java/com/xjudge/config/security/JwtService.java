@@ -1,4 +1,4 @@
-package com.xjudge.securityconfig;
+package com.xjudge.config.security;
 
 import com.xjudge.entity.User;
 import io.jsonwebtoken.Claims;

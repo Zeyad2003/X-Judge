@@ -1,4 +1,4 @@
-package com.xjudge.model;
+package com.xjudge.model.submission;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

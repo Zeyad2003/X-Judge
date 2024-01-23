@@ -1,4 +1,4 @@
-package com.xjudge.config;
+package com.xjudge.config.selenium;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;

@@ -1,11 +1,11 @@
 package com.xjudge.service.auth;
 
 import com.xjudge.entity.User;
-import com.xjudge.models.AuthRequest;
-import com.xjudge.models.AuthResponse;
-import com.xjudge.models.UserRegisterRequest;
-import com.xjudge.repos.UserRepo;
-import com.xjudge.securityconfig.JwtService;
+import com.xjudge.model.auth.AuthRequest;
+import com.xjudge.model.auth.AuthResponse;
+import com.xjudge.model.auth.UserRegisterRequest;
+import com.xjudge.repository.UserRepo;
+import com.xjudge.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
