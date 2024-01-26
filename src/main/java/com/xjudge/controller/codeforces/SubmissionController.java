@@ -1,4 +1,4 @@
-package com.xjudge.controllers.codeforces;
+package com.xjudge.controller.codeforces;
 
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
