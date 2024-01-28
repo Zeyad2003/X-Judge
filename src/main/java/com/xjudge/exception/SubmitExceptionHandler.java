@@ -14,10 +14,10 @@ public class SubmitExceptionHandler {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss a";
 
     @ExceptionHandler(SubmitException.class)
-    public ResponseEntity<?> submitException(String message, WebRequest webRequest) {
+    public ResponseEntity<?> submitException(SubmitException exception, WebRequest webRequest) {
         ExceptionMessage errorDetails = new ExceptionMessage(
                 HttpStatus.BAD_REQUEST.value(),
-                message,
+                exception.getMessage(),
                 DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
                 webRequest.getDescription(false)
         );
@@ -25,10 +25,10 @@ public class SubmitExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeException(String message, WebRequest webRequest) {
+    public ResponseEntity<?> runtimeException(Exception exception, WebRequest webRequest) {
         ExceptionMessage errorDetails = new ExceptionMessage(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                message,
+                exception.getMessage(),
                 DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
                 webRequest.getDescription(false)
         );
