@@ -1,6 +1,7 @@
 package com.xjudge.service.auth;
 
 import com.xjudge.entity.User;
+import com.xjudge.enums.UserRole;
 import com.xjudge.model.auth.AuthRequest;
 import com.xjudge.model.auth.AuthResponse;
 import com.xjudge.model.auth.UserRegisterRequest;
@@ -45,7 +46,7 @@ public class AuthServiceImp implements AuthService{
                 .userPhotoUrl(registerRequest.getUserPhotoUrl())
                 .userRegistrationDate(LocalDate.now())
                 .userSchool(registerRequest.getUserSchool())
-                .role(registerRequest.getRole())
+                .role(UserRole.USER)
                 .build();
 
 

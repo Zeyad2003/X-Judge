@@ -4,4 +4,5 @@ public enum UserRole {
     LEADER,
     MANAGER,
     MEMBER
+    , USER
 }
