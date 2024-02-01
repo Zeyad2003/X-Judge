@@ -34,7 +34,6 @@ public class UserRegisterRequest {
 
     private String userPhotoUrl;
 
-    @NotBlank(message = "user role is mandatory")
     private UserRole role;
 
 }

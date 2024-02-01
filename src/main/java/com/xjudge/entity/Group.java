@@ -1,5 +1,8 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.enums.GroupVisibility;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="`group`")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "groupId")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

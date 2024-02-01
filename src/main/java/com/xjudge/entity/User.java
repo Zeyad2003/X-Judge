@@ -1,5 +1,7 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,7 +26,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
 @Table(name = "user")
 public class User implements UserDetails {
     @Id
@@ -70,8 +72,11 @@ public class User implements UserDetails {
     )
     private List<Problem> userFavoriteProblems;
 
-    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.LAZY)
-    private List<Contest> userContests;
+//    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+//    private List<Contest> userContests;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    private List<UserContest> contests ;
 
     @ManyToMany(mappedBy = "groupUsers", fetch = FetchType.LAZY)
     private List<Group> userGroups;

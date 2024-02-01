@@ -1,8 +1,11 @@
 package com.xjudge.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.enums.ContestType;
 import com.xjudge.enums.ContestVisibility;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +13,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <strong>Contest Entity</strong>
@@ -21,6 +26,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="contest")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "contestId")
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,23 +47,16 @@ public class Contest {
     @Enumerated(EnumType.STRING)
     private ContestVisibility contestVisibility;
 
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "contest_id")
-    private List<Submission> contestSubmissions;
+    private List<Submission> contestSubmissions = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_contest",
-            joinColumns = @JoinColumn(name = "contest_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> contestUsers;
+    @OneToMany(mappedBy = "contest" , cascade = CascadeType.ALL)
+    private List<UserContest> contestUsers = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "contest_problem",
-            joinColumns = @JoinColumn(name = "contest_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_id")
-    )
-    private List<Problem> problems;
+
+    @OneToMany(mappedBy = "contest" , cascade = CascadeType.ALL)
+    List<ContestProblem> problemSet = new ArrayList<>();
+
 }

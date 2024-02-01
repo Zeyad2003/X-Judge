@@ -6,6 +6,7 @@ import com.xjudge.entity.Tag;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.repository.TagRepository;
 import com.xjudge.service.problemscraping.GetProblemAutomation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,13 +35,16 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         if (problem != null) return problem;
 
         try {
+
             final Document document = Jsoup.connect(problemSetUrl + "/" + contestId + "/" + letter).get();
+
             Elements problemHeader = document.select(".header > .title");
 
             // Check problem is found in codeforces or not
             if (problemHeader.isEmpty()) {
                 System.out.println("Problem not found");
-                return null;
+                throw new EntityNotFoundException("PROBLEM_NOT_FOUND");
+//                return null;
             }
 
             String problemTutorial = "https://codeforces.com/" + document.select(".roundbox.sidebox.sidebar-menu.borderTopRound > ul > li").get(1).select("a").attr("href"),

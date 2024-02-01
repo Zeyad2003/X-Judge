@@ -1,9 +1,8 @@
 package com.xjudge.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.xjudge.entity.ids.UserContestId;
+import com.xjudge.enums.UserContestRole;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +16,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_contest")
+@IdClass(UserContestId.class)
 public class UserContest {
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
 
     @Id
-    @Column(name = "contest_id")
-    private Long contestId;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "contest_id")
+    private Contest contest;
+
+    @Id
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private Boolean isFavorite;
+
+    @Enumerated(EnumType.STRING)
+    private UserContestRole role;
 }
