@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class groupServiceImpl implements groupService {
+public class groupServiceImpl implements GroupService {
     @Override
     public List<Group> publicGroups() {
         return null;
@@ -36,7 +36,7 @@ public class groupServiceImpl implements groupService {
     }
 
     @Override
-    public void addContest(Long contestId) {
+    public void addContest(Long contestId, Long groupId) {
 
     }
 

@@ -7,7 +7,7 @@ import com.xjudge.model.group.GroupRequest;
 
 import java.util.List;
 
-public interface groupService {
+public interface GroupService {
 
     // CRUD operations
     List<Group> publicGroups();
@@ -17,7 +17,7 @@ public interface groupService {
     void delete(Long groupId);
 
     // Contest and invitation
-    void addContest(Long contestId);
+    void addContest(Long contestId, Long groupId);
     void inviteUser(Long groupId, Long userId);
 
     // Join and leave group
