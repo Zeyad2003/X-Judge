@@ -4,12 +4,19 @@ import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
 import com.xjudge.model.group.GroupRequest;
+import com.xjudge.repository.GroupRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class groupServiceImpl implements GroupService {
+
+    private final GroupRepository groupRepository;
+
     @Override
     public List<Group> publicGroups() {
         return null;
