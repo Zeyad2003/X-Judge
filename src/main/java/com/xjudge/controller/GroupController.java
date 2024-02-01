@@ -62,12 +62,12 @@ public class GroupController {
         return ResponseEntity.ok("User left successfully.");
     }
 
-    @PostMapping("/{groupId}/contests")
+    @GetMapping("/{groupId}/contests")
     public ResponseEntity<?> getGroupContests(@PathVariable Long groupId) {
         return ResponseEntity.ok(groupService.Contests(groupId));
     }
 
-    @PostMapping("/{groupId}/users")
+    @GetMapping("/{groupId}/users")
     public ResponseEntity<?> getGroupUsers(@PathVariable Long groupId) {
         return ResponseEntity.ok(groupService.Users(groupId));
     }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,4 +46,15 @@ public class Group {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> groupUsers;
+
+    public void addUser(User user) {
+        if (groupUsers == null) {
+            groupUsers = new ArrayList<>();
+        }
+        groupUsers.add(user);
+    }
+
+    public void deleteUser(User user) {
+        groupUsers.removeIf(u -> u.equals(user));
+    }
 }
