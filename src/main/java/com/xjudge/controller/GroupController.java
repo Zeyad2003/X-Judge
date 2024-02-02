@@ -12,17 +12,17 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @GetMapping
+    @GetMapping("/public")
     public ResponseEntity<?> getAllPublicGroups() {
         return ResponseEntity.ok(groupService.publicGroups());
     }
 
     @GetMapping("/{groupId}")
     public ResponseEntity<?> getSpecificGroup(@PathVariable  Long groupId) {
-        return ResponseEntity.ok(groupService.details(groupId));
+        return ResponseEntity.ok(groupService.getSpecificGroup(groupId));
     }
 
-    @PostMapping
+    @PostMapping("/create-group")
     public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest) {
         return ResponseEntity.ok(groupService.create(groupRequest));
     }
@@ -43,7 +43,7 @@ public class GroupController {
         groupService.addContest(contestId, groupId);
         return ResponseEntity.ok("Contest added successfully.");
     }
-
+////////////////////////////////////////////////////////////////////////////////
     @PostMapping("/{groupId}/user/{userId}")
     public ResponseEntity<?> inviteUserToGroup(@PathVariable Long groupId, @PathVariable Long userId) {
         groupService.inviteUser(groupId, userId);

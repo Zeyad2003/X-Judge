@@ -11,8 +11,9 @@ public interface GroupService {
 
     // CRUD operations
     List<Group> publicGroups();
+    Group getSpecificGroup(Long id);
     Group create(GroupRequest groupRequest);
-    Group details(Long groupId);
+
     Group update(Long groupId, GroupRequest groupRequest);
     void delete(Long groupId);
 

@@ -6,14 +6,18 @@ import com.xjudge.entity.User;
 import com.xjudge.enums.GroupVisibility;
 import com.xjudge.exception.SubmitException;
 import com.xjudge.model.group.GroupRequest;
+import com.xjudge.repository.ContestRepository;
 import com.xjudge.repository.GroupRepository;
 import com.xjudge.repository.UserRepo;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,35 +25,70 @@ public class groupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
     private final UserRepo userRepository;
+    private final ContestRepository contestRepository;
 
     @Override
     public List<Group> publicGroups() {
-        return null;
+        return groupRepository.findByGroupVisibility(GroupVisibility.PUBLIC);
     }
+
+    @Override
+    public Group getSpecificGroup(Long id) {
+        return groupRepository.findById(id).orElse(null);
+    }
+
 
     @Override
     public Group create(GroupRequest groupRequest) {
-        return null;
+        Group group=new Group();
+        group.setGroupName(groupRequest.getName());
+        group.setGroupDescription(groupRequest.getDescription());
+        group.setGroupVisibility(groupRequest.getVisibility());
+        return groupRepository.save(group);
     }
 
-    @Override
-    public Group details(Long groupId) {
-        return null;
-    }
 
     @Override
     public Group update(Long groupId, GroupRequest groupRequest) {
-        return null;
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+            group.setGroupName(groupRequest.getName());
+            group.setGroupDescription(groupRequest.getDescription());
+            group.setGroupVisibility(groupRequest.getVisibility());
+
+            return groupRepository.save(group);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void delete(Long groupId) {
-
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if (optionalGroup.isPresent()) {
+            groupRepository.deleteById(groupId);
+        } else {
+            throw new EntityNotFoundException("Group with ID " + groupId + " not found");
+        }
     }
 
     @Override
     public void addContest(Long contestId, Long groupId) {
 
+        Optional<Contest> optionalContest = contestRepository.findById(contestId);
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalContest.isPresent() && optionalGroup.isPresent()) {
+            Contest contest = optionalContest.get();
+            Group group = optionalGroup.get();
+            group.addContest(contest);
+            groupRepository.save(group);
+        } else {
+            throw new EntityNotFoundException("Contest or Group not found");
+        }
     }
 
     @Override

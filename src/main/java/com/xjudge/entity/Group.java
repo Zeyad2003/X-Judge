@@ -53,6 +53,12 @@ public class Group {
         }
         groupUsers.add(user);
     }
+    public void addContest(Contest contest){
+        if (groupContests == null) {
+            groupContests = new ArrayList<>();
+        }
+        groupContests.add(contest);
+    }
 
     public void deleteUser(User user) {
         groupUsers.removeIf(u -> u.equals(user));
