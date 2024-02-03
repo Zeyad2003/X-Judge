@@ -2,7 +2,7 @@ package com.xjudge.controller.codeforces;
 
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
-import com.xjudge.service.problemscraping.SubmissionAutomation;
+import com.xjudge.service.scraping.SubmissionAutomation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

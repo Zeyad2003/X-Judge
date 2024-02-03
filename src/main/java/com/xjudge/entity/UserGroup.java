@@ -1,6 +1,6 @@
 package com.xjudge.entity;
 
-import com.xjudge.enums.UserRole;
+import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

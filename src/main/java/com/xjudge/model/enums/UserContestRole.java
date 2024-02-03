@@ -1,4 +1,4 @@
-package com.xjudge.enums;
+package com.xjudge.model.enums;
 
 public enum UserContestRole {
     PARTICIPANT , OWNER

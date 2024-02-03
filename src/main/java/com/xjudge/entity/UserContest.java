@@ -1,7 +1,7 @@
 package com.xjudge.entity;
 
 import com.xjudge.entity.ids.UserContestId;
-import com.xjudge.enums.UserContestRole;
+import com.xjudge.model.enums.UserContestRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

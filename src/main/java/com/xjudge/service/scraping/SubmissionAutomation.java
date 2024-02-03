@@ -1,4 +1,4 @@
-package com.xjudge.service.problemscraping;
+package com.xjudge.service.scraping;
 
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;

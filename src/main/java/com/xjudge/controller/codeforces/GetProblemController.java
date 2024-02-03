@@ -1,6 +1,6 @@
 package com.xjudge.controller.codeforces;
 
-import com.xjudge.service.problemscraping.GetProblemAutomation;
+import com.xjudge.service.scraping.GetProblemAutomation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

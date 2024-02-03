@@ -2,7 +2,7 @@ package com.xjudge.service.contest;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.xjudge.entity.*;
-import com.xjudge.enums.UserContestRole;
+import com.xjudge.model.enums.UserContestRole;
 import com.xjudge.mappers.ContestMapper;
 import com.xjudge.model.contest.ContestCreationRequest;
 import com.xjudge.model.contest.ContestDataResp;
@@ -14,13 +14,11 @@ import com.xjudge.repository.GroupRepo;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 

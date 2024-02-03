@@ -1,8 +1,7 @@
 package com.xjudge.model.contest;
 
-import com.xjudge.enums.ContestType;
-import com.xjudge.enums.ContestVisibility;
-import jakarta.persistence.*;
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

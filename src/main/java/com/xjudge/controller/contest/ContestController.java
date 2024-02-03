@@ -1,4 +1,4 @@
-package com.xjudge.controller;
+package com.xjudge.controller.contest;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.xjudge.model.contest.ContestCreationRequest;

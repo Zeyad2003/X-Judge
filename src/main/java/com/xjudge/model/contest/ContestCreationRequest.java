@@ -1,20 +1,13 @@
 package com.xjudge.model.contest;
 
-import com.xjudge.entity.ContestProblem;
-import com.xjudge.entity.Submission;
-import com.xjudge.entity.User;
-import com.xjudge.enums.ContestType;
-import com.xjudge.enums.ContestVisibility;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.security.PrivateKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

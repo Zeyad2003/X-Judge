@@ -3,7 +3,7 @@ package com.xjudge.service.problem;
 import com.xjudge.entity.Problem;
 import com.xjudge.model.problem.ContestProblemResp;
 import com.xjudge.repository.ProblemRepository;
-import com.xjudge.service.problemscraping.GetProblemAutomation;
+import com.xjudge.service.scraping.GetProblemAutomation;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

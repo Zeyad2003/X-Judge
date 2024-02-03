@@ -1,11 +1,11 @@
-package com.xjudge.service.problemscraping.codeforces;
+package com.xjudge.service.scraping.codeforces;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Sample;
 import com.xjudge.entity.Tag;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.repository.TagRepository;
-import com.xjudge.service.problemscraping.GetProblemAutomation;
+import com.xjudge.service.scraping.GetProblemAutomation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;

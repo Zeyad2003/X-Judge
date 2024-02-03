@@ -1,4 +1,4 @@
-package com.xjudge.controller;
+package com.xjudge.controller.problem;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.model.problem.ContestProblemResp;

@@ -3,9 +3,8 @@ package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.xjudge.enums.ContestType;
-import com.xjudge.enums.ContestVisibility;
-import jakarta.annotation.Nullable;
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <strong>Contest Entity</strong>
