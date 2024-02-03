@@ -30,7 +30,7 @@ public interface GroupService {
     List<User> Users(Long groupId);
 
     // Public or private group
-    boolean isPublic(Long groupId);
-    boolean isPrivate(Long groupId);
+    boolean isPublic(Group group);
+    boolean isPrivate(Group group);
 
 }

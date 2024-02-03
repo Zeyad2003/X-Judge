@@ -11,7 +11,6 @@ import com.xjudge.repository.GroupRepository;
 import com.xjudge.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,7 +104,7 @@ public class groupServiceImpl implements GroupService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
         );
-        if (isPublic(groupId)) {
+        if (isPublic(group)) {
             group.addUser(user);
         }else {
             throw new SubmitException("Group visibility is not public.", HttpStatus.BAD_REQUEST);
@@ -141,15 +140,12 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    public boolean isPublic(Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(
-                () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
-        );
+    public boolean isPublic(Group group) {
         return group.getGroupVisibility() == GroupVisibility.PUBLIC;
     }
 
     @Override
-    public boolean isPrivate(Long groupId) {
-        return !isPublic(groupId);
+    public boolean isPrivate(Group group) {
+        return !isPublic(group);
     }
 }
