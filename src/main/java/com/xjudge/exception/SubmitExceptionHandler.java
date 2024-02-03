@@ -31,7 +31,7 @@ public class SubmitExceptionHandler {
     }
 
     private ResponseEntity<?> createResponseEntity(Exception exception, HttpStatus status, WebRequest webRequest) {
-        ExceptionMessage errorDetails = new ExceptionMessage(
+        ExceptionModel errorDetails = new ExceptionModel(
                 status.value(),
                 exception.getMessage(),
                 DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
