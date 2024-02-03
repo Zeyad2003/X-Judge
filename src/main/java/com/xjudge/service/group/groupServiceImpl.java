@@ -1,13 +1,17 @@
 package com.xjudge.service.group;
 
+import com.xjudge.config.security.JwtService;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
+import com.xjudge.entity.Invitation;
 import com.xjudge.entity.User;
 import com.xjudge.enums.GroupVisibility;
+import com.xjudge.enums.InvitationStatus;
 import com.xjudge.exception.SubmitException;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.repository.ContestRepository;
 import com.xjudge.repository.GroupRepository;
+import com.xjudge.repository.InvitationRepository;
 import com.xjudge.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,8 @@ public class groupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
     private final UserRepo userRepository;
     private final ContestRepository contestRepository;
+    private final InvitationRepository invitationRepository; // Don't user repository, user service layer
+    private final JwtService jwtService;
 
     @Override
     public List<Group> publicGroups() {
@@ -91,8 +97,24 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    public void inviteUser(Long groupId, Long userId) {
+    public void inviteUser(Long groupId, String senderToken, Long receiverId) {
         // TODO
+        Group group = groupRepository.findById(groupId).orElseThrow(
+                () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
+        );
+        String senderHandle = jwtService.extractByUserHandle(senderToken); //get sender handle from token
+        User sender = userRepository.findUserByUserHandle(senderHandle).orElseThrow(
+                () -> new SubmitException("sender not found", HttpStatus.NOT_FOUND)
+        );
+        User receiver = userRepository.findById(receiverId).orElseThrow(
+                () -> new SubmitException("Receiver not found", HttpStatus.NOT_FOUND)
+        );
+        invitationRepository.save(Invitation.builder()
+                .receiver(receiver)
+                .sender(sender)
+                .group(group)
+                .status(InvitationStatus.PENDING)
+                .build());
     }
 
     @Override

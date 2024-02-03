@@ -1,6 +1,9 @@
 package com.xjudge.controller;
 
+import com.xjudge.config.security.JwtService;
+import com.xjudge.entity.User;
 import com.xjudge.model.group.GroupRequest;
+import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.service.group.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +48,9 @@ public class GroupController {
         return ResponseEntity.ok("Contest added successfully.");
     }
 ////////////////////////////////////////////////////////////////////////////////
-    @PostMapping("/{groupId}/user/{userId}")
-    public ResponseEntity<?> inviteUserToGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        groupService.inviteUser(groupId, userId);
+    @PostMapping("/invite")
+    public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest) {
+        groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getToken(), invitationRequest.getReceiverId());
         return ResponseEntity.ok("Invitation sent successfully.");
     }
 

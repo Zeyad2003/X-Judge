@@ -19,7 +19,7 @@ public interface GroupService {
 
     // Contest and invitation
     void addContest(Long contestId, Long groupId);
-    void inviteUser(Long groupId, Long userId);
+    void inviteUser(Long groupId, String senderToken, Long receiverId);
 
     // Join and leave group
     void join(Long groupId, Long userId);
