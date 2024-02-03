@@ -3,7 +3,7 @@ package com.xjudge.mappers;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.ContestProblem;
 import com.xjudge.entity.UserContest;
-import com.xjudge.model.contest.ContestDataResp;
+import com.xjudge.model.contest.ContestData;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestProblemData;
 import com.xjudge.model.user.UserContestModel;
@@ -34,7 +34,7 @@ public interface ContestMapper {
             @Mapping(source = "contestSubmissions" , target = "submissions") ,
     }
     )
-    ContestDataResp toContestDataResp(Contest contest);
+    ContestData toContestDataResp(Contest contest);
 
     UserContestModel toUserContestModel(UserContest userContest);
     UserContest toUserContest(UserContestModel userContestModel);

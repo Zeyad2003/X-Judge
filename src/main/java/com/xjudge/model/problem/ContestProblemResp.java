@@ -1,14 +1,14 @@
 package com.xjudge.model.problem;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ContestProblemResp {
     private Long problemId;
     private String problemCode;

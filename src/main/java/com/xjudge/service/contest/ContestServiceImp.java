@@ -2,10 +2,10 @@ package com.xjudge.service.contest;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 import com.xjudge.entity.*;
+import com.xjudge.model.contest.ContestData;
 import com.xjudge.model.enums.UserContestRole;
 import com.xjudge.mappers.ContestMapper;
 import com.xjudge.model.contest.ContestCreationRequest;
-import com.xjudge.model.contest.ContestDataResp;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestProblemData;
 import com.xjudge.model.problem.ContestProblemResp;
@@ -46,8 +46,8 @@ public class ContestServiceImp implements ContestService{
      2- do logic of properties
      */
     @Override
-    public ContestDataResp createContest(Long userId, @NotNull ContestCreationRequest contest) {
-        User user = userRepo.findById(userId).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
+    public ContestData createContest(@NotNull ContestCreationRequest contest) {
+        User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
         Group group = groupRepo.findById(contest.getGroupId()).orElseThrow(() -> new EntityNotFoundException("GROUP_NOT_FOUND"));
 
 
@@ -84,7 +84,7 @@ public class ContestServiceImp implements ContestService{
     }
 
     @Override
-    public List<ContestDataResp> getAllContests() {
+    public List<ContestData> getAllContests() {
         return contestRepo.findAll()
                 .stream()
                 .map(contest -> mapper.toContestDataResp(contest))
@@ -92,7 +92,7 @@ public class ContestServiceImp implements ContestService{
     }
 
     @Override
-    public ContestDataResp getContest(Long id) {
+    public ContestData getContest(Long id) {
         return mapper.toContestDataResp(
                 contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"))
         );

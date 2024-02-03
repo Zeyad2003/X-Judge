@@ -13,13 +13,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
-public class ContestDataResp {
+@NoArgsConstructor
+@AllArgsConstructor
 
-    private Long  contestId;
+public class ContestData {
+
+    private Long contestId;
 
     private String contestTitle;
 

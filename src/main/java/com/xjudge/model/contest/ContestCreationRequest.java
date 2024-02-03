@@ -14,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ContestCreationRequest {
+
+    @NotNull(message = "THIS FIELD CAN NOT BE EMPTY")
+    private Long userId;
+
     @NotNull(message = "THIS FIELD CAN NOT BE EMPTY")
     private String contestTitle;
 
