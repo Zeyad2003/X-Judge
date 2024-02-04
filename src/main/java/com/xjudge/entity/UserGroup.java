@@ -3,6 +3,7 @@ package com.xjudge.entity;
 import com.xjudge.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,20 +17,24 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "user_group")
 public class UserGroup {
+
     @Id
-    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @Id
-    @Column(name = "group_id")
     @ManyToOne
+    @JoinColumn(name = "group_id")
     private Group group;
 
-    LocalDate userGroupJoinDate;
+    LocalDate joinDate;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole role;
 }

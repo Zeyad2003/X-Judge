@@ -1,8 +1,10 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xjudge.enums.GroupVisibility;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name="`group`")
 public class Group {
     @Id
@@ -39,28 +42,22 @@ public class Group {
     @JoinColumn(name = "group_id")
     List<Contest> groupContests;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_group",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> groupUsers;
+    @JsonIgnore
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private List<UserGroup> users;
 
-    public void addUser(User user) {
-        if (groupUsers == null) {
-            groupUsers = new ArrayList<>();
+    public void addUser(UserGroup user) {
+        if (users == null) {
+            users = new ArrayList<>();
         }
-        groupUsers.add(user);
-    }
-    public void addContest(Contest contest){
-        if (groupContests == null) {
-            groupContests = new ArrayList<>();
-        }
-        groupContests.add(contest);
+        users.add(user);
     }
 
-    public void deleteUser(User user) {
-        groupUsers.removeIf(u -> u.equals(user));
+    public void deleteUser(UserGroup user) {
+        users.remove(user);
+    }
+
+    public boolean userFound(User user) {
+        return users.stream().anyMatch(userGroup -> userGroup.getUser().equals(user));
     }
 }
