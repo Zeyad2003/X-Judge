@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 @Builder
@@ -26,4 +28,5 @@ public class Invitation {
     @JoinColumn(name = "group_id")
     Group group;
     InvitationStatus status;
+    LocalDate date;
 }

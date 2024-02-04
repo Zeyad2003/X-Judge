@@ -20,11 +20,13 @@ import java.time.LocalDate;
 public class UserGroup {
     @Id
     @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    private User user;
 
     @Id
     @Column(name = "group_id")
-    private Long groupId;
+    @ManyToOne
+    private Group group;
 
     LocalDate userGroupJoinDate;
 
