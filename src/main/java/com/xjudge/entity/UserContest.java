@@ -1,32 +1,30 @@
 package com.xjudge.entity;
 
-import com.xjudge.entity.ids.UserContestId;
+import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.model.enums.UserContestRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * <strong>UserContest Entity</strong>
- * <p>Represents a user's data in a contest. {Favorite}</p>
- */
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_contest")
-@IdClass(UserContestId.class)
 public class UserContest {
 
-    @Id
+    @EmbeddedId
+    UserContestKey id;
+
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "contest_id")
+    @MapsId("contestId")
     private Contest contest;
 
-    @Id
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
+    @MapsId("userId")
     private User user;
 
     private Boolean isFavorite;

@@ -1,6 +1,5 @@
 package com.xjudge.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.model.enums.ContestType;
@@ -13,12 +12,10 @@ import lombok.NoArgsConstructor;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-/**
- * <strong>Contest Entity</strong>
- * <p>Represents a contest with a list of problems and submissions.</p>
- */
 @Data
 @Entity
 @NoArgsConstructor
@@ -45,16 +42,14 @@ public class Contest {
     @Enumerated(EnumType.STRING)
     private ContestVisibility contestVisibility;
 
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "contest_id")
     private List<Submission> contestSubmissions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "contest" , cascade = CascadeType.ALL)
-    private List<UserContest> contestUsers = new ArrayList<>();
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    private Set<UserContest> contestUsers = new HashSet<>();
 
-
-    @OneToMany(mappedBy = "contest" , cascade = CascadeType.ALL)
-    List<ContestProblem> problemSet = new ArrayList<>();
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    Set<ContestProblem> problemSet = new HashSet<>();
 
 }

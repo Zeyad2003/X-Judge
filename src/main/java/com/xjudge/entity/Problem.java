@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**
- * <strong>Problem Entity</strong>
- * <p>Problem entity is used to store all problem details</p>
- */
 @Data
 @Entity
 @NoArgsConstructor

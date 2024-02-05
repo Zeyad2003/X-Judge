@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * <strong>Tag entity.</strong>
- * <p>Tag entity holds the tags of the problems.</p>
- */
 @Data
 @Entity
 @NoArgsConstructor

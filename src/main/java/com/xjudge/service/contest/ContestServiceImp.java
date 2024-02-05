@@ -1,45 +1,33 @@
 package com.xjudge.service.contest;
 
-import com.github.dockerjava.api.exception.BadRequestException;
-import com.xjudge.entity.*;
+import com.xjudge.entity.Contest;
+import com.xjudge.entity.ContestProblem;
+import com.xjudge.entity.Problem;
+import com.xjudge.entity.User;
 import com.xjudge.model.contest.ContestData;
-import com.xjudge.model.enums.UserContestRole;
 import com.xjudge.mappers.ContestMapper;
 import com.xjudge.model.contest.ContestCreationRequest;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestProblemData;
 import com.xjudge.model.problem.ContestProblemResp;
 import com.xjudge.repository.ContestRepo;
-import com.xjudge.repository.GroupRepo;
 import com.xjudge.repository.ProblemRepository;
-import com.xjudge.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ContestServiceImp implements ContestService{
 
-    ContestRepo contestRepo;
-    UserRepo userRepo;
-    GroupRepo groupRepo;
-    ProblemRepository problemRepo;
+    private final ContestRepo contestRepo;
+    private final ProblemRepository problemRepo;
+    private final ContestMapper mapper;
 
-    ContestMapper mapper;
-
-    @Autowired
-    public ContestServiceImp(ContestRepo contestRepo, UserRepo userRepo , GroupRepo groupRepo , ProblemRepository problemRepo , ContestMapper mapper) {
-        this.contestRepo = contestRepo;
-        this.userRepo = userRepo;
-        this.groupRepo = groupRepo;
-        this.problemRepo = problemRepo;
-        this.mapper = mapper;
-    }
 
     /*
      1- create UserContest entity after changing the relation
@@ -47,7 +35,7 @@ public class ContestServiceImp implements ContestService{
      */
     @Override
     public ContestData createContest(@NotNull ContestCreationRequest contest) {
-        User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
+      /*  User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
         Group group = groupRepo.findById(contest.getGroupId()).orElseThrow(() -> new EntityNotFoundException("GROUP_NOT_FOUND"));
 
 
@@ -80,8 +68,10 @@ public class ContestServiceImp implements ContestService{
 
         userRepo.save(user);
 
-        return mapper.toContestDataResp(contest1);
+        return mapper.toContestDataResp(contest1);*/
+        return null;
     }
+
 
     @Override
     public List<ContestData> getAllContests() {

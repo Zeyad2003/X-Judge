@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * <strong>Submission Entity</strong>
- * <p>Submission entity is used to store all submission details</p>
- */
 @Data
 @Entity
 @NoArgsConstructor

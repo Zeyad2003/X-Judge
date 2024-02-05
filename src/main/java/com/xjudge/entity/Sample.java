@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * <strong>Sample Entity</strong>
- * <p>Sample entity is used to store sample input and output for a problem</p>
- */
 @Data
 @Entity
 @NoArgsConstructor

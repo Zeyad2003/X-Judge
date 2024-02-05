@@ -1,9 +1,7 @@
 package com.xjudge.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.xjudge.entity.ids.ContestProblemId;
+import com.xjudge.entity.key.ContestProblemKey;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,20 +11,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@IdClass(value = ContestProblemId.class)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "contest")
+@Table(name = "contest_problem")
 public class ContestProblem {
 
+    @EmbeddedId
+    ContestProblemKey id;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "contest_id")
+    @MapsId("contestId")
     private Contest contest;
 
     @JsonIgnore
-    @Id
     @ManyToOne
     @JoinColumn(name = "problem_id")
+    @MapsId("problemId")
     private Problem problem;
 
     private int problemWeight;

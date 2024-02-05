@@ -14,15 +14,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
-/**
- * <strong>User Entity</strong>
- * <p>User entity is used to store all user information</p>
- */
-
-@Entity
 @Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,7 +28,6 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long userId;
 
     private String userPassword;
@@ -72,14 +68,10 @@ public class User implements UserDetails {
     )
     private List<Problem> userFavoriteProblems;
 
-//    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
-//    private List<Contest> userContests;
+    @OneToMany(mappedBy = "user")
+    private Set<UserContest> contests = new HashSet<>();
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
-    private List<UserContest> contests ;
-
-    @ManyToMany(mappedBy = "groupUsers", fetch = FetchType.LAZY)
-    private List<Group> userGroups;
+//======================================================================================================================
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -88,12 +80,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userPassword;
+        return this.userPassword;
     }
 
     @Override
     public String getUsername() {
-        return userHandle;
+        return this.userHandle;
     }
 
     @Override
