@@ -1,5 +1,6 @@
 tmp.java
 env.properties
+.jpb
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

@@ -5,28 +5,22 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@Data
-@Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name="contest")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "contestId")
-public class Contest {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long contestId;
-
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Contest extends BaseEntity {
     private String contestTitle;
 
     private Instant contestBeginTime;
@@ -44,12 +38,14 @@ public class Contest {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "contest_id")
+    @ToString.Exclude
     private List<Submission> contestSubmissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Set<UserContest> contestUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    @ToString.Exclude
     Set<ContestProblem> problemSet = new HashSet<>();
-
 }

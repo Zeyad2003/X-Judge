@@ -115,7 +115,7 @@ public class ContestServiceImp implements ContestService{
                 .stream()
                 .map(contestProblem ->
                         ContestProblemResp.builder()
-                                .problemId(contestProblem.getProblem().getProblemId())
+                                .problemId(contestProblem.getProblem().getId())
                                 .problemCode(contestProblem.getCode())
                                 .platform(contestProblem.getProblem().getProblemSource())
                                 .title(contestProblem.getAlias())

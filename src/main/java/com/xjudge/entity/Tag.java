@@ -1,19 +1,16 @@
 package com.xjudge.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@ToString
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tagId;
+public class Tag extends BaseEntity {
 
     private String tagName;
 }

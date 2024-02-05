@@ -3,11 +3,15 @@ package com.xjudge.entity;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.model.enums.UserContestRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
-@Data
+import java.util.Objects;
+
+@Getter
+@Setter
+@ToString
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,4 +35,20 @@ public class UserContest {
 
     @Enumerated(EnumType.STRING)
     private UserContestRole role;
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        UserContest that = (UserContest) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(id);
+    }
 }

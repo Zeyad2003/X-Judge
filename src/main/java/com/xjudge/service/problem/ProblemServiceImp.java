@@ -32,7 +32,7 @@ public class ProblemServiceImp implements ProblemService{
         if(problem == null) throw new EntityNotFoundException(PROBLEM_NOT_FOUND);
 
         return ContestProblemResp.builder()
-                .problemId(problem.getProblemId())
+                .problemId(problem.getId())
                 .problemCode(problem.getProblemCode())
                 .title(problem.getProblemTitle())
                 .platform(problem.getProblemSource())

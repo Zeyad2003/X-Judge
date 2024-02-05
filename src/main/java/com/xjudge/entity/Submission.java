@@ -1,22 +1,20 @@
 package com.xjudge.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Data
+@Getter
+@Setter
+@ToString
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="submission")
-public class Submission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long submissionId;
+public class Submission extends BaseEntity {
 
     private String submissionUserHandle;
 
@@ -34,4 +32,5 @@ public class Submission {
     private BigDecimal submissionMemoryUsage;
 
     private BigDecimal submissionTimeUsage;
+
 }

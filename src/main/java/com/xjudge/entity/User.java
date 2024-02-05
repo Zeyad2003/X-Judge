@@ -4,31 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
 @Table(name = "user")
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+public class User extends BaseEntity implements UserDetails {
 
     private String userPassword;
 
@@ -54,10 +47,12 @@ public class User implements UserDetails {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "statistics_id")
+    @ToString.Exclude
     private UserStatistics userStatistics;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     List<Submission> userSubmission;
 
     @ManyToMany
@@ -66,9 +61,11 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
+    @ToString.Exclude
     private List<Problem> userFavoriteProblems;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
     private Set<UserContest> contests = new HashSet<>();
 
 //======================================================================================================================

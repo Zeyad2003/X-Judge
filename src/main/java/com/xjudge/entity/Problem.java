@@ -3,22 +3,20 @@ package com.xjudge.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "problem")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "problemId")
-public class Problem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long problemId;
+public class Problem extends BaseEntity {
 
     private String problemCode;
 
@@ -56,6 +54,7 @@ public class Problem {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id")
+    @ToString.Exclude
     List<Sample> problemSamples;
 
     @ManyToMany
@@ -64,10 +63,12 @@ public class Problem {
             joinColumns = @JoinColumn(name = "problem_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @ToString.Exclude
     private List<Tag> tags;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id")
+    @ToString.Exclude
     List<Submission> problemSubmission;
-  
+
 }

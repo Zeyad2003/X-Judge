@@ -23,7 +23,7 @@ public interface ContestMapper {
     ContestProblem toContestProblem(ContestProblemData data);
 
     @Mappings({
-            @Mapping(source = "contestId" , target = "contestId") ,
+            @Mapping(source = "id" , target = "contestId") ,
             @Mapping(source = "contestLength" , target = "contestLength") ,
             @Mapping(source = "contestTitle" , target = "contestTitle") ,
             @Mapping(source = "contestType" , target = "contestType") ,

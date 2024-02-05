@@ -71,7 +71,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                             return false;
                         }
                     }).map(element -> tagRepository.findByTagName(element.text())
-                            .orElseGet(() -> tagRepository.save(new Tag(0L, element.text())))
+                            .orElseGet(() -> tagRepository.save(new Tag(element.text())))
                     ).collect(Collectors.toList());
 
             List<Sample> allSamples = new ArrayList<>();
@@ -80,29 +80,29 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 List<Element> inputs = sample.select(".input > pre");
                 List<Element> outputs = sample.select(".output > pre");
                 for (int i = 0; i < inputs.size(); i++) {
-                    Sample s = new Sample(0L, inputs.get(i).outerHtml(), outputs.get(i).outerHtml());
+                    Sample s = new Sample(inputs.get(i).outerHtml(), outputs.get(i).outerHtml());
                     allSamples.add(s);
                 }
             }
 
-            problem = new Problem(
-                    0L,
-                    problemCode,
-                    problemRate[0],
-                    title,
-                    inputFile,
-                    outputFile,
-                    problemStatement,
-                    inputSpecification,
-                    outputSpecification,
-                    "Codeforces",
-                    note,
-                    timeLimit,
-                    memoryLimit,
-                    problemTutorial,
-                    allSamples,
-                    tags,
-                    null);
+            problem = Problem.builder()
+                    .problemCode(problemCode)
+                    .problemRate(problemRate[0])
+                    .problemTitle(title)
+                    .inputFile(inputFile)
+                    .outputFile(outputFile)
+                    .problemStatement(problemStatement)
+                    .problemInput(inputSpecification)
+                    .problemOutput(outputSpecification)
+                    .problemSource("Codeforces")
+                    .problemNote(note)
+                    .problemTimeLimit(timeLimit)
+                    .problemMemoryLimit(memoryLimit)
+                    .problemTutorial(problemTutorial)
+                    .problemSamples(allSamples)
+                    .tags(tags)
+                    .build();
+
             return problemRepository.save(problem);
         } catch (Exception e) {
             System.out.println(e.getMessage());
