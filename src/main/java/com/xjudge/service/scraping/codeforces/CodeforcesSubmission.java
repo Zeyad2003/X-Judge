@@ -47,7 +47,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
 
             wait.until(driver -> driver.findElement(By.className("submit-form")));
 
-            submitCode(problemCode, data);
+            submitHelper(problemCode, data);
 
             // getting status of submitting
             WebElement status = driver.findElement(By.className("status-cell"));
@@ -74,7 +74,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
         }
     }
 
-    private void submitCode(String problemCode, SubmissionInfo data) {
+    private void submitHelper(String problemCode, SubmissionInfo data) {
         try {
 
             // get submission elements

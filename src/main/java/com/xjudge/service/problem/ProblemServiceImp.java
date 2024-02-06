@@ -1,10 +1,12 @@
 package com.xjudge.service.problem;
 
 import com.xjudge.entity.Problem;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.problem.ContestProblemResp;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,13 +41,17 @@ public class ProblemServiceImp implements ProblemService{
         Optional<Problem> problem = problemRepo.findByProblemCode(problemCode);
         if(problem.isPresent()) return problem.get();
 
-        int contestId = Integer.parseInt(problemCode.substring(11, problemCode.length() - 1));
-        char problemId = problemCode.charAt(problemCode.length() - 1);
+        if(problemCode.startsWith("CodeForces")) {
+            int contestId = Integer.parseInt(problemCode.substring(11, problemCode.length() - 1));
+            char problemId = problemCode.charAt(problemCode.length() - 1);
 
-        Problem newProblem = getProblemAutomation.GetProblem(contestId, problemId);
+            Problem newProblem = getProblemAutomation.GetProblem(contestId, problemId);
 
-        problemRepo.save(newProblem);
+            problemRepo.save(newProblem);
 
-        return newProblem;
+            return newProblem;
+        }
+
+        throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
     }
 }

@@ -47,7 +47,6 @@ public class AuthServiceImp implements AuthService{
                 .userSchool(registerRequest.getUserSchool())
                 .build();
 
-
         userRepo.save(userDetails);
 
         Map<String , Object> claims = new HashMap<>();
