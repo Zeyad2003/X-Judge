@@ -11,15 +11,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+@Entity
 @Getter
 @Setter
 @Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name="contest")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Contest extends BaseEntity {
     private String contestTitle;
 

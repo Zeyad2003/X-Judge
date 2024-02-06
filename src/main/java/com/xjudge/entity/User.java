@@ -12,14 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.util.*;
 
+@Entity
 @Getter
 @Setter
-@ToString
-@Entity
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
 @Table(name = "user")
 public class User extends BaseEntity implements UserDetails {
 

@@ -6,11 +6,11 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="submission")

@@ -4,6 +4,7 @@ import com.xjudge.exception.SubmitException;
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.service.scraping.SubmissionAutomation;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
@@ -12,7 +13,6 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,6 @@ public class CodeforcesSubmission implements SubmissionAutomation {
     @Value("${CodeForces.password}")
     String PASSWORD;
 
-    @Autowired
     public CodeforcesSubmission(WebDriver driver) {
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));

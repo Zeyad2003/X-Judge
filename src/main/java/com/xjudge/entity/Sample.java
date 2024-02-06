@@ -3,11 +3,11 @@ package com.xjudge.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "sample")

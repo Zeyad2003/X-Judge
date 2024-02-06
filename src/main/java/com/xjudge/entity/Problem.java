@@ -7,15 +7,15 @@ import lombok.*;
 
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "problem")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "problemId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
 public class Problem extends BaseEntity {
 
     private String problemCode;

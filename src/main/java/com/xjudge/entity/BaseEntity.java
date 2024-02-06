@@ -15,8 +15,8 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 

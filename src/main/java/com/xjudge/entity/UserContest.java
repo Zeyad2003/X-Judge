@@ -8,11 +8,11 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_contest")

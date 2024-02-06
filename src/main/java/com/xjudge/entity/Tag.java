@@ -3,11 +3,11 @@ package com.xjudge.entity;
 import jakarta.persistence.Entity;
 import lombok.*;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tag extends BaseEntity {

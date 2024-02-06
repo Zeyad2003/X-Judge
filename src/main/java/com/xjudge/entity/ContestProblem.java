@@ -8,13 +8,13 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
-@ToString
 @Builder
-@Entity
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "contest_problem")
 public class ContestProblem {
 
