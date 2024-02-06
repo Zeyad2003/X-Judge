@@ -11,7 +11,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_statistics")
-public class UserStatistics extends BaseEntity{
+public class UserStatistics extends BaseEntity<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     Long userSolvedCount;
 

@@ -20,7 +20,12 @@ import java.util.*;
 @AllArgsConstructor
 @Table(name="contest")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
-public class Contest extends BaseEntity {
+public class Contest extends BaseEntity<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String contestTitle;
 
     private Instant contestBeginTime;
@@ -48,4 +53,5 @@ public class Contest extends BaseEntity {
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
     @ToString.Exclude
     Set<ContestProblem> problemSet = new HashSet<>();
+
 }

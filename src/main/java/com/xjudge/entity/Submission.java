@@ -14,7 +14,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="submission")
-public class Submission extends BaseEntity {
+public class Submission extends BaseEntity<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String submissionUserHandle;
 

@@ -16,7 +16,11 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "problem")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
-public class Problem extends BaseEntity {
+public class Problem extends BaseEntity<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String problemCode;
 

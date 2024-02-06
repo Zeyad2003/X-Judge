@@ -71,7 +71,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                             return false;
                         }
                     }).map(element -> tagRepository.findByTagName(element.text())
-                            .orElseGet(() -> tagRepository.save(new Tag(element.text())))
+                            .orElseGet(() -> tagRepository.save(Tag.builder().tagName(element.text()).build()))
                     ).collect(Collectors.toList());
 
             List<Sample> allSamples = new ArrayList<>();
@@ -80,7 +80,10 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 List<Element> inputs = sample.select(".input > pre");
                 List<Element> outputs = sample.select(".output > pre");
                 for (int i = 0; i < inputs.size(); i++) {
-                    Sample s = new Sample(inputs.get(i).outerHtml(), outputs.get(i).outerHtml());
+                    Sample s = Sample.builder()
+                            .sampleInput(inputs.get(i).outerHtml())
+                            .sampleOutput(outputs.get(i).outerHtml())
+                            .build();
                     allSamples.add(s);
                 }
             }
