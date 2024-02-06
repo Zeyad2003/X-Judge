@@ -1,6 +1,7 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,13 +25,11 @@ public class Problem extends BaseEntity<Long> {
 
     private String problemCode;
 
-    private int problemRate;
-
     private String problemTitle;
 
-    private String inputFile;
+    private String inputMethod;
 
-    private String outputFile;
+    private String outputMethod;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
@@ -61,6 +60,7 @@ public class Problem extends BaseEntity<Long> {
     @ToString.Exclude
     List<Sample> problemSamples;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "problem_tags",

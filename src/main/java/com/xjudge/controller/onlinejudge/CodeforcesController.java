@@ -12,6 +12,8 @@ import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import com.xjudge.service.scraping.SubmissionAutomation;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/codeforces")

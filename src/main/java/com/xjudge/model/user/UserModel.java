@@ -1,8 +1,6 @@
 package com.xjudge.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xjudge.model.enums.UserRole;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +31,4 @@ public class UserModel {
 
     private String userPhotoUrl;
 
-    @Enumerated(EnumType.STRING)
-    UserRole role;
 }

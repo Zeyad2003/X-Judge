@@ -1,6 +1,6 @@
 package com.xjudge.service.scraping.codeforces;
 
-import com.xjudge.exception.SubmitException;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.service.scraping.SubmissionAutomation;
@@ -70,7 +70,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             return res;
         } catch (Exception exception) {
             logger.error(exception.getMessage());
-            throw new SubmitException(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new XJudgeException(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -97,7 +97,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
 
         } catch (Exception exception) {
             logger.error(exception.getMessage());
-            throw new SubmitException("Fail to submit. The code may have been submitted before.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new XJudgeException("Fail to submit. The code may have been submitted before.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -116,7 +116,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             loginButton.submit();
         } catch (Exception exception) {
             logger.error("FAIL TO LOGIN");
-            throw new SubmitException("FAIL TO LOGIN", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new XJudgeException("FAIL TO LOGIN", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

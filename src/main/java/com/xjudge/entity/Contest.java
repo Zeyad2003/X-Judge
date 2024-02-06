@@ -30,7 +30,7 @@ public class Contest extends BaseEntity<Long> {
 
     private Instant contestBeginTime;
 
-    private Duration contestLength;
+    private Duration contestDuration;
 
     @Column(columnDefinition = "TEXT")
     private String contestDescription;

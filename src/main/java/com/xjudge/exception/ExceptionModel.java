@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExceptionModel {
-    private int code;
+    private int statusCode;
 
     private String message;
 
     private String timeStamp;
 
-    private String desc;
+    private String description;
 }

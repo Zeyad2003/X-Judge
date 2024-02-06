@@ -1,8 +1,7 @@
 package com.xjudge.model.enums;
 
-public enum UserRole {
+public enum GroupRole {
     LEADER,
     MANAGER,
     MEMBER
-    , USER
 }

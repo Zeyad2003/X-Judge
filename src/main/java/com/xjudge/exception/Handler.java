@@ -1,7 +1,5 @@
 package com.xjudge.exception;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
@@ -12,17 +10,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @ControllerAdvice
-public class SubmitExceptionHandler {
+public class Handler {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss a";
 
-    @ExceptionHandler(SubmitException.class)
-    public ResponseEntity<?> submitException(SubmitException exception, WebRequest webRequest) {
+    @ExceptionHandler(XJudgeException.class)
+    public ResponseEntity<?> submitException(XJudgeException exception, WebRequest webRequest) {
         return createResponseEntity(exception, exception.getStatusCode(), webRequest);
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> runtimeException(EntityNotFoundException exception, WebRequest webRequest) {
-        return createResponseEntity(exception, HttpStatus.NOT_FOUND, webRequest);
     }
 
     @ExceptionHandler(Exception.class)

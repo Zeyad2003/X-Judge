@@ -20,17 +20,19 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     @ManyToOne
     @MapsId("contestId")
+    @JoinColumn(name = "contest_id")
     private Contest contest;
 
-    @JsonIgnore
     @ManyToOne
+    @JsonIgnore
     @MapsId("problemId")
+    @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    private int problemWeight;
+    private Integer problemWeight;
 
-    private String alias;
+    private String problemAlias;
 
-    private String code;
+    private String problemCode;
 
 }

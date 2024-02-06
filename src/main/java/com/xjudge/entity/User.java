@@ -2,7 +2,7 @@ package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.xjudge.model.enums.UserRole;
+import com.xjudge.model.enums.GroupRole;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,7 +47,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
     private String userPhotoUrl;
 
     @Enumerated(EnumType.STRING)
-    UserRole role;
+    GroupRole role;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "statistics_id")
