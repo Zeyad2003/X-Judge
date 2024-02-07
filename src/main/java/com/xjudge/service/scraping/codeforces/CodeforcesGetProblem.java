@@ -6,7 +6,6 @@ import com.xjudge.entity.Tag;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.service.scraping.GetProblemAutomation;
-import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,21 +16,20 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class CodeforcesGetProblem implements GetProblemAutomation {
 
-    final String URL = "https://codeforces.com/problemset/problem";
-
     @Override
-    public Problem GetProblem(int contestId, char letter) {
+    public Problem GetProblem(String contestId, String problemId) {
 
-        String problemCode = OnlineJudgeType.CODEFORCES.getName() + "-" + String.format("%d%c", contestId, letter);
+        String problemCode = OnlineJudgeType.CODEFORCES.getName() + "-" + contestId + problemId;
         final Document document;
 
         try {
-            document = Jsoup.connect(URL + "/" + contestId + "/" + letter).get();
+            String URL = "https://codeforces.com/problemset/problem";
+            document = Jsoup.connect(URL + "/" + contestId + "/" + problemId).get();
         } catch (IOException e) {
             throw new XJudgeException("PROBLEM_NOT_FOUND", HttpStatus.NOT_FOUND);
         }
@@ -59,8 +57,9 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         String problemStatement = document.select(".problem-statement > div").get(1).outerHtml();
         String note = document.select(".note").outerHtml();
 
-        // TODO: implement the tags list part
-        List<Tag> tags = new ArrayList<>();
+        List<Tag> tags = document.select(".tag-box").stream()
+                .map(tag -> Tag.builder().tagName(tag.text()).build())
+                .collect(Collectors.toList());
 
         List<Sample> allSamples = new ArrayList<>();
         List<Element> sampleElement = document.select(".sample-tests > .sample-test");

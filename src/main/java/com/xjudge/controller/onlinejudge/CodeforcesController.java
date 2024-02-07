@@ -28,7 +28,7 @@ public class CodeforcesController {
     }
 
     @GetMapping("/{contestId}/{problemId}")
-    public ResponseEntity<?> getProblem(@PathVariable Integer contestId, @PathVariable Character problemId) {
+    public ResponseEntity<?> getProblem(@PathVariable String contestId, @PathVariable String problemId) {
         return ResponseEntity.ok(problem.GetProblem(contestId, problemId));
     }
 

@@ -19,7 +19,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="contest")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Contest extends BaseEntity<Long> {
 
     @Id

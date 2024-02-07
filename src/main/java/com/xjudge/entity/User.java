@@ -19,7 +19,7 @@ import java.util.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "user")
 public class User extends BaseEntity<Long> implements UserDetails {
 

@@ -42,8 +42,8 @@ public class ProblemServiceImp implements ProblemService{
         if(problem.isPresent()) return problem.get();
 
         if(problemCode.startsWith("CodeForces")) {
-            int contestId = Integer.parseInt(problemCode.substring(11, problemCode.length() - 1));
-            char problemId = problemCode.charAt(problemCode.length() - 1);
+            String contestId = problemCode.replaceAll("CodeForces-(\\d+).*", "$1");
+            String problemId = problemCode.replaceAll("CodeForces-\\d+(.*)", "$1");
 
             Problem newProblem = getProblemAutomation.GetProblem(contestId, problemId);
 

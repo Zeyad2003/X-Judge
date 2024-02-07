@@ -1,7 +1,6 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "problem")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Problem extends BaseEntity<Long> {
 
     @Id
@@ -60,13 +59,8 @@ public class Problem extends BaseEntity<Long> {
     @ToString.Exclude
     List<Sample> problemSamples;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "problem_tags",
-            joinColumns = @JoinColumn(name = "problem_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
     @ToString.Exclude
     private List<Tag> tags;
 
