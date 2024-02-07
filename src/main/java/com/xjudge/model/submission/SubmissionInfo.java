@@ -8,9 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class SubmissionInfo {
+
+    @NotNull
+    @NotBlank
+    String problemCode;
 
     @NotNull
     @NotBlank

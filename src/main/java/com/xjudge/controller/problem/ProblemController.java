@@ -1,5 +1,7 @@
 package com.xjudge.controller.problem;
 
+import com.xjudge.model.submission.SubmissionInfo;
+import com.xjudge.model.submission.SubmissionResult;
 import lombok.RequiredArgsConstructor;
 
 import com.xjudge.entity.Problem;
@@ -7,10 +9,7 @@ import com.xjudge.service.problem.ProblemService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +21,10 @@ public class ProblemController {
     @GetMapping("/{problemCode}")
     public ResponseEntity<Problem> getProblem(@PathVariable String problemCode){
         return new ResponseEntity<>(problemService.getProblem(problemCode), HttpStatus.OK);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<SubmissionResult> submit(@RequestBody SubmissionInfo info){
+        return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
     }
 }

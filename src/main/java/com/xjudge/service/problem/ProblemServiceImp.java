@@ -2,10 +2,13 @@ package com.xjudge.service.problem;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.exception.XJudgeException;
-import com.xjudge.model.problem.ContestProblemResp;
+import com.xjudge.model.submission.SubmissionInfo;
+import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
+import com.xjudge.service.scraping.SubmissionAutomation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ public class ProblemServiceImp implements ProblemService{
 
     private final ProblemRepository problemRepo;
     private final GetProblemAutomation getProblemAutomation;
+    private final SubmissionAutomation submissionAutomation;
 //    final String PROBLEM_NOT_FOUND = "PROBLEM_NOT_FOUND";
 //
 //    @Override
@@ -42,8 +46,9 @@ public class ProblemServiceImp implements ProblemService{
         if(problem.isPresent()) return problem.get();
 
         if(problemCode.startsWith("CodeForces")) {
-            String contestId = problemCode.replaceAll("CodeForces-(\\d+).*", "$1");
-            String problemId = problemCode.replaceAll("CodeForces-\\d+(.*)", "$1");
+            Pair<String, String> codeForcesData = getCodeForcesCodeHelper(problemCode);
+            String contestId = codeForcesData.getFirst();
+            String problemId = codeForcesData.getSecond();
 
             Problem newProblem = getProblemAutomation.GetProblem(contestId, problemId);
 
@@ -53,5 +58,23 @@ public class ProblemServiceImp implements ProblemService{
         }
 
         throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public SubmissionResult submit(SubmissionInfo info) {
+        String problemCode = info.getProblemCode();
+        if(problemCode.startsWith("CodeForces")) {
+            Pair<String, String> codeForcesCode = getCodeForcesCodeHelper(problemCode);
+            problemCode = codeForcesCode.getFirst() + codeForcesCode.getSecond();
+            return submissionAutomation.submit(problemCode, info);
+        }
+
+        throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
+    }
+
+    private Pair<String, String> getCodeForcesCodeHelper(String problemCode) {
+        String contestId = problemCode.replaceAll("CodeForces-(\\d+).*", "$1");
+        String problemId = problemCode.replaceAll("CodeForces-\\d+(.*)", "$1");
+        return Pair.of(contestId, problemId);
     }
 }
