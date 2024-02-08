@@ -2,6 +2,7 @@ package com.xjudge.controller.problem;
 
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import com.xjudge.entity.Problem;
@@ -24,7 +25,7 @@ public class ProblemController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<SubmissionResult> submit(@RequestBody SubmissionInfo info){
+    public ResponseEntity<SubmissionResult> submit(@Valid @RequestBody SubmissionInfo info){
         return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
     }
 }

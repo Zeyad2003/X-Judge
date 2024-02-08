@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -68,5 +69,10 @@ public class Problem extends BaseEntity<Long> {
     @JoinColumn(name = "problem_id")
     @ToString.Exclude
     List<Submission> problemSubmission;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    @ToString.Exclude
+    private List<Compiler> problemCompilers;
 
 }
