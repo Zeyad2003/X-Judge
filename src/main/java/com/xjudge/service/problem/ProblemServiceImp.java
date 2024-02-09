@@ -2,6 +2,8 @@ package com.xjudge.service.problem;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.exception.XJudgeException;
+import com.xjudge.mappers.ProblemMapper;
+import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
 import com.xjudge.repository.ProblemRepository;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class ProblemServiceImp implements ProblemService{
 
     private final ProblemRepository problemRepo;
+    private final ProblemMapper problemMapper;
     private final GetProblemAutomation getProblemAutomation;
     private final SubmissionAutomation submissionAutomation;
 //    final String PROBLEM_NOT_FOUND = "PROBLEM_NOT_FOUND";
@@ -41,9 +44,9 @@ public class ProblemServiceImp implements ProblemService{
 //    }
 
     @Override
-    public Problem getProblem(String problemCode) {
+    public ProblemModel getProblem(String problemCode) {
         Optional<Problem> problem = problemRepo.findByProblemCode(problemCode);
-        if(problem.isPresent()) return problem.get();
+        if(problem.isPresent()) return problemMapper.toModel(problem.get());
 
         if(problemCode.startsWith("CodeForces")) {
             Pair<String, String> codeForcesData = getCodeForcesCodeHelper(problemCode);
@@ -54,7 +57,7 @@ public class ProblemServiceImp implements ProblemService{
 
             problemRepo.save(newProblem);
 
-            return newProblem;
+            return problemMapper.toModel(newProblem);
         }
 
         throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);

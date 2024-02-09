@@ -1,5 +1,6 @@
 package com.xjudge.controller.problem;
 
+import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfo;
 import com.xjudge.model.submission.SubmissionResult;
 import jakarta.validation.Valid;
@@ -20,7 +21,7 @@ public class ProblemController {
     private final ProblemService problemService;
 
     @GetMapping("/{problemCode}")
-    public ResponseEntity<Problem> getProblem(@PathVariable String problemCode){
+    public ResponseEntity<ProblemModel> getProblem(@PathVariable String problemCode){
         return new ResponseEntity<>(problemService.getProblem(problemCode), HttpStatus.OK);
     }
 
