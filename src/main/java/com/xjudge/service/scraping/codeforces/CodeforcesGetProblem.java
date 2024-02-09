@@ -41,7 +41,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
 
         // Common Info
         String title = problemHeader.text().substring(3);
-        String problemCode = OnlineJudgeType.CODEFORCES.getName() + "-" + contestId + problemId;
+        String problemCode = contestId + problemId;
         String timeLimit = problemDocument.select(".header > .time-limit").text().substring(19);
         String memoryLimit = problemDocument.select(".header > .memory-limit").text().substring(21);
         String inputSpecification = problemDocument.select(".input-specification > p").outerHtml();
@@ -69,6 +69,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         );
 
         return Problem.builder()
+                .problemSource(OnlineJudgeType.CODEFORCES)
                 .problemTitle(title)
                 .problemCode(problemCode)
                 .problemTimeLimit(timeLimit)

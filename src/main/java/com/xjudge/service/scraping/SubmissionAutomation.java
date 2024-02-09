@@ -5,5 +5,5 @@ import com.xjudge.model.submission.SubmissionResult;
 
 public interface SubmissionAutomation {
     void login();
-    SubmissionResult submit(String problemCode, SubmissionInfo data);
+    SubmissionResult submit(SubmissionInfo data);
 }

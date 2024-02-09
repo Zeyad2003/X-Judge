@@ -41,13 +41,13 @@ public class CodeforcesSubmission implements SubmissionAutomation {
     }
 
     @Override
-    public SubmissionResult submit(String problemCode, SubmissionInfo data) {
+    public SubmissionResult submit(SubmissionInfo info) {
         try {
             verifyLogin();
 
             wait.until(driver -> driver.findElement(By.className("submit-form")));
 
-            submitHelper(problemCode, data);
+            submitHelper(info);
 
             // getting status of submitting
             WebElement status = driver.findElement(By.className("status-cell"));
@@ -74,7 +74,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
         }
     }
 
-    private void submitHelper(String problemCode, SubmissionInfo data) {
+    private void submitHelper(SubmissionInfo info) {
         try {
 
             // get submission elements
@@ -84,13 +84,13 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             WebElement toggleEditorCheckbox = driver.findElement(By.id("toggleEditorCheckbox"));
             WebElement sourceCodeTextarea = driver.findElement(By.id("sourceCodeTextarea"));
 
-            logger.info(data.getSolutionCode());
+            logger.info(info.solutionCode());
 
-            // send data
-            submittedProblemCode.sendKeys(problemCode);
+            // send info
+            submittedProblemCode.sendKeys(info.problemCode());
             if(!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
-            sourceCodeTextarea.sendKeys(data.getSolutionCode());
-            lang.selectByValue(String.valueOf(data.getCompilerId()));
+            sourceCodeTextarea.sendKeys(info.solutionCode());
+            lang.selectByValue(String.valueOf(info.compilerId()));
             singlePageSubmitButton.submit();
 
             wait.until(driver -> driver.findElement(By.className("status-frame-datatable")));
