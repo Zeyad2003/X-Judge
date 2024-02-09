@@ -2,9 +2,12 @@ package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.xjudge.entity.converter.JsonDataConverter;
+import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +30,6 @@ public class Problem extends BaseEntity<Long> {
 
     private String problemTitle;
 
-    private String inputMethod;
-
-    private String outputMethod;
-
     @Column(columnDefinition = "LONGTEXT")
     @Lob
     private String problemStatement;
@@ -43,27 +42,12 @@ public class Problem extends BaseEntity<Long> {
     @Lob
     private String problemOutput;
 
-    private String problemSource;
-
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private String problemNote;
+    @Enumerated(EnumType.STRING)
+    private OnlineJudgeType problemSource;
 
     private String problemTimeLimit;
 
     private String problemMemoryLimit;
-
-    private String problemTutorial;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    @ToString.Exclude
-    List<Sample> problemSamples;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    @ToString.Exclude
-    private List<Tag> tags;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id")
@@ -74,5 +58,9 @@ public class Problem extends BaseEntity<Long> {
     @JoinColumn(name = "problem_id")
     @ToString.Exclude
     private List<Compiler> problemCompilers;
+
+    @Convert(converter = JsonDataConverter.class)
+    @Column(columnDefinition = "json")
+    private Map<String, Object> extraInfo = new HashMap<>();
 
 }
