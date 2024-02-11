@@ -1,5 +1,6 @@
 package com.xjudge.exception;
 
+import com.github.dockerjava.api.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +16,17 @@ public class SubmitExceptionHandler {
 
     @ExceptionHandler(SubmitException.class)
     public ResponseEntity<?> submitException(SubmitException exception, WebRequest webRequest) {
+        ExceptionMessage errorDetails = new ExceptionMessage(
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
+                webRequest.getDescription(false)
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<?> submitException(BadRequestException exception, WebRequest webRequest) {
         ExceptionMessage errorDetails = new ExceptionMessage(
                 HttpStatus.BAD_REQUEST.value(),
                 exception.getMessage(),
