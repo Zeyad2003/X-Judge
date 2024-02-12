@@ -1,4 +1,4 @@
-package com.xjudge.entity.converter;
+package com.xjudge.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

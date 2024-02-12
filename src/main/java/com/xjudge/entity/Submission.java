@@ -1,12 +1,11 @@
 package com.xjudge.entity;
 
-import com.xjudge.entity.converter.JsonDataConverter;
+import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
