@@ -1,5 +1,6 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,11 +15,12 @@ import lombok.*;
 public class Compiler extends BaseEntity<Long> {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String compilerIdValue;
+    private String idValue;
 
-    private String compilerName;
+    private String name;
 
 }

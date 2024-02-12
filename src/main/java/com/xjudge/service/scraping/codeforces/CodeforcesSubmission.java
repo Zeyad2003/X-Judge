@@ -1,8 +1,8 @@
 package com.xjudge.service.scraping.codeforces;
 
+import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
-import com.xjudge.model.submission.SubmissionInfo;
-import com.xjudge.model.submission.SubmissionResult;
+import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.service.scraping.SubmissionAutomation;
 
 import org.openqa.selenium.By;
@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 
 @Service
 public class CodeforcesSubmission implements SubmissionAutomation {
@@ -30,10 +30,11 @@ public class CodeforcesSubmission implements SubmissionAutomation {
     private static final Logger logger = LoggerFactory.getLogger(CodeforcesSubmission.class);
 
     @Value("${CodeForces.username}")
-    String USERNAME;
+    private String USERNAME;
 
     @Value("${CodeForces.password}")
-    String PASSWORD;
+    private String PASSWORD;
+
 
     public CodeforcesSubmission(WebDriver driver) {
         this.driver = driver;
@@ -41,7 +42,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
     }
 
     @Override
-    public SubmissionResult submit(SubmissionInfo info) {
+    public Submission submit(SubmissionInfoModel info) {
         try {
             verifyLogin();
 
@@ -57,24 +58,33 @@ public class CodeforcesSubmission implements SubmissionAutomation {
 
             WebElement time = driver.findElement(By.className("time-consumed-cell"));
             WebElement memory = driver.findElement(By.className("memory-consumed-cell"));
+            WebElement remoteId = driver.findElement(By.className("id-cell"));
 
             logger.info(time.getText());
             logger.info(memory.getText());
+            logger.info(status.getText());
+            logger.info(remoteId.getText());
 
-            SubmissionResult res = new SubmissionResult();
-            res.setMemory(memory.getText());
-            res.setVerdict(status.getText());
-            res.setSubmitTime(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a").format(LocalDateTime.now()));
-            res.setTime(time.getText());
-
-            return res;
+            return Submission.builder()
+                    .userHandle(info.userHandle())
+                    .problemCode(info.problemCode())
+                    .remoteRunId(remoteId.getText())
+                    .ojType(info.ojType())
+                    .solution(info.solutionCode())
+                    .language(info.compiler().getName())
+                    .submitTime(Instant.now())
+                    .memoryUsage(memory.getText())
+                    .timeUsage(time.getText())
+                    .verdict(status.getText())
+                    .submissionStatus("submitted")
+                    .build();
         } catch (Exception exception) {
             logger.error(exception.getMessage());
             throw new XJudgeException(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void submitHelper(SubmissionInfo info) {
+    private void submitHelper(SubmissionInfoModel info) {
         try {
 
             // get submission elements
@@ -88,9 +98,10 @@ public class CodeforcesSubmission implements SubmissionAutomation {
 
             // send info
             submittedProblemCode.sendKeys(info.problemCode());
-            if(!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
+            if (!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
             sourceCodeTextarea.sendKeys(info.solutionCode());
-            lang.selectByValue(String.valueOf(info.compilerId()));
+            lang.selectByValue(info.compiler().getIdValue());
+            //selectByValue(String.valueOf());
             singlePageSubmitButton.submit();
 
             wait.until(driver -> driver.findElement(By.className("status-frame-datatable")));

@@ -1,8 +1,8 @@
 package com.xjudge.model.contest;
 
+import com.xjudge.entity.Submission;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
-import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.user.UserContestModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +36,6 @@ public class ContestData {
 
     private List<UserContestModel> participants;
 
-    private List<SubmissionModel> submissions;
+    private List<Submission> submissions;
 
 }

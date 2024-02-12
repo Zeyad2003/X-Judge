@@ -1,9 +1,9 @@
 package com.xjudge.service.scraping;
 
-import com.xjudge.model.submission.SubmissionInfo;
-import com.xjudge.model.submission.SubmissionResult;
+import com.xjudge.entity.Submission;
+import com.xjudge.model.submission.SubmissionInfoModel;
 
 public interface SubmissionAutomation {
     void login();
-    SubmissionResult submit(SubmissionInfo data);
+    Submission submit(SubmissionInfoModel data);
 }

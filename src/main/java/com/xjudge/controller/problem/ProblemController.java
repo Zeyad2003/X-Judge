@@ -1,8 +1,7 @@
 package com.xjudge.controller.problem;
 
-import com.xjudge.model.problem.ProblemModel;
-import com.xjudge.model.submission.SubmissionInfo;
-import com.xjudge.model.submission.SubmissionResult;
+import com.xjudge.entity.Submission;
+import com.xjudge.model.submission.SubmissionInfoModel;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +20,12 @@ public class ProblemController {
     private final ProblemService problemService;
 
     @GetMapping("/{problemCode}")
-    public ResponseEntity<ProblemModel> getProblem(@PathVariable String problemCode){
-        return new ResponseEntity<>(problemService.getProblem(problemCode), HttpStatus.OK);
+    public ResponseEntity<Problem> getProblem(@PathVariable String problemCode){
+        return new ResponseEntity<>(problemService.getProblemByCode(problemCode), HttpStatus.OK);
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<SubmissionResult> submit(@Valid @RequestBody SubmissionInfo info){
+    public ResponseEntity<Submission> submit(@Valid @RequestBody SubmissionInfoModel info){
         return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
     }
 }

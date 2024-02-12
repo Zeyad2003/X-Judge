@@ -9,7 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
-    Optional<Problem> findByProblemCode(String problemCode);
-
     Optional<Problem> findByProblemCodeAndProblemSource(String problemCode, OnlineJudgeType problemSource);
 }

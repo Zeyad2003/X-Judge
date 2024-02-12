@@ -21,7 +21,6 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
 
     @Override
     public Problem GetProblem(String contestId, String problemId) {
-
         String URL = "https://codeforces.com";
         String targetProblem = URL + "/problemset/problem/" + contestId + "/" + problemId;
         Document problemDocument;
