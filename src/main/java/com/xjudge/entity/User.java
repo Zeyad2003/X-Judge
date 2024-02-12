@@ -49,10 +49,9 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @Enumerated(EnumType.STRING)
     UserRole userRole;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "statistics_id")
-    @ToString.Exclude
-    private UserStatistics userStatistics;
+    Long userSolvedCount;
+
+    Long userAttemptedCount;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
