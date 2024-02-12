@@ -27,36 +27,36 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userPassword;
+    private String password;
 
     @Column(unique = true)
-    private String userHandle;
+    private String handle;
 
-    private String userFirstName;
+    private String firstName;
 
-    private String userLastName;
+    private String lastName;
 
     @Column(unique = true)
-    private String userEmail;
+    private String email;
 
-    private String userSchool;
+    private String school;
 
     @Column(columnDefinition = "DATE")
-    private LocalDate userRegistrationDate;
+    private LocalDate registrationDate;
 
-    private String userPhotoUrl;
+    private String photoUrl;
 
     @Enumerated(EnumType.STRING)
-    UserRole userRole;
+    UserRole role;
 
-    Long userSolvedCount;
+    Long solvedCount;
 
-    Long userAttemptedCount;
+    Long attemptedCount;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
-    List<Submission> userSubmission;
+    List<Submission> submissions;
 
     @ManyToMany
     @JoinTable(
@@ -65,7 +65,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
     @ToString.Exclude
-    private List<Problem> userFavoriteProblems;
+    private List<Problem> favoriteProblems;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude
@@ -75,17 +75,17 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(userRole.name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getPassword() {
-        return this.userPassword;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return this.userHandle;
+        return this.handle;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class ProblemServiceImp implements ProblemService {
     public Problem getProblemByCode(String problemCode) {
         if (problemCode.startsWith("CodeForces")) {
             problemCode = problemCode.substring(11);
-            Optional<Problem> problem = problemRepo.findByProblemCodeAndProblemSource(problemCode, OnlineJudgeType.CODEFORCES);
+            Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CODEFORCES);
             if (problem.isPresent()) return problem.get();
             return getProblem(problemCode);
         }

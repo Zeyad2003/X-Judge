@@ -28,36 +28,36 @@ public class Problem extends BaseEntity<Long> {
 
     private String problemCode;
 
-    private String problemTitle;
+    private String title;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemStatement;
+    private String statement;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemInput;
+    private String input;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemOutput;
+    private String output;
 
     @Enumerated(EnumType.STRING)
-    private OnlineJudgeType problemSource;
+    private OnlineJudgeType source;
 
-    private String problemTimeLimit;
+    private String timeLimit;
 
-    private String problemMemoryLimit;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    @ToString.Exclude
-    List<Submission> problemSubmission;
+    private String memoryLimit;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "problem_id")
     @ToString.Exclude
-    private List<Compiler> problemCompilers;
+    List<Submission> submissions;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "problem_id")
+    @ToString.Exclude
+    private List<Compiler> compilers;
 
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")

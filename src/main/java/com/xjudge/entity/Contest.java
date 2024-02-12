@@ -26,29 +26,29 @@ public class Contest extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String contestTitle;
+    private String title;
 
-    private Instant contestBeginTime;
+    private Instant beginTime;
 
-    private Duration contestDuration;
+    private Duration duration;
 
     @Column(columnDefinition = "TEXT")
-    private String contestDescription;
+    private String description;
 
     @Enumerated(EnumType.STRING)
-    private ContestType contestType;
+    private ContestType type;
 
     @Enumerated(EnumType.STRING)
-    private ContestVisibility contestVisibility;
+    private ContestVisibility visibility;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "contest_id")
     @ToString.Exclude
-    private List<Submission> contestSubmissions = new ArrayList<>();
+    private List<Submission> submissions = new ArrayList<>();
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<UserContest> contestUsers = new HashSet<>();
+    private Set<UserContest> users = new HashSet<>();
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
     @ToString.Exclude

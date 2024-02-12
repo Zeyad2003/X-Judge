@@ -37,20 +37,20 @@ public class AuthServiceImp implements AuthService{
     public AuthResponse register(UserRegisterRequest registerRequest) {
 
         User userDetails = User.builder()
-                .userHandle(registerRequest.getUserHandle())
-                .userPassword(passwordEncoder.encode(registerRequest.getUserPassword()))
-                .userEmail(registerRequest.getUserEmail())
-                .userFirstName(registerRequest.getUserFirstName())
-                .userLastName(registerRequest.getUserLastName())
-                .userPhotoUrl(registerRequest.getUserPhotoUrl())
-                .userRegistrationDate(LocalDate.now())
-                .userSchool(registerRequest.getUserSchool())
+                .handle(registerRequest.getUserHandle())
+                .password(passwordEncoder.encode(registerRequest.getUserPassword()))
+                .email(registerRequest.getUserEmail())
+                .firstName(registerRequest.getUserFirstName())
+                .lastName(registerRequest.getUserLastName())
+                .photoUrl(registerRequest.getUserPhotoUrl())
+                .registrationDate(LocalDate.now())
+                .school(registerRequest.getUserSchool())
                 .build();
 
         userRepo.save(userDetails);
 
         Map<String , Object> claims = new HashMap<>();
-        claims.put("email" , userDetails.getUserEmail());
+        claims.put("email" , userDetails.getEmail());
         String token = jwtService.generateToken(claims , userDetails);
 
         return AuthResponse
@@ -66,7 +66,7 @@ public class AuthServiceImp implements AuthService{
         );
 
         User user = userRepo
-                .findUserByUserHandle(authRequest.getUserHandle())
+                .findUserByHandle(authRequest.getUserHandle())
                 .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
         String token = jwtService.generateToken(user);
         return AuthResponse

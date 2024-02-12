@@ -68,15 +68,15 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         );
 
         return Problem.builder()
-                .problemSource(OnlineJudgeType.CODEFORCES)
-                .problemTitle(title)
+                .source(OnlineJudgeType.CODEFORCES)
+                .title(title)
                 .problemCode(problemCode)
-                .problemTimeLimit(timeLimit)
-                .problemMemoryLimit(memoryLimit)
-                .problemInput(inputSpecification)
-                .problemOutput(outputSpecification)
-                .problemStatement(problemStatement)
-                .problemCompilers(compilers)
+                .timeLimit(timeLimit)
+                .memoryLimit(memoryLimit)
+                .input(inputSpecification)
+                .output(outputSpecification)
+                .statement(problemStatement)
+                .compilers(compilers)
                 .extraInfo(extraInfo)
                 .build();
     }
