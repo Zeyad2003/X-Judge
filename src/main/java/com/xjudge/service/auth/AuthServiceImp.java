@@ -2,7 +2,7 @@ package com.xjudge.service.auth;
 
 import com.xjudge.entity.User;
 import com.xjudge.enums.UserRole;
-import com.xjudge.exception.SubmitException;
+import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.AuthRequest;
 import com.xjudge.model.auth.AuthResponse;
 import com.xjudge.model.auth.UserRegisterRequest;
@@ -16,11 +16,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AuthServiceImp implements AuthService{
@@ -39,12 +40,28 @@ public class AuthServiceImp implements AuthService{
         this.authenticationManager = authenticationManager;
     }
     @Override
-    public AuthResponse register(UserRegisterRequest registerRequest) {
+    public AuthResponse register(UserRegisterRequest registerRequest, BindingResult bindingResult) {
 
-        // Check if user already exists
-        Optional<User> existingUser = userRepo.findUserByUserHandle(registerRequest.getUserHandle());
-        if (existingUser.isPresent()){
-            throw new SubmitException("User already exists", HttpStatus.ALREADY_REPORTED);
+        Map<String, String> errors = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField() , error.getDefaultMessage());
+            }
+        }
+
+        // Check if user with the same handle exists
+        if (userRepo.existsByUserHandle(registerRequest.getUserHandle())) {
+            errors.put("userHandle" , "User with this handle already exists");
+        }
+
+        // Check if user with the same email exists
+        if (userRepo.existsByUserEmail(registerRequest.getUserEmail())) {
+            errors.put("userEmail" , "User with this email already exists");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new AuthException("Registration failed" , HttpStatus.BAD_REQUEST, errors);
         }
 
         User userDetails = User.builder()
@@ -73,13 +90,26 @@ public class AuthServiceImp implements AuthService{
     }
 
     @Override
-    public AuthResponse authenticate(AuthRequest authRequest) {
+    public AuthResponse authenticate(AuthRequest authRequest, BindingResult bindingResult) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField() , error.getDefaultMessage());
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new AuthException("Authentication failed" , HttpStatus.BAD_REQUEST, errors);
+        }
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUserHandle() , authRequest.getUserPassword())
             );
         } catch (AuthenticationException e) {
-            throw new SubmitException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED);
+            throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
         User user = userRepo

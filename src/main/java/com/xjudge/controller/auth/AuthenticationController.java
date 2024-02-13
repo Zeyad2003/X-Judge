@@ -1,6 +1,5 @@
 package com.xjudge.controller.auth;
 
-import com.github.dockerjava.api.exception.BadRequestException;
 import com.xjudge.model.auth.AuthRequest;
 import com.xjudge.model.auth.AuthResponse;
 import com.xjudge.model.auth.UserRegisterRequest;
@@ -24,18 +23,12 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     ResponseEntity<AuthResponse> register(@Valid @RequestBody UserRegisterRequest registerRequest , BindingResult result){
-        if(result.hasErrors()){
-            throw new BadRequestException(result.getFieldErrors().toString());
-        }
-        return new ResponseEntity<>(authService.register(registerRequest) , HttpStatus.CREATED);
+        return new ResponseEntity<>(authService.register(registerRequest, result) , HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     ResponseEntity<AuthResponse> loginAuth(@Valid @RequestBody AuthRequest authRequest , BindingResult result){
-        if(result.hasErrors()){
-            throw new BadRequestException(result.getFieldErrors().toString());
-        }
-        return new ResponseEntity<>(authService.authenticate(authRequest) , HttpStatus.OK);
+        return new ResponseEntity<>(authService.authenticate(authRequest, result) , HttpStatus.OK);
     }
 
     @GetMapping
