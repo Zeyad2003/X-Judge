@@ -2,14 +2,17 @@ package com.xjudge.service.auth;
 
 import com.xjudge.entity.User;
 import com.xjudge.enums.UserRole;
+import com.xjudge.exception.SubmitException;
 import com.xjudge.model.auth.AuthRequest;
 import com.xjudge.model.auth.AuthResponse;
 import com.xjudge.model.auth.UserRegisterRequest;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthServiceImp implements AuthService{
@@ -36,6 +40,12 @@ public class AuthServiceImp implements AuthService{
     }
     @Override
     public AuthResponse register(UserRegisterRequest registerRequest) {
+
+        // Check if user already exists
+        Optional<User> existingUser = userRepo.findUserByUserHandle(registerRequest.getUserHandle());
+        if (existingUser.isPresent()){
+            throw new SubmitException("User already exists", HttpStatus.ALREADY_REPORTED);
+        }
 
         User userDetails = User.builder()
                 .userHandle(registerRequest.getUserHandle())
@@ -64,9 +74,13 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     public AuthResponse authenticate(AuthRequest authRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authRequest.getUserHandle() , authRequest.getUserPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUserHandle() , authRequest.getUserPassword())
+            );
+        } catch (AuthenticationException e) {
+            throw new SubmitException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED);
+        }
 
         User user = userRepo
                 .findUserByUserHandle(authRequest.getUserHandle())
