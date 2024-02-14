@@ -66,8 +66,6 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             logger.info(remoteId.getText());
 
             return Submission.builder()
-                    .userHandle(info.userHandle())
-                    .problemCode(info.problemCode())
                     .remoteRunId(remoteId.getText())
                     .ojType(info.ojType())
                     .solution(info.solutionCode())

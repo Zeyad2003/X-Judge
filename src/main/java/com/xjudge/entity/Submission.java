@@ -24,10 +24,6 @@ public class Submission extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userHandle;
-
-    private String problemCode;
-
     private String remoteRunId;
 
     private OnlineJudgeType ojType;
@@ -47,6 +43,16 @@ public class Submission extends BaseEntity<Long> {
     private String verdict;
 
     private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
+
+    @ManyToOne
+    @JoinColumn(name = "problem_id", nullable = false)
+    @ToString.Exclude
+    private Problem problem;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
 
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")

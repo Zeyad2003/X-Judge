@@ -49,13 +49,12 @@ public class Problem extends BaseEntity<Long> {
 
     private String memoryLimit;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
+    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     List<Submission> submissions;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
+    @JoinColumn(name = "compiler_id")
     @ToString.Exclude
     private List<Compiler> compilers;
 
