@@ -85,6 +85,7 @@ public class AuthServiceImp implements AuthService{
 
         return AuthResponse
                 .builder()
+                .statusCode(HttpStatus.CREATED.value())
                 .token(token)
                 .build();
     }
