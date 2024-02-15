@@ -119,6 +119,7 @@ public class AuthServiceImp implements AuthService{
         String token = jwtService.generateToken(user);
         return AuthResponse
                 .builder()
+                .statusCode(HttpStatus.OK.value())
                 .token(token)
                 .build();
     }
