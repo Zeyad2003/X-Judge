@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthRequest {
+public class LoginRequest {
 
     @NotBlank(message = "Please enter a valid handle")
     private String userHandle;

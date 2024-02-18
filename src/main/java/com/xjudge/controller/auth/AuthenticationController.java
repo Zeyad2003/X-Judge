@@ -1,8 +1,6 @@
 package com.xjudge.controller.auth;
 
-import com.xjudge.model.auth.AuthRequest;
-import com.xjudge.model.auth.AuthResponse;
-import com.xjudge.model.auth.UserRegisterRequest;
+import com.xjudge.model.auth.*;
 import com.xjudge.service.auth.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,18 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<AuthResponse> register(@Valid @RequestBody UserRegisterRequest registerRequest , BindingResult result){
+    ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
         return new ResponseEntity<>(authService.register(registerRequest, result) , HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    ResponseEntity<AuthResponse> loginAuth(@Valid @RequestBody AuthRequest authRequest , BindingResult result){
-        return new ResponseEntity<>(authService.authenticate(authRequest, result) , HttpStatus.OK);
+    ResponseEntity<LoginResponse> loginAuth(@Valid @RequestBody LoginRequest loginRequest, BindingResult result){
+        return new ResponseEntity<>(authService.authenticate(loginRequest, result) , HttpStatus.OK);
+    }
+
+    @GetMapping("/verify-email")
+    ResponseEntity<String> verify(@RequestParam String token){
+        return new ResponseEntity<>(authService.verify(token) , HttpStatus.OK);
     }
 
     @GetMapping
