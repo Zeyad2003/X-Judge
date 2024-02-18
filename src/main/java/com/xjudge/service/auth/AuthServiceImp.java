@@ -1,5 +1,6 @@
 package com.xjudge.service.auth;
 
+import com.xjudge.entity.PasswordResetToken;
 import com.xjudge.entity.User;
 import com.xjudge.entity.VerificationToken;
 import com.xjudge.enums.UserRole;
@@ -7,6 +8,7 @@ import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
+import com.xjudge.service.auth.resetPasswordToken.ResetPasswordService;
 import com.xjudge.service.auth.verificationToken.VerificationTokenService;
 import com.xjudge.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +44,23 @@ public class AuthServiceImp implements AuthService{
     AuthenticationManager authenticationManager;
     EmailService emailService;
     VerificationTokenService verificationTokenService;
+    ResetPasswordService resetPasswordService;
 
     @Autowired
-    public AuthServiceImp(UserRepo userRepo, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, VerificationTokenService verificationTokenService) {
+    public AuthServiceImp(UserRepo userRepo,
+                          JwtService jwtService,
+                          PasswordEncoder passwordEncoder,
+                          AuthenticationManager authenticationManager,
+                          EmailService emailService,
+                          VerificationTokenService verificationTokenService,
+                          ResetPasswordService resetPasswordService) {
         this.userRepo = userRepo;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.verificationTokenService = verificationTokenService;
+        this.resetPasswordService = resetPasswordService;
     }
 
     @Override
@@ -201,6 +211,76 @@ public class AuthServiceImp implements AuthService{
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password changed successfully")
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        User user = userRepo.findUserByUserEmail(forgotPasswordRequest.getEmail()).orElseThrow(
+                () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
+        );
+
+        String token = UUID.randomUUID().toString();
+        resetPasswordService.save(PasswordResetToken.builder()
+                .token(token)
+                .user(user)
+                .expiredAt(LocalDateTime.now().plusMinutes(15))
+                .verifiedAt(null)
+                .build());
+
+        String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
+                + "<div style='text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 1px solid #ddd;'>"
+                + "<h1>Password Reset Request</h1>"
+                + "</div>"
+                + "<div style='padding: 20px;'>"
+                + "<p>Dear " + user.getUserFirstName() + ",</p>"
+                + "<p>We received a request to reset your password. Please click the link below to set a new password:</p>"
+                + "<p><a href='http://localhost:7070/auth/reset-password?token=" + token + "'>Reset Password</a></p>"
+                + "<p>If you did not request a password reset, please ignore this email.</p>"
+                + "<p>Best Regards,</p>"
+                + "<p>The xJudge Team</p>"
+                + "</div>"
+                + "</div>";
+
+        emailService.send(user.getUserEmail(), "Reset Password", emailContent);
+
+        return ForgotPasswordResponse
+                .builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Reset password link has been sent to your email")
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        PasswordResetToken passwordResetToken = resetPasswordService.findByToken(resetPasswordRequest.getToken());
+
+        if (passwordResetToken.getVerifiedAt() != null) {
+            throw new AuthException("Token already used", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        if (passwordResetToken.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new AuthException("Token expired", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        User user = passwordResetToken.getUser();
+
+        if (!resetPasswordRequest.getPassword().equals(resetPasswordRequest.getConfirmPassword())) {
+            throw new AuthException("Passwords do not match", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        user.setUserPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
+        userRepo.save(user);
+
+        passwordResetToken.setVerifiedAt(LocalDateTime.now());
+        resetPasswordService.save(passwordResetToken);
+
+        return ResetPasswordResponse
+                .builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Password reset successfully")
                 .build();
     }
 

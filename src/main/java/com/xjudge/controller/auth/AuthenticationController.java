@@ -41,6 +41,16 @@ public class AuthenticationController {
         return new ResponseEntity<>(authService.changePassword(changePasswordRequest, connectedUser), HttpStatus.OK);
     }
 
+    @PostMapping("/forget-password")
+    ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
+        return new ResponseEntity<>(authService.forgotPassword(forgotPasswordRequest), HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+        return new ResponseEntity<>(authService.resetPassword(resetPasswordRequest), HttpStatus.OK);
+    }
+
     @GetMapping
     String get(){
         return "SERVER IS WORKING";

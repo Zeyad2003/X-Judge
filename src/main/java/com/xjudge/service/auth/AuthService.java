@@ -10,4 +10,6 @@ public interface AuthService {
     LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult);
     String verifyRegistrationToken(String token);
     ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser);
+    ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
+    ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest);
 }
