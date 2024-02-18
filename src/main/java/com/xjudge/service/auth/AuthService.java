@@ -1,11 +1,10 @@
 package com.xjudge.service.auth;
 
-import com.xjudge.model.auth.AuthRequest;
-import com.xjudge.model.auth.AuthResponse;
-import com.xjudge.model.auth.UserRegisterRequest;
+import com.xjudge.model.auth.*;
 import org.springframework.validation.BindingResult;
 
 public interface AuthService {
-    AuthResponse register(UserRegisterRequest registerRequest, BindingResult bindingResult);
-    AuthResponse authenticate(AuthRequest authRequest, BindingResult bindingResult);
+    RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult);
+    LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult);
+    String verify(String token);
 }

@@ -1,14 +1,16 @@
 package com.xjudge.service.auth;
 
 import com.xjudge.entity.User;
+import com.xjudge.entity.VerificationToken;
 import com.xjudge.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
-import com.xjudge.model.auth.AuthRequest;
-import com.xjudge.model.auth.AuthResponse;
-import com.xjudge.model.auth.UserRegisterRequest;
+import com.xjudge.model.auth.*;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
+import com.xjudge.service.auth.verificationToken.VerificationTokenService;
+import com.xjudge.service.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,31 +18,41 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthServiceImp implements AuthService{
 
 
-    UserRepo userRepo;
+    UserRepo userRepo; // Use service layer instead of repository layer directly
     JwtService jwtService;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
+    EmailService emailService;
+    VerificationTokenService verificationTokenService;
 
     @Autowired
-    public AuthServiceImp(UserRepo repo , JwtService jwtService , PasswordEncoder passwordEncoder ,  AuthenticationManager authenticationManager){
-        this.userRepo = repo;
+    public AuthServiceImp(UserRepo userRepo, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailService emailService, VerificationTokenService verificationTokenService) {
+        this.userRepo = userRepo;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
+        this.verificationTokenService = verificationTokenService;
     }
+
     @Override
-    public AuthResponse register(UserRegisterRequest registerRequest, BindingResult bindingResult) {
+    public RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
 
         Map<String, String> errors = new HashMap<>();
 
@@ -74,24 +86,44 @@ public class AuthServiceImp implements AuthService{
                 .userRegistrationDate(LocalDate.now())
                 .userSchool(registerRequest.getUserSchool())
                 .role(UserRole.USER)
+                .isVerified(false)
                 .build();
-
 
         userRepo.save(userDetails);
 
-        Map<String , Object> claims = new HashMap<>();
-        claims.put("email" , userDetails.getUserEmail());
-        String token = jwtService.generateToken(claims , userDetails);
+        String verificationToken = UUID.randomUUID().toString();
+        String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
+                + "<div style='text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 1px solid #ddd;'>"
+                + "<h1>Welcome to xJudge</h1>"
+                + "</div>"
+                + "<div style='padding: 20px;'>"
+                + "<p>Dear " + userDetails.getUserFirstName() + ",</p>"
+                + "<p>Thank you for registering at xJudge. Please click the link below to verify your email:</p>"
+                + "<p><a href='http://localhost:7070/auth/verify-email?token=" + verificationToken + "'>Verify Email</a></p>"
+                + "<p>If you did not register at xJudge, please ignore this email.</p>"
+                + "<p>Best Regards,</p>"
+                + "<p>The xJudge Team</p>"
+                + "</div>"
+                + "</div>";
 
-        return AuthResponse
+        emailService.send(userDetails.getUserEmail() , "xJudge Email Verification" , emailContent);
+
+        verificationTokenService.save(VerificationToken.builder()
+                .token(verificationToken)
+                .user(userDetails)
+                .expiredAt(LocalDateTime.now().plusMinutes(15))
+                .verifiedAt(null)
+                .build());
+
+        return RegisterResponse
                 .builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .token(token)
+                .message("User registered successfully, please verify your email to login")
                 .build();
     }
 
     @Override
-    public AuthResponse authenticate(AuthRequest authRequest, BindingResult bindingResult) {
+    public LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult) {
 
         Map<String, String> errors = new HashMap<>();
 
@@ -107,20 +139,51 @@ public class AuthServiceImp implements AuthService{
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUserHandle() , authRequest.getUserPassword())
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUserHandle() , loginRequest.getUserPassword())
             );
         } catch (AuthenticationException e) {
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
         User user = userRepo
-                .findUserByUserHandle(authRequest.getUserHandle())
+                .findUserByUserHandle(loginRequest.getUserHandle())
                 .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
+
+        if (!user.isVerified()) {
+            throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
+        }
         String token = jwtService.generateToken(user);
-        return AuthResponse
+        return LoginResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .token(token)
                 .build();
+    }
+
+    @Override
+    public String verify(String token) {
+        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+
+        if (verificationToken.getVerifiedAt() != null) {
+            throw new AuthException("Token already verified", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        if (verificationToken.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new AuthException("Token expired", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        User user = verificationToken.getUser();
+        user.setVerified(true);
+        userRepo.save(user);
+
+        verificationToken.setVerifiedAt(LocalDateTime.now());
+        verificationTokenService.save(verificationToken);
+
+        try {
+            ClassPathResource resource = new ClassPathResource("/static/verification_success.html");
+            return StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
+        } catch (IOException e) {
+            return "Email verification successful. You can now login.";
+        }
     }
 }
