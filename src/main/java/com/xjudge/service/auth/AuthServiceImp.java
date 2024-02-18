@@ -192,7 +192,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
-            throw new AuthException("55555555555555, New password cannot be the same as old password", HttpStatus.BAD_REQUEST, new HashMap<>());
+            throw new AuthException("New password cannot be the same as old password", HttpStatus.BAD_REQUEST, new HashMap<>());
         }
 
         user.setUserPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
