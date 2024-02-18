@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -32,6 +34,12 @@ public class AuthenticationController {
     @GetMapping("/verify-email")
     ResponseEntity<String> verify(@RequestParam String token){
         return new ResponseEntity<>(authService.verifyRegistrationToken(token) , HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password")
+    ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+        authService.changePassword(changePasswordRequest, connectedUser);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping

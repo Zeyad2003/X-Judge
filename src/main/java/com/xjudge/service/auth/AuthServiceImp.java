@@ -24,6 +24,7 @@ import org.springframework.validation.FieldError;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -185,5 +186,21 @@ public class AuthServiceImp implements AuthService{
         } catch (IOException e) {
             return "Email verification successful. You can now login.";
         }
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getUserPassword())) {
+            throw new AuthException("Old password is incorrect", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())) {
+            throw new AuthException("Passwords do not match", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
+
+        user.setUserPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        userRepo.save(user);
     }
 }
