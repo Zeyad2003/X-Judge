@@ -152,6 +152,7 @@ public class AuthServiceImp implements AuthService{
     }
 
     @Override
+    @Transactional
     public String verifyRegistrationToken(String token) {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
