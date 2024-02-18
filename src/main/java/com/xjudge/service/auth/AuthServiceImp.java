@@ -57,13 +57,7 @@ public class AuthServiceImp implements AuthService{
     @Transactional
     public RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
 
-        Map<String, String> errors = new HashMap<>();
-
-        if (bindingResult.hasErrors()) {
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField() , error.getDefaultMessage());
-            }
-        }
+        Map<String, String> errors = checkErrors(bindingResult);
 
         // Check if user with the same handle exists
         if (userRepo.existsByUserHandle(registerRequest.getUserHandle())) {
@@ -128,13 +122,7 @@ public class AuthServiceImp implements AuthService{
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult) {
 
-        Map<String, String> errors = new HashMap<>();
-
-        if (bindingResult.hasErrors()) {
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errors.put(error.getField() , error.getDefaultMessage());
-            }
-        }
+        Map<String, String> errors = checkErrors(bindingResult);
 
         if (!errors.isEmpty()) {
             throw new AuthException("Authentication failed" , HttpStatus.BAD_REQUEST, errors);
@@ -204,5 +192,15 @@ public class AuthServiceImp implements AuthService{
 
         user.setUserPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepo.save(user);
+    }
+
+    private Map<String, String> checkErrors(BindingResult bindingResult) {
+        Map<String, String> errors = new HashMap<>();
+        if (bindingResult.hasErrors()) {
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+        }
+        return errors;
     }
 }
