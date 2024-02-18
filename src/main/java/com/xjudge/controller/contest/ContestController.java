@@ -22,16 +22,16 @@ import java.util.List;
 @RequestMapping("/contest")
 public class ContestController {
 
-    private ContestService service;
-
-    @GetMapping
-    public ResponseEntity<List<ContestData>> getAllContests() {
-        return new ResponseEntity<>(service.getAllContests(), HttpStatus.OK);
-    }
+    private final ContestService service;
 
     @PostMapping
     public ResponseEntity<ContestData> createContest(@Valid @RequestBody ContestCreationModel contest) {
         return new ResponseEntity<>(service.createContest(contest), HttpStatus.OK);
+    }
+
+  /*  @GetMapping
+    public ResponseEntity<List<ContestData>> getAllContests() {
+        return new ResponseEntity<>(service.getAllContests(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -62,5 +62,5 @@ public class ContestController {
         if (id <= 0) throw new BadRequestException("CONTEST_ID_LESS_THAN_ZERO");
         return new ResponseEntity<>(service.gerContestProblems(id), HttpStatus.OK);
     }
-
+*/
 }

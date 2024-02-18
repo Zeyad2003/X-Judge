@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface ContestService {
     ContestData createContest(ContestCreationModel contest);
-    List<ContestData> getAllContests();
+  /*  List<ContestData> getAllContests();
 
     ContestData getContest(Long id);
     ContestModel updateContest(Long id , ContestModel model);
     void deleteContest(Long id);
 
-    List<ContestProblemResp> gerContestProblems(Long id);
+    List<ContestProblemResp> gerContestProblems(Long id);*/
 }

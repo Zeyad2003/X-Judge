@@ -29,7 +29,7 @@ public class UserContest extends BaseEntity<UserContestKey> {
 
     private Boolean isFavorite;
 
-    private Boolean isOwner;
+    private Boolean isOwner = false;
 
     private Boolean isParticipant;
 

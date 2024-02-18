@@ -19,28 +19,27 @@ public record ContestCreationModel(
 
         @NotNull(message = "The contest title is required to create a contest.")
         @NotBlank(message = "Contest title can't be empty.")
-        String contestTitle,
+        String title,
 
         @NotNull(message = "The contest begin time is required to create a contest.")
         @Future(message = "The contest begin time must be in the future.")
-        Instant contestBeginTime,
+        Instant beginTime,
 
         @NotNull(message = "The contest length is required to create a contest.")
         @DurationMax(days = 365, message = "The contest length must be less than 1 year.")
-        Duration contestLength,
+        Duration duration,
 
-        String contestDescription,
+        String description,
 
         @NotNull(message = "You must select the type of the contest.")
-        ContestType contestType,
+        ContestType type,
 
         String groupName,
 
         @NotNull(message = "You must select the visibility of the contest.")
-        ContestVisibility contestVisibility,
+        ContestVisibility visibility,
 
         @NotNull(message = "The problemset can't be null.")
         @Size(min = 1, message = "At least one problem is required to create a contest.")
         List<ContestProblemset> problems
-) {
-}
+) {}

@@ -9,6 +9,10 @@ import java.util.List;
 import jakarta.validation.constraints.*;
 
 public record ContestOverviewModel(
+        @NotNull(message = "The contest id is required.")
+        @Min(value = 1, message = "The contest id must be positive.")
+        Long contestId,
+
         @NotNull(message = "The problems grid data can't be null.")
         @Size(min = 1, message = "At least one problem is required.")
         List<ProblemsGridData> problemsGridData,
@@ -42,6 +46,10 @@ public record ContestOverviewModel(
 }
 
 record ProblemsGridData(
+        @NotNull(message = "The problem id is required.")
+        @Min(value = 1, message = "The problem id must be positive.")
+        Long problemId,
+
         @NotNull(message = "The problem status is required.")
         @NotBlank(message = "Problem status can't be empty.")
         String problemStatus,
