@@ -77,11 +77,23 @@ public class ProblemServiceImp implements ProblemService {
         throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
     }
 
+    @Override
+    public Problem updateProblem(String problemCode) {
+        if (problemCode.startsWith("CodeForces")) {
+            problemCode = problemCode.substring(11);
+            return getProblem(problemCode);
+        }
+        throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
+    }
+
     private Problem getProblem(String problemCode) {
         String contestId = problemCode.replaceAll("(\\d+).*", "$1");
         String problemId = problemCode.replaceAll("\\d+(.*)", "$1");
 
         Problem problem = getProblemAutomation.GetProblem(contestId, problemId);
+
+        Optional<Problem> storedProblem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
+        storedProblem.ifPresent(value -> problem.setId(value.getId()));
 
         problemRepo.save(problem);
 

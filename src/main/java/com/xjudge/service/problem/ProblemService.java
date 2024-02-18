@@ -16,4 +16,6 @@ public interface ProblemService {
     Problem getProblemByCode(String problemCode);
 
     Submission submit(SubmissionInfoModel info);
+
+    Problem updateProblem(String problemCode);
 }
