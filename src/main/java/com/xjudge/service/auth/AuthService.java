@@ -6,5 +6,5 @@ import org.springframework.validation.BindingResult;
 public interface AuthService {
     RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult);
     LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult);
-    String verify(String token);
+    String verifyRegistrationToken(String token);
 }
