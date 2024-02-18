@@ -10,9 +10,12 @@ import com.xjudge.service.scraping.GetProblemAutomation;
 import com.xjudge.service.scraping.SubmissionAutomation;
 import com.xjudge.service.submission.SubmissionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +47,11 @@ public class ProblemServiceImp implements ProblemService {
 //    }
 
     @Override
+    public Page<Problem> getAllProblems(Pageable pageable) {
+        return problemRepo.findAll(pageable);
+    }
+
+    @Override
     public Problem getProblemById(Long problemId) {
         return problemRepo.findById(problemId).orElseThrow(() -> new XJudgeException("Problem not found.", HttpStatus.NOT_FOUND));
     }
@@ -52,7 +60,7 @@ public class ProblemServiceImp implements ProblemService {
     public Problem getProblemByCode(String problemCode) {
         if (problemCode.startsWith("CodeForces")) {
             problemCode = problemCode.substring(11);
-            Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CODEFORCES);
+            Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
             if (problem.isPresent()) return problem.get();
             return getProblem(problemCode);
         }
