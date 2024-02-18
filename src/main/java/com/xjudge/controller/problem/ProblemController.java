@@ -48,10 +48,4 @@ public class ProblemController {
         return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
     }
 
-    @PutMapping("/{problemCode}")
-    @Operation(summary = "Re-crawling a problem", description = "Update a specific problem by its code by fetching it again.")
-    public ResponseEntity<Problem> updateProblem(@PathVariable String problemCode){
-        return new ResponseEntity<>(problemService.updateProblem(problemCode), HttpStatus.OK);
-    }
-
 }

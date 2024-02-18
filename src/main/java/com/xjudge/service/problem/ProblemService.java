@@ -17,5 +17,4 @@ public interface ProblemService {
 
     Submission submit(SubmissionInfoModel info);
 
-    Problem updateProblem(String problemCode);
 }
