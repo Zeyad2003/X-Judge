@@ -55,7 +55,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
-    List<Submission> submissions;
+    Set<Submission> submissions;
 
     @ManyToMany
     @JoinTable(
@@ -64,7 +64,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
     @ToString.Exclude
-    private List<Problem> favoriteProblems;
+    private Set<Problem> favoriteProblems;
 
     @OneToMany(mappedBy = "user")
     @ToString.Exclude

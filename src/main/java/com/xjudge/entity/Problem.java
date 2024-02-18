@@ -8,7 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 
 @Entity
@@ -49,9 +50,9 @@ public class Problem extends BaseEntity<Long> {
 
     private String memoryLimit;
 
-    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY)
     @ToString.Exclude
-    List<Submission> submissions;
+    Set<Submission> submissions = new HashSet<>();
 
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")

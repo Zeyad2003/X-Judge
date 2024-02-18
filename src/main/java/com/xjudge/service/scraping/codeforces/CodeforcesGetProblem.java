@@ -67,7 +67,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         );
 
         return Problem.builder()
-                .source(OnlineJudgeType.CODEFORCES)
+                .source(OnlineJudgeType.CodeForces)
                 .title(title)
                 .problemCode(problemCode)
                 .timeLimit(timeLimit)

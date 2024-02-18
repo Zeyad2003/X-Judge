@@ -62,7 +62,7 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Submission submit(SubmissionInfoModel info) {
 
-        if (info.ojType() == OnlineJudgeType.CODEFORCES) {
+        if (info.ojType() == OnlineJudgeType.CodeForces) {
             return submissionService.save(submissionAutomation.submit(info));
         }
 
