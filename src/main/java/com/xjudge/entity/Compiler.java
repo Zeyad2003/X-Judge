@@ -23,4 +23,9 @@ public class Compiler extends BaseEntity<Long> {
 
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "problem_id", nullable = false)
+    @ToString.Exclude
+    private Problem problem;
+
 }

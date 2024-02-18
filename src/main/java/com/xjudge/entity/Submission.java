@@ -42,7 +42,14 @@ public class Submission extends BaseEntity<Long> {
 
     private String verdict;
 
+    private Boolean isOpen;
+
     private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
+
+    @ManyToOne
+    @JoinColumn(name = "contest_id", nullable = false)
+    @ToString.Exclude
+    private Contest contest;
 
     @ManyToOne
     @JoinColumn(name = "problem_id", nullable = false)

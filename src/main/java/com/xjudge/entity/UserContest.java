@@ -1,7 +1,6 @@
 package com.xjudge.entity;
 
 import com.xjudge.entity.key.UserContestKey;
-import com.xjudge.model.enums.UserContestRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +29,14 @@ public class UserContest extends BaseEntity<UserContestKey> {
 
     private Boolean isFavorite;
 
-    @Enumerated(EnumType.STRING)
-    private UserContestRole role;
+    private Boolean isOwner;
+
+    private Boolean isParticipant;
+
+    private Integer userContestPenalty;
+
+    private Integer userContestRank;
+
+    private Integer userContestScore;
 
 }

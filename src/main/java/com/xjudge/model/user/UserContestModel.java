@@ -2,7 +2,6 @@ package com.xjudge.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xjudge.entity.Contest;
-import com.xjudge.model.enums.UserContestRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +19,4 @@ public class UserContestModel {
 
         private Boolean isFavorite;
 
-        @Enumerated(EnumType.STRING)
-        private UserContestRole role;
 }

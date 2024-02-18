@@ -6,7 +6,7 @@
 //import com.xjudge.entity.User;
 //import com.xjudge.model.contest.ContestData;
 //import com.xjudge.mappers.ContestMapper;
-//import com.xjudge.model.contest.ContestCreationRequest;
+//import com.xjudge.model.contest.ContestCreationModel;
 //import com.xjudge.model.contest.ContestModel;
 //import com.xjudge.model.contest.ContestProblemData;
 //import com.xjudge.model.problem.ContestProblemResp;
@@ -34,7 +34,7 @@
 //     2- do logic of properties
 //     */
 //    @Override
-//    public ContestData createContest(@NotNull ContestCreationRequest contest) {
+//    public ContestData createContest(@NotNull ContestCreationModel contest) {
 //      /*  User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
 //        Group group = groupRepo.findById(contest.getGroupId()).orElseThrow(() -> new EntityNotFoundException("GROUP_NOT_FOUND"));
 //

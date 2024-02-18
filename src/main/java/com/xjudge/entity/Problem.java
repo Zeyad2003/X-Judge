@@ -53,11 +53,6 @@ public class Problem extends BaseEntity<Long> {
     @ToString.Exclude
     List<Submission> submissions;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "compiler_id")
-    @ToString.Exclude
-    private List<Compiler> compilers;
-
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")
     private Map<String, Object> extraInfo = new HashMap<>();

@@ -1,6 +1,6 @@
 package com.xjudge.service.contest;
 
-import com.xjudge.model.contest.ContestCreationRequest;
+import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestData;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.problem.ContestProblemResp;
@@ -8,7 +8,7 @@ import com.xjudge.model.problem.ContestProblemResp;
 import java.util.List;
 
 public interface ContestService {
-    ContestData createContest(ContestCreationRequest contest);
+    ContestData createContest(ContestCreationModel contest);
     List<ContestData> getAllContests();
 
     ContestData getContest(Long id);

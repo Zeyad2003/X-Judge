@@ -41,11 +41,6 @@ public class Contest extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private ContestVisibility visibility;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "contest_id")
-    @ToString.Exclude
-    private List<Submission> submissions = new ArrayList<>();
-
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<UserContest> users = new HashSet<>();

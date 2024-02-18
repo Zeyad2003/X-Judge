@@ -25,7 +25,6 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         String targetProblem = URL + "/problemset/problem/" + contestId + "/" + problemId;
         Document problemDocument;
 
-
         try {
             problemDocument = Jsoup.connect(targetProblem).get();
         } catch (IOException e) {
@@ -76,7 +75,6 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 .input(inputSpecification)
                 .output(outputSpecification)
                 .statement(problemStatement)
-                .compilers(compilers)
                 .extraInfo(extraInfo)
                 .build();
     }
