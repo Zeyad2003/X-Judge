@@ -46,17 +46,17 @@ public class Submission extends BaseEntity<Long> {
 
     private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contest_id", nullable = false)
     @ToString.Exclude
     private Contest contest;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     @ToString.Exclude
     private Problem problem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User user;

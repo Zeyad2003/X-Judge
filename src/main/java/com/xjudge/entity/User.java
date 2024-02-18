@@ -53,7 +53,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     Long attemptedCount;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
     Set<Submission> submissions;
 
