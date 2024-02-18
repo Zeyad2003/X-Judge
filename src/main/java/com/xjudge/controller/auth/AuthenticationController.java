@@ -37,9 +37,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/change-password")
-    ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
-        authService.changePassword(changePasswordRequest, connectedUser);
-        return new ResponseEntity<>(HttpStatus.OK);
+    ResponseEntity<ChangePasswordResponse> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+        return new ResponseEntity<>(authService.changePassword(changePasswordRequest, connectedUser), HttpStatus.OK);
     }
 
     @GetMapping

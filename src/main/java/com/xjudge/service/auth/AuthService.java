@@ -9,5 +9,5 @@ public interface AuthService {
     RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult);
     LoginResponse authenticate(LoginRequest loginRequest, BindingResult bindingResult);
     String verifyRegistrationToken(String token);
-    void changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser);
+    ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser);
 }

@@ -180,7 +180,7 @@ public class AuthServiceImp implements AuthService{
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
+    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getUserPassword())) {
@@ -193,6 +193,11 @@ public class AuthServiceImp implements AuthService{
 
         user.setUserPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepo.save(user);
+        return ChangePasswordResponse
+                .builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Password changed successfully")
+                .build();
     }
 
     private Map<String, String> checkErrors(BindingResult bindingResult) {
