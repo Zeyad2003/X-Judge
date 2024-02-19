@@ -11,9 +11,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class BaseEntity<ID extends Serializable> {
+public abstract class BaseEntity<T extends Serializable> {
 
-    public abstract ID getId();
+    public abstract T getId();
 
     @Override
     public boolean equals(Object o) {

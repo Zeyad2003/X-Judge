@@ -8,7 +8,7 @@ import com.xjudge.model.problem.ContestProblemResp;
 import java.util.List;
 
 public interface ContestService {
-    ContestData createContest(ContestCreationModel contest);
+    ContestCreationModel createContest(ContestCreationModel creationModel);
   /*  List<ContestData> getAllContests();
 
     ContestData getContest(Long id);

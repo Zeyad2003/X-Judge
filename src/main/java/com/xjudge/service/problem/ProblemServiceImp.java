@@ -53,7 +53,7 @@ public class ProblemServiceImp implements ProblemService {
 
     @Override
     public Problem getProblemById(Long problemId) {
-        return problemRepo.findById(problemId).orElseThrow(() -> new XJudgeException("Problem not found.", HttpStatus.NOT_FOUND));
+        return problemRepo.findById(problemId).orElseThrow(() -> new XJudgeException("Problem not found.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ProblemServiceImp implements ProblemService {
             if (problem.isPresent()) return problem.get();
             return getProblem(problemCode);
         }
-        throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
+        throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ProblemServiceImp implements ProblemService {
             return submissionService.save(submissionAutomation.submit(info));
         }
 
-        throw new XJudgeException("Online Judge not supported yet.", HttpStatus.NOT_FOUND);
+        throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
     }
 
     private Problem getProblem(String problemCode) {

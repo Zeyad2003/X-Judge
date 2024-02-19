@@ -1,7 +1,10 @@
 package com.xjudge.controller.contest;
 
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestData;
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +18,9 @@ import com.xjudge.model.problem.ContestProblemResp;
 
 import com.github.dockerjava.api.exception.BadRequestException;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
 import java.util.List;
 
 @RestController
@@ -25,8 +31,28 @@ public class ContestController {
     private final ContestService service;
 
     @PostMapping
-    public ResponseEntity<ContestData> createContest(@Valid @RequestBody ContestCreationModel contest) {
-        return new ResponseEntity<>(service.createContest(contest), HttpStatus.OK);
+    public ResponseEntity<ContestCreationModel> createContest(@Valid @RequestBody ContestCreationModel creationModel) {
+        return new ResponseEntity<>(service.createContest(creationModel), HttpStatus.OK);
+    }
+
+    @GetMapping("/tmp")
+    public ContestCreationModel getTmp() {
+
+        return new ContestCreationModel(
+                "zeyad_nasef",
+                "title",
+                Instant.now().plus(Duration.ofDays(1)),
+                31536000,
+                "description",
+                ContestType.CLASSIC,
+                ContestVisibility.PUBLIC,
+                "groupName",
+                "password", null);
+    }
+
+    @GetMapping("/tmpBody")
+    public ContestCreationModel getTmpBody(@Valid @RequestBody ContestCreationModel contest) {
+        return contest;
     }
 
   /*  @GetMapping

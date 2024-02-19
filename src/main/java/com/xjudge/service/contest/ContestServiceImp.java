@@ -4,6 +4,7 @@ import com.xjudge.entity.Contest;
 import com.xjudge.entity.ContestProblem;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.User;
+import com.xjudge.mapper.ContestMapper;
 import com.xjudge.model.contest.ContestData;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestModel;
@@ -11,24 +12,26 @@ import com.xjudge.model.problem.ContestProblemResp;
 import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.problem.ProblemService;
+import com.xjudge.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ContestServiceImp implements ContestService{
 
     private final ContestRepo contestRepo;
+    private final ContestMapper contestMapper;
+    private final UserService userService;
     private final ProblemService problemService;
 
 
     @Override
-    public ContestData createContest(@NotNull ContestCreationModel contest) {
+    public ContestCreationModel createContest(@NotNull ContestCreationModel creationModel) {
       /*  User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
         Group group = groupRepo.findById(contest.getGroupId()).orElseThrow(() -> new EntityNotFoundException("GROUP_NOT_FOUND"));
 
@@ -64,7 +67,15 @@ public class ContestServiceImp implements ContestService{
 
         return mapper.toContestDataResp(contest1);*/
 
+//        User user = userService.getUserByHandle(creationModel.userHandle());
+//        Contest contest = contestMapper.toContest(creationModel);
+        List<Problem> problemset = creationModel.problems().stream()
+                .map(problemSet -> problemService.getProblemByCode(problemSet.ojType() + "-" + problemSet.problemCode()))
+                .toList();
 
+        for(Problem problem : problemset){
+            System.out.println(problem.getTitle());
+        }
 
         return null;
     }

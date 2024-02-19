@@ -12,6 +12,8 @@ public class ExceptionModel {
 
     private String message;
 
+    private String location;
+
     private String timeStamp;
 
     private String description;

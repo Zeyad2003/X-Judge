@@ -53,6 +53,8 @@ public class Contest extends BaseEntity<Long> {
     @Column(nullable = false)
     private ContestVisibility visibility;
 
+    private String password;
+
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<UserContest> users = new HashSet<>();

@@ -66,8 +66,8 @@ public class AuthServiceImp implements AuthService{
         );
 
         User user = userRepo
-                .findUserByHandle(authRequest.getUserHandle())
-                .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
+                .findByHandle(authRequest.getUserHandle())
+                .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND @" + AuthServiceImp.class.getName()));
         String token = jwtService.generateToken(user);
         return AuthResponse
                 .builder()

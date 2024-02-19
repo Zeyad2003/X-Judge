@@ -28,13 +28,13 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         try {
             problemDocument = Jsoup.connect(targetProblem).get();
         } catch (IOException e) {
-            throw new XJudgeException("PROBLEM NOT FOUND", HttpStatus.NOT_FOUND);
+            throw new XJudgeException("CodeForces may be down at the current time", CodeforcesGetProblem.class.getName(), HttpStatus.NOT_FOUND);
         }
 
         Elements problemHeader = problemDocument.select(".header > .title");
 
         if (problemHeader.isEmpty()) {
-            throw new XJudgeException("CAN'T FETCH THE PROBLEM", HttpStatus.NOT_FOUND);
+            throw new XJudgeException("The Problem may be Deleted", CodeforcesGetProblem.class.getName(), HttpStatus.NOT_FOUND);
         }
 
         // Common Info
