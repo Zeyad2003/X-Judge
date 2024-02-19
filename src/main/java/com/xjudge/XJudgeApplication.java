@@ -1,13 +1,18 @@
 package com.xjudge;
 
+import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
+import com.xjudge.model.enums.UserRole;
+import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.UserRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @SpringBootApplication
 public class XJudgeApplication {
@@ -17,10 +22,11 @@ public class XJudgeApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepo userRepo) {
+    public CommandLineRunner commandLineRunner(UserRepo userRepo, ContestRepo contestRepo) {
         return args -> {
             User user = User.builder()
                     .id(1L)
+                    .role(UserRole.ADMIN)
                     .handle("Zeyad_Nasef")
                     .email("zeyad@gmail.com")
                     .password("123456")
@@ -31,7 +37,7 @@ public class XJudgeApplication {
                     .solvedCount(0L)
                     .attemptedCount(0L)
                     .build();
-            userRepo.save(user);
+            if(userRepo.findByHandle(user.getHandle()).isEmpty()) userRepo.save(user);
         };
     }
 }

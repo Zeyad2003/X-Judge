@@ -1,16 +1,15 @@
 package com.xjudge.service.contest;
 
-import com.xjudge.entity.Contest;
-import com.xjudge.entity.ContestProblem;
-import com.xjudge.entity.Problem;
-import com.xjudge.entity.User;
+import com.xjudge.entity.*;
+import com.xjudge.entity.key.ContestProblemKey;
+import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.mapper.ContestMapper;
-import com.xjudge.model.contest.ContestData;
 import com.xjudge.model.contest.ContestCreationModel;
-import com.xjudge.model.contest.ContestModel;
-import com.xjudge.model.problem.ContestProblemResp;
+import com.xjudge.model.contest.ContestProblemset;
+import com.xjudge.model.enums.ContestVisibility;
+import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
-import com.xjudge.repository.ProblemRepository;
+import com.xjudge.repository.UserContestRepo;
 import com.xjudge.service.problem.ProblemService;
 import com.xjudge.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,66 +17,58 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
-public class ContestServiceImp implements ContestService{
+public class ContestServiceImp implements ContestService {
 
     private final ContestRepo contestRepo;
+    private final ContestProblemRepo contestProblemRepo;
+    private final UserContestRepo userContestRepo;
     private final ContestMapper contestMapper;
     private final UserService userService;
     private final ProblemService problemService;
 
+    @Override
+    public Contest createContest(@NotNull ContestCreationModel creationModel) {
+
+        User user = userService.getUserByHandle(creationModel.userHandle());
+        Contest contest = contestMapper.toContest(creationModel);
+
+        handlePassword(creationModel, contest);
+
+        // TODO: handle the group relation
+        // handleGroupRelation(creationModel, contest);
+
+        contestRepo.save(contest);
+
+        handleContestProblemsetRelation(creationModel, contest);
+
+        handleContestUserRelation(user, contest);
+
+        return contest;
+    }
+
+    private void handleContestUserRelation(User user, Contest contest) {
+        UserContestKey userContestKey = new UserContestKey(user.getId(), contest.getId());
+        UserContest userContest = UserContest.builder()
+                .id(userContestKey)
+                .contest(contest)
+                .user(user)
+                .isOwner(true)
+                .build();
+
+        userContestRepo.save(userContest);
+    }
+
+    // TODO: use model after implementing it
+    @Override
+    public Contest getContest(Long id) {
+        return contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"));
+    }
 
     @Override
-    public ContestCreationModel createContest(@NotNull ContestCreationModel creationModel) {
-      /*  User user = userRepo.findById(contest.getUserId()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
-        Group group = groupRepo.findById(contest.getGroupId()).orElseThrow(() -> new EntityNotFoundException("GROUP_NOT_FOUND"));
-
-
-        if(!isUserInGroup(user , group.getGroupUsers()))
-        {
-            throw new BadRequestException("BAD REQUEST");
-        }
-//
-//        if(contest.getContestBeginTime().toEpochMilli() - System.currentTimeMillis() <= 0){
-//            throw new BadRequestException("BEGIN TIME SHOULD BE AFTER CURRENT TIME");
-//        }
-
-
-
-        Contest contest1 = new Contest();
-        contest1.setProblemSet(getContestProblemData(contest.getProblems() , contest1));
-        contest1.setContestDescription(contest.getContestDescription());
-        contest1.setContestLength(contest.getContestLength());
-        contest1.setContestTitle(contest.getContestTitle());
-        contest1.setContestVisibility(contest.getContestVisibility());
-        contest1.setContestType(contest.getContestType());
-        contest1.setContestBeginTime(contest.getContestBeginTime());
-
-
-        group.getGroupContests().add(contest1);
-        contest1 = contestRepo.save(contest1);
-
-        UserContest userContest = new UserContest(contest1 , user , false , UserContestRole.OWNER);
-        user.getContests().add(userContest);
-
-        userRepo.save(user);
-
-        return mapper.toContestDataResp(contest1);*/
-
-//        User user = userService.getUserByHandle(creationModel.userHandle());
-//        Contest contest = contestMapper.toContest(creationModel);
-        List<Problem> problemset = creationModel.problems().stream()
-                .map(problemSet -> problemService.getProblemByCode(problemSet.ojType() + "-" + problemSet.problemCode()))
-                .toList();
-
-        for(Problem problem : problemset){
-            System.out.println(problem.getTitle());
-        }
-
-        return null;
+    public void deleteContest(Long id) {
+        contestRepo.deleteById(id);
     }
 /*
 
@@ -157,4 +148,34 @@ public class ContestServiceImp implements ContestService{
     }
     */
 
+    private void handleContestProblemsetRelation(ContestCreationModel creationModel, Contest contest) {
+        for (ContestProblemset problemaya : creationModel.problems()) {
+            String code = problemaya.ojType() + "-" + problemaya.problemCode();
+            Problem problem = problemService.getProblemByCode(code);
+
+            ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
+
+            ContestProblem contestProblem = ContestProblem.builder()
+                    .id(contestProblemKey)
+                    .contest(contest)
+                    .problem(problem)
+                    .problemWeight(problemaya.problemWeight())
+                    .problemAlias(problemaya.problemAlias())
+                    .problemCode(problemaya.problemCode())
+                    .problemAccepted(0)
+                    .problemAttempted(0)
+                    .build();
+
+            contestProblemRepo.save(contestProblem);
+        }
+    }
+
+    private void handlePassword(ContestCreationModel creationModel, Contest contest) {
+        if (contest.getVisibility() == ContestVisibility.PRIVATE) {
+            if (creationModel.password() == null || creationModel.password().isEmpty()) {
+                throw new IllegalArgumentException("PASSWORD_REQUIRED");
+            }
+            contest.setPassword(creationModel.password());
+        }
+    }
 }

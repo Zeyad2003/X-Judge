@@ -1,7 +1,10 @@
 package com.xjudge.repository;
 
 import com.xjudge.entity.ContestProblem;
+import com.xjudge.entity.key.ContestProblemKey;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ContestProblemRepo extends JpaRepository<ContestProblem , Long> {
+@Repository
+public interface ContestProblemRepo extends JpaRepository<ContestProblem , ContestProblemKey> {
 }

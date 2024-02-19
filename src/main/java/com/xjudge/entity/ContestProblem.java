@@ -19,6 +19,7 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
     ContestProblemKey id;
 
     @ManyToOne
+    @JsonIgnore
     @MapsId("contestId")
     @JoinColumn(name = "contest_id")
     private Contest contest;
@@ -34,5 +35,9 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
     private String problemAlias;
 
     private String problemCode;
+
+    private Integer problemAccepted;
+
+    private Integer problemAttempted;
 
 }

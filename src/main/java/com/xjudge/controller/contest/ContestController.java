@@ -1,5 +1,6 @@
 package com.xjudge.controller.contest;
 
+import com.xjudge.entity.Contest;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestData;
@@ -31,28 +32,19 @@ public class ContestController {
     private final ContestService service;
 
     @PostMapping
-    public ResponseEntity<ContestCreationModel> createContest(@Valid @RequestBody ContestCreationModel creationModel) {
+    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel) {
         return new ResponseEntity<>(service.createContest(creationModel), HttpStatus.OK);
     }
 
-    @GetMapping("/tmp")
-    public ContestCreationModel getTmp() {
-
-        return new ContestCreationModel(
-                "zeyad_nasef",
-                "title",
-                Instant.now().plus(Duration.ofDays(1)),
-                31536000,
-                "description",
-                ContestType.CLASSIC,
-                ContestVisibility.PUBLIC,
-                "groupName",
-                "password", null);
+    @GetMapping("/{id}")
+    public ResponseEntity<Contest> getContest(@PathVariable Long id) {
+        return new ResponseEntity<>(service.getContest(id), HttpStatus.OK);
     }
 
-    @GetMapping("/tmpBody")
-    public ContestCreationModel getTmpBody(@Valid @RequestBody ContestCreationModel contest) {
-        return contest;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContest(@PathVariable Long id) {
+        service.deleteContest(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
   /*  @GetMapping

@@ -55,11 +55,11 @@ public class Contest extends BaseEntity<Long> {
 
     private String password;
 
-    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private Set<UserContest> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     Set<ContestProblem> problemSet = new HashSet<>();
 

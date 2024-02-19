@@ -14,7 +14,8 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public interface ContestMapper {
 
-    Contest toContest(ContestCreationModel contestCreationModel);
+    @Mapping(target = "duration", expression = "java(java.time.Duration.ofSeconds(creationModel.durationSeconds()))")
+    Contest toContest(ContestCreationModel creationModel);
 /*
     @Mappings({
             @Mapping(source = "id" , target = "contestId") ,

@@ -36,8 +36,8 @@ public record ContestCreationModel(
 
         String password,
 
-//        @NotNull(message = "The problemset can't be null.")
-//        @Size(min = 1, message = "At least one problem is required to create a contest.")
+        @NotNull(message = "The problemset can't be null.")
+        @Size(min = 1, message = "At least one problem is required to create a contest.")
         List<ContestProblemset> problems
 ) {
 }
