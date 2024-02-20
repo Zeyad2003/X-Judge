@@ -2,12 +2,14 @@ package com.xjudge.controller.auth;
 
 import com.xjudge.model.auth.*;
 import com.xjudge.service.auth.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 
@@ -32,8 +34,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/verify-email")
-    ResponseEntity<String> verify(@RequestParam String token){
-        return new ResponseEntity<>(authService.verifyRegistrationToken(token) , HttpStatus.OK);
+    ResponseEntity<String> verify(@RequestParam String token, HttpServletResponse response, RedirectAttributes redirectAttributes){
+        return new ResponseEntity<>(authService.verifyRegistrationToken(token, response, redirectAttributes) , HttpStatus.OK);
     }
 
     @PostMapping("/change-password")

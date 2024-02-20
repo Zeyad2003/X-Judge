@@ -11,8 +11,8 @@ import com.xjudge.config.security.JwtService;
 import com.xjudge.service.auth.resetPasswordToken.ResetPasswordService;
 import com.xjudge.service.auth.verificationToken.VerificationTokenService;
 import com.xjudge.service.email.EmailService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,12 +21,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,7 +97,7 @@ public class AuthServiceImp implements AuthService{
 
         userRepo.save(userDetails);
 
-        String verificationToken = UUID.randomUUID().toString();
+        String verificationToken = UUID.randomUUID().toString() + UUID.randomUUID();
         String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
                 + "<div style='text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 1px solid #ddd;'>"
                 + "<h1>Welcome to xJudge</h1>"
@@ -113,7 +112,7 @@ public class AuthServiceImp implements AuthService{
                 + "</div>"
                 + "</div>";
 
-        emailService.send(userDetails.getUserEmail() , "xJudge Email Verification" , emailContent);
+        emailService.send(userDetails.getUserEmail() , "Email Verification" , emailContent);
 
         verificationTokenService.save(VerificationToken.builder()
                 .token(verificationToken)
@@ -163,7 +162,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public String verifyRegistrationToken(String token) {
+    public String verifyRegistrationToken(String token, HttpServletResponse response, RedirectAttributes redirectAttributes) {
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
         if (verificationToken.getVerifiedAt() != null) {
@@ -181,12 +180,13 @@ public class AuthServiceImp implements AuthService{
         verificationToken.setVerifiedAt(LocalDateTime.now());
         verificationTokenService.save(verificationToken);
 
+        redirectAttributes.addFlashAttribute("emailVerificationMessage", "Email verification successful. You can now login.");
         try {
-            ClassPathResource resource = new ClassPathResource("/static/verification_success.html");
-            return StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
+            response.sendRedirect("http://localhost:4200/login");
         } catch (IOException e) {
-            return "Email verification successful. You can now login.";
+            throw new AuthException("Redirect failed", HttpStatus.INTERNAL_SERVER_ERROR, new HashMap<>());
         }
+        return "Redirected to login page...";
     }
 
     @Override
@@ -221,7 +221,7 @@ public class AuthServiceImp implements AuthService{
                 () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
         );
 
-        String token = UUID.randomUUID().toString();
+        String token = UUID.randomUUID().toString() + UUID.randomUUID();
         resetPasswordService.save(PasswordResetToken.builder()
                 .token(token)
                 .user(user)
