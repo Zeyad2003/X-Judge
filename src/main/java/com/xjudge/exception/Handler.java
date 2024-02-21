@@ -2,6 +2,7 @@ package com.xjudge.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,11 @@ public class Handler {
     @ExceptionHandler(XJudgeException.class)
     public ResponseEntity<?> submitException(XJudgeException exception, WebRequest webRequest) {
         return createResponseEntity(exception, exception.getLocation(), exception.getStatusCode(), webRequest);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> validationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
+        return createResponseEntity(exception, exception.getClass().getName(), HttpStatus.BAD_REQUEST, webRequest);
     }
 
     @ExceptionHandler(Exception.class)

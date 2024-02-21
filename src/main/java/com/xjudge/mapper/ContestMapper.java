@@ -1,21 +1,25 @@
 package com.xjudge.mapper;
 
 import com.xjudge.entity.Contest;
-import com.xjudge.entity.ContestProblem;
-import com.xjudge.entity.UserContest;
-import com.xjudge.model.contest.ContestCreationModel;
-import com.xjudge.model.contest.ContestData;
-import com.xjudge.model.contest.ContestModel;
-import com.xjudge.model.user.UserContestModel;
+import com.xjudge.model.contest.ContestBaseModel;
+import com.xjudge.model.enums.ContestVisibility;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
 public interface ContestMapper {
 
-    @Mapping(target = "duration", expression = "java(java.time.Duration.ofSeconds(creationModel.durationSeconds()))")
-    Contest toContest(ContestCreationModel creationModel);
+    @Mapping(target = "duration", expression = "java(java.time.Duration.ofSeconds(contestModel.getDurationSeconds()))")
+    @Mapping(target = "password", expression = "java(passwordValidation(contestModel))")
+    Contest toContest(ContestBaseModel contestModel);
+
+    default String passwordValidation(ContestBaseModel contestModel) {
+        if (contestModel.getVisibility() == ContestVisibility.PRIVATE && (contestModel.getPassword() == null || contestModel.getPassword().isEmpty())) {
+            throw new IllegalArgumentException("PASSWORD_REQUIRED");
+        }
+        return contestModel.getPassword();
+    }
+
 /*
     @Mappings({
             @Mapping(source = "id" , target = "contestId") ,
@@ -29,11 +33,11 @@ public interface ContestMapper {
             @Mapping(source = "contestSubmissions" , target = "submissions") ,
     }
     )
-    ContestData toContestDataResp(Contest contest);
+    ContestUpdatingModel toContestDataResp(Contest contest);
 
     UserContestModel toUserContestModel(UserContest userContest);
     UserContest toUserContest(UserContestModel userContestModel);
 
-    Contest toContest(ContestModel contestModel);
-    ContestModel toModel(Contest contest);*/
+    Contest toContest(ContestUserDataModel contestModel);
+    ContestUserDataModel toModel(Contest contest);*/
 }

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SeleniumConfig {
-    @Value("${brave.binary}")
+    @Value("${browser.binary}")
     private String braveBinaryPath;
 
     @Bean

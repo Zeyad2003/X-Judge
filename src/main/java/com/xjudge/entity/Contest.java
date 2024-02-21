@@ -7,7 +7,6 @@ import com.xjudge.model.enums.ContestVisibility;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.time.DurationMax;
 
@@ -35,7 +34,7 @@ public class Contest extends BaseEntity<Long> {
     private String title;
 
     @Future(message = "The contest begin time must be in the future.")
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Instant beginTime;
 
     @DurationMax(days = 365, message = "The contest length must be less than 1 year.")
