@@ -1,5 +1,6 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xjudge.entity.key.UserContestKey;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,11 +21,15 @@ public class UserContest extends BaseEntity<UserContestKey> {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "contest_id")
     @MapsId("contestId")
+    @ToString.Exclude
+    @JsonIgnore
     private Contest contest;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     @MapsId("userId")
+    @ToString.Exclude
+    @JsonIgnore
     private User user;
 
     private Boolean isFavorite;

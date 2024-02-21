@@ -20,12 +20,14 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     @ManyToOne
     @JsonIgnore
+    @ToString.Exclude
     @MapsId("contestId")
     @JoinColumn(name = "contest_id")
     private Contest contest;
 
     @ManyToOne
     @JsonIgnore
+    @ToString.Exclude
     @MapsId("problemId")
     @JoinColumn(name = "problem_id")
     private Problem problem;
@@ -35,9 +37,5 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
     private String problemAlias;
 
     private String problemCode;
-
-    private Integer problemAccepted;
-
-    private Integer problemAttempted;
 
 }

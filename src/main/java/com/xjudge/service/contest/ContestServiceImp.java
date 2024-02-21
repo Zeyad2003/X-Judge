@@ -3,22 +3,24 @@ package com.xjudge.service.contest;
 import com.xjudge.entity.*;
 import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.ContestMapper;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestProblemset;
 import com.xjudge.model.contest.ContestUpdatingModel;
-import com.xjudge.model.enums.ContestVisibility;
 import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.UserContestRepo;
 import com.xjudge.service.problem.ProblemService;
 import com.xjudge.service.user.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +47,9 @@ public class ContestServiceImp implements ContestService {
 
         contestRepo.save(contest);
 
-        contestRelationsHelper(creationModel, contest, user);
+        //TODO: handle the group relation
+        handleContestProblemsetRelation(creationModel.getProblems(), contest);
+        handleContestUserRelation(user, contest);
 
         return contest;
     }
@@ -53,14 +57,33 @@ public class ContestServiceImp implements ContestService {
     // TODO: use model after implementing it
     @Override
     public Contest getContest(Long id) {
-        return contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"));
+        Optional<Contest> contestOptional = contestRepo.findById(id);
+
+        if(contestOptional.isEmpty()) {
+            throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+        }
+
+        return contestOptional.get();
     }
 
     @Override
-    public Contest updateContest(Long id, ContestUpdatingModel model) {
-        Contest contest = getContest(id);
+    public Contest updateContest(Long id, ContestUpdatingModel updatingModel) {
+        if(!contestRepo.existsById(id)) {
+            throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+        }
 
-        return null;
+        User user = userService.getUserByHandle(updatingModel.getOwnerHandle());
+
+        Contest contest = contestMapper.toContest(updatingModel);
+        contest.setId(id);
+
+        contestRepo.save(contest);
+
+        //TODO: handle the group relation
+        handleContestProblemsetRelation(updatingModel.getProblems(), contest);
+        handleContestUserRelation(user, contest);
+
+        return contest;
     }
 
     @Override
@@ -144,17 +167,9 @@ public class ContestServiceImp implements ContestService {
     }
     */
 
-    private void contestRelationsHelper(ContestCreationModel creationModel, Contest contest, User user) {
-        // TODO: handle the group relation
-        // handleGroupRelation(creationModel, contest);
-
-        handleContestProblemsetRelation(creationModel, contest);
-
-        handleContestUserRelation(user, contest);
-    }
-
-    private void handleContestProblemsetRelation(ContestCreationModel creationModel, Contest contest) {
-        for (ContestProblemset problemaya : creationModel.getProblems()) {
+    private void handleContestProblemsetRelation(List<ContestProblemset> problemset, Contest contest) {
+        contestProblemRepo.deleteAllByContestId(contest.getId());
+        for (ContestProblemset problemaya : problemset) {
             String code = problemaya.ojType() + "-" + problemaya.problemCode();
             Problem problem = problemService.getProblemByCode(code);
 
@@ -167,8 +182,6 @@ public class ContestServiceImp implements ContestService {
                     .problemWeight(problemaya.problemWeight())
                     .problemAlias(problemaya.problemAlias())
                     .problemCode(problemaya.problemCode())
-                    .problemAccepted(0)
-                    .problemAttempted(0)
                     .build();
 
             contestProblemRepo.save(contestProblem);
@@ -187,12 +200,4 @@ public class ContestServiceImp implements ContestService {
         userContestRepo.save(userContest);
     }
 
-//    private void handlePassword(ContestCreationModel creationModel, Contest contest) {
-//        if (contest.getVisibility() == ContestVisibility.PRIVATE) {
-//            if (creationModel.getPassword() == null || creationModel.getPassword().isEmpty()) {
-//                throw new IllegalArgumentException("PASSWORD_REQUIRED");
-//            }
-//            contest.setPassword(creationModel.getPassword());
-//        }
-//    }
 }

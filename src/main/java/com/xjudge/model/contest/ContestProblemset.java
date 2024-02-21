@@ -17,9 +17,9 @@ public record ContestProblemset(
         @Min(value = 1)
         Integer problemWeight,
 
-        String problemAlias,
-
         @NotNull
-        OnlineJudgeType ojType
+        OnlineJudgeType ojType,
+
+        String problemAlias
 ) {
 }
