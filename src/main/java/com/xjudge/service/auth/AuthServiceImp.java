@@ -236,7 +236,7 @@ public class AuthServiceImp implements AuthService{
                 + "<div style='padding: 20px;'>"
                 + "<p>Dear " + user.getUserFirstName() + ",</p>"
                 + "<p>We received a request to reset your password. Please click the link below to set a new password:</p>"
-                + "<p><a href='http://localhost:7070/auth/reset-password?token=" + token + "'>Reset Password</a></p>"
+                + "<p><a href='http://localhost:4200/resetPasswordtoken=" + token + "'>Reset Password</a></p>"
                 + "<p>If you did not request a password reset, please ignore this email.</p>"
                 + "<p>Best Regards,</p>"
                 + "<p>The xJudge Team</p>"
