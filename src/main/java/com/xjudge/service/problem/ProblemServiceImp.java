@@ -26,7 +26,6 @@ public class ProblemServiceImp implements ProblemService {
     private final SubmissionAutomation submissionAutomation;
     private final SubmissionService submissionService;
 
-
     @Override
     public Page<Problem> getAllProblems(Pageable pageable) {
         return problemRepo.findAll(pageable);
@@ -40,7 +39,6 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Problem getProblemByCode(String problemCode, String problemSource) {
         if (problemSource.equalsIgnoreCase("codeforces")) {
-//            problemCode = problemCode.substring(11);
             Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
             return problem.orElseGet(() -> getProblem(problemCode));
         }

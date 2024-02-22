@@ -38,4 +38,6 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     private String problemCode;
 
+    private String problemHashtag;
+
 }

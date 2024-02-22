@@ -4,8 +4,12 @@ import com.xjudge.entity.Contest;
 import com.xjudge.entity.Problem;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestUpdatingModel;
+import com.xjudge.model.problem.ProblemModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
+
+import java.util.List;
 
 public interface ContestService {
     Page<Contest> getAllContests(Pageable pageable);
@@ -17,11 +21,6 @@ public interface ContestService {
     Contest updateContest(Long id, ContestUpdatingModel model);
 
     void deleteContest(Long id);
-  /*  List<ContestUpdatingModel> getAllContests();
 
-    ContestUpdatingModel getContest(Long id);
-    ContestUserDataModel updateContest(Long id , ContestUserDataModel model);
-    void deleteContest(Long id);
-
-    List<ContestProblemResp> gerContestProblems(Long id);*/
+    List<ProblemModel> getContestProblems(Long id);
 }

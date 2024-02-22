@@ -1,14 +1,11 @@
 package com.xjudge.entity;
 
-import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -60,9 +57,5 @@ public class Submission extends BaseEntity<Long> {
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User user;
-
-    @Convert(converter = JsonDataConverter.class)
-    @Column(columnDefinition = "json")
-    private Map<String, Object> extraInfo = new HashMap<>(); // Any extra info like contest id, etc.
 
 }

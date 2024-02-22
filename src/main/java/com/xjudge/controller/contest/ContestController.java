@@ -3,13 +3,9 @@ package com.xjudge.controller.contest;
 import com.xjudge.entity.Contest;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestCreationModel;
-import com.xjudge.model.contest.ContestProblemset;
 import com.xjudge.model.contest.ContestUpdatingModel;
-import com.xjudge.model.enums.ContestType;
-import com.xjudge.model.enums.ContestVisibility;
-import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.problem.ProblemModel;
 import jakarta.validation.Valid;
-import jakarta.xml.bind.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.xjudge.service.contest.ContestService;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -66,6 +61,12 @@ public class ContestController {
     public ResponseEntity<String> deleteContest(@PathVariable Long id) {
         contestService.deleteContest(id);
         return new ResponseEntity<>("The Contest has been deleted successfully!!", HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping("/{id}/problems")
+    public ResponseEntity<List<ProblemModel>> getContestProblems(@PathVariable Long id){
+        return new ResponseEntity<>(contestService.getContestProblems(id), HttpStatus.OK);
     }
 
 }

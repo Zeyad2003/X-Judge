@@ -54,6 +54,10 @@ public class Problem extends BaseEntity<Long> {
     @ToString.Exclude
     Set<Submission> submissions = new HashSet<>();
 
+    @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<ContestProblem> contests = new HashSet<>();
+
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")
     private Map<String, Object> extraInfo = new HashMap<>();

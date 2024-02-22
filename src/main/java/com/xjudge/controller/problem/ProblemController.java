@@ -32,7 +32,7 @@ public class ProblemController {
     @GetMapping
     @Operation(summary = "Retrieve all problems", description = "Get all problems available in the system with pagination.")
     public ResponseEntity<List<Problem>> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                        @RequestParam(defaultValue = "10") Integer size){
+                                                        @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<Problem> pagedResult = problemService.getAllProblems(paging);
         return new ResponseEntity<>(pagedResult.getContent(), HttpStatus.OK);

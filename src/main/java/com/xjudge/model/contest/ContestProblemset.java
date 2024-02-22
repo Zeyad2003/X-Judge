@@ -20,6 +20,10 @@ public record ContestProblemset(
         @NotNull
         OnlineJudgeType ojType,
 
+        @NotNull
+        @NotBlank
+        String problemHashtag, // A, B, C, AA, AB, etc.
+
         String problemAlias
 ) {
 }

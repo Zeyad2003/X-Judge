@@ -5,9 +5,11 @@ import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.ContestMapper;
+import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestProblemset;
 import com.xjudge.model.contest.ContestUpdatingModel;
+import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.UserContestRepo;
@@ -30,6 +32,7 @@ public class ContestServiceImp implements ContestService {
     private final ContestProblemRepo contestProblemRepo;
     private final UserContestRepo userContestRepo;
     private final ContestMapper contestMapper;
+    private final ProblemMapper problemMapper;
     private final UserService userService;
     private final ProblemService problemService;
 
@@ -40,7 +43,7 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public Contest createContest(@NotNull ContestCreationModel creationModel) {
-        User user = userService.getUserByHandle(creationModel.getOwnerHandle());
+        User user = userService.getUserByHandle(creationModel.getUserHandle());
 
         Contest contest = contestMapper.toContest(creationModel);
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
@@ -59,7 +62,7 @@ public class ContestServiceImp implements ContestService {
     public Contest getContest(Long id) {
         Optional<Contest> contestOptional = contestRepo.findById(id);
 
-        if(contestOptional.isEmpty()) {
+        if (contestOptional.isEmpty()) {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
@@ -68,11 +71,11 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public Contest updateContest(Long id, ContestUpdatingModel updatingModel) {
-        if(!contestRepo.existsById(id)) {
+        if (!contestRepo.existsById(id)) {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
-        User user = userService.getUserByHandle(updatingModel.getOwnerHandle());
+        User user = userService.getUserByHandle(updatingModel.getUserHandle());
 
         Contest contest = contestMapper.toContest(updatingModel);
         contest.setId(id);
@@ -91,10 +94,26 @@ public class ContestServiceImp implements ContestService {
         contestRepo.deleteById(id);
     }
 
+    @Override
+    public List<ProblemModel> getContestProblems(Long id) {
+        Contest contest = getContest(id);
+
+        List<ProblemModel> problems = new ArrayList<>(contest.getProblemSet().stream()
+                .map(contestProblem -> {
+                    Problem problem = contestProblem.getProblem();
+                    String problemHashtag = contestProblem.getProblemHashtag();
+                    return problemMapper.toModel(problem, problemHashtag);
+                }).toList());
+
+        problems.sort(Comparator.comparing(ProblemModel::problemHashtag));
+
+        return problems;
+    }
+
+
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
         contestProblemRepo.deleteAllByContestId(contest.getId());
         for (ContestProblemset problemaya : problemSet) {
-//            String code = problemaya.ojType() + "-" + problemaya.problemCode();
             Problem problem = problemService.getProblemByCode(problemaya.problemCode(), problemaya.ojType().name());
 
             ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
@@ -106,6 +125,7 @@ public class ContestServiceImp implements ContestService {
                     .problemWeight(problemaya.problemWeight())
                     .problemAlias(problemaya.problemAlias())
                     .problemCode(problemaya.problemCode())
+                    .problemHashtag(problemaya.problemHashtag())
                     .build();
 
             contestProblemRepo.save(contestProblem);

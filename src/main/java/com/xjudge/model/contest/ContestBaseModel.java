@@ -16,7 +16,7 @@ import lombok.Data;
 public abstract class ContestBaseModel {
     @NotNull(message = "The user handle is required to create a contest.")
     @NotBlank(message = "UserHandle can't be empty.")
-    private String ownerHandle;
+    private String userHandle;
 
     @NotNull(message = "The contest title is required to create a contest.")
     @NotBlank(message = "Contest title can't be empty.")

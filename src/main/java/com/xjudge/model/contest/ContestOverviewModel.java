@@ -16,8 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class ContestUserDataModel extends ContestBaseModel {
-
+public class ContestOverviewModel extends ContestBaseModel {
     @NotNull(message = "The contest id is required.")
     @Min(value = 1, message = "The contest id must be positive.")
     Long id;
@@ -57,6 +56,11 @@ record ProblemsData(
 
         @NotNull(message = "The problem title is required.")
         @NotBlank(message = "Problem title can't be empty.")
-        String problemAlias
+        String problemAlias,
+
+        @NotNull(message = "The problem hashtag is required.")
+        @NotBlank(message = "Problem hashtag can't be empty.")
+        String problemHashtag
+
 ) {
 }
