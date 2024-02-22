@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -75,6 +74,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
                     .timeUsage(time.getText())
                     .verdict(status.getText())
                     .submissionStatus("submitted")
+                    .isOpen(info.isOpen() == null || info.isOpen())
                     .build();
         } catch (Exception exception) {
             logger.error(exception.getMessage());
@@ -99,7 +99,6 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             if (!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
             sourceCodeTextarea.sendKeys(info.solutionCode());
             lang.selectByValue(info.compiler().getIdValue());
-            //selectByValue(String.valueOf());
             singlePageSubmitButton.submit();
 
             wait.until(driver -> driver.findElement(By.className("status-frame-datatable")));

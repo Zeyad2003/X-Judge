@@ -18,6 +18,8 @@ public record SubmissionInfoModel(
         @NotNull
         OnlineJudgeType ojType,
 
+        Boolean isOpen,
+
         @NotNull
         @NotBlank
         String solutionCode,

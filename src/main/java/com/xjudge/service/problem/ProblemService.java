@@ -9,9 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface ProblemService {
     Page<Problem> getAllProblems(Pageable pageable);
 
-    Problem getProblemById(Long problemId);
-
-    Problem getProblemByCode(String problemCode , String problemSource);
+    Problem getProblemByCodeAndSource(String problemCode, String problemSource);
 
     Submission submit(SubmissionInfoModel info);
 

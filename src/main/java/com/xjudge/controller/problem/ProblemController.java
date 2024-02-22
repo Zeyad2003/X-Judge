@@ -41,7 +41,7 @@ public class ProblemController {
     @GetMapping("/{problemSource}-{problemCode}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
     public ResponseEntity<Problem> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource){
-        return new ResponseEntity<>(problemService.getProblemByCode(problemCode, problemSource), HttpStatus.OK);
+        return new ResponseEntity<>(problemService.getProblemByCodeAndSource(problemCode, problemSource), HttpStatus.OK);
     }
 
     @PostMapping("/submit")

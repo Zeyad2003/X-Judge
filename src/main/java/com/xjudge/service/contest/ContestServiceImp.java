@@ -6,14 +6,18 @@ import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.ContestMapper;
 import com.xjudge.mapper.ProblemMapper;
+import com.xjudge.mapper.SubmissionMapper;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestProblemset;
 import com.xjudge.model.contest.ContestUpdatingModel;
 import com.xjudge.model.problem.ProblemModel;
+import com.xjudge.model.submission.SubmissionInfoModel;
+import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.UserContestRepo;
 import com.xjudge.service.problem.ProblemService;
+import com.xjudge.service.submission.SubmissionService;
 import com.xjudge.service.user.UserService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,8 @@ public class ContestServiceImp implements ContestService {
     private final ProblemMapper problemMapper;
     private final UserService userService;
     private final ProblemService problemService;
+    private final SubmissionService submissionService;
+    private final SubmissionMapper submissionMapper;
 
     @Override
     public Page<Contest> getAllContests(Pageable pageable) {
@@ -110,11 +116,25 @@ public class ContestServiceImp implements ContestService {
         return problems;
     }
 
+    @Override
+    public SubmissionModel submitInContest(Long id, SubmissionInfoModel info) {
+        Contest contest = getContest(id);
+        Submission submission = problemService.submit(info);
+
+        submission.setContest(contest);
+
+        //TODO: update contest rank
+
+        submission = submissionService.save(submission);
+
+        return submissionMapper.toModel(submission);
+    }
+
 
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
         contestProblemRepo.deleteAllByContestId(contest.getId());
         for (ContestProblemset problemaya : problemSet) {
-            Problem problem = problemService.getProblemByCode(problemaya.problemCode(), problemaya.ojType().name());
+            Problem problem = problemService.getProblemByCodeAndSource(problemaya.problemCode(), problemaya.ojType().name());
 
             ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
 

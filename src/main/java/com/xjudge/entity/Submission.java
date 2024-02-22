@@ -1,5 +1,7 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -15,6 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="submission")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Submission extends BaseEntity<Long> {
 
     @Id
@@ -44,7 +47,7 @@ public class Submission extends BaseEntity<Long> {
     private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contest_id", nullable = false)
+    @JoinColumn(name = "contest_id")
     @ToString.Exclude
     private Contest contest;
 

@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SeleniumConfig {
     @Value("${browser.binary}")
-    private String braveBinaryPath;
+    private String browserPath;
 
     @Bean
     public WebDriver getDriver(){
         WebDriverManager.chromedriver().browserVersion("120").setup();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless"); // This line enables headless mode
-        options.setBinary(braveBinaryPath);
+        options.setBinary(browserPath);
         return new ChromeDriver(options);
     }
 

@@ -2,6 +2,7 @@ package com.xjudge.service.problem;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
+import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -9,6 +10,7 @@ import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import com.xjudge.service.scraping.SubmissionAutomation;
 import com.xjudge.service.submission.SubmissionService;
+import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ public class ProblemServiceImp implements ProblemService {
     private final GetProblemAutomation getProblemAutomation;
     private final SubmissionAutomation submissionAutomation;
     private final SubmissionService submissionService;
+    private final UserService userService;
 
     @Override
     public Page<Problem> getAllProblems(Pageable pageable) {
@@ -32,30 +35,32 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
-    public Problem getProblemById(Long problemId) {
-        return problemRepo.findById(problemId).orElseThrow(() -> new XJudgeException("Problem not found.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND));
-    }
-
-    @Override
-    public Problem getProblemByCode(String problemCode, String problemSource) {
+    public Problem getProblemByCodeAndSource(String problemCode, String problemSource) {
         if (problemSource.equalsIgnoreCase("codeforces")) {
             Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
-            return problem.orElseGet(() -> getProblem(problemCode));
+            return problem.orElseGet(() -> scrapProblem(problemCode));
         }
         throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
     }
 
     @Override
     public Submission submit(SubmissionInfoModel info) {
+        User user = userService.getUserByHandle(info.userHandle());
 
         if (info.ojType() == OnlineJudgeType.CodeForces) {
-            return submissionService.save(submissionAutomation.submit(info));
+            Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
+            Submission submission = submissionAutomation.submit(info);
+
+            submission.setProblem(problem);
+            submission.setUser(user);
+
+            return submissionService.save(submission);
         }
 
         throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
     }
 
-    private Problem getProblem(String problemCode) {
+    private Problem scrapProblem(String problemCode) {
         String contestId = problemCode.replaceAll("(\\d+).*", "$1");
         String problemId = problemCode.replaceAll("\\d+(.*)", "$1");
 

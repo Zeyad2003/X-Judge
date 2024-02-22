@@ -1,10 +1,13 @@
 package com.xjudge.controller.contest;
 
 import com.xjudge.entity.Contest;
+import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestUpdatingModel;
 import com.xjudge.model.problem.ProblemModel;
+import com.xjudge.model.submission.SubmissionInfoModel;
+import com.xjudge.model.submission.SubmissionModel;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -63,6 +66,11 @@ public class ContestController {
         return new ResponseEntity<>("The Contest has been deleted successfully!!", HttpStatus.NO_CONTENT);
     }
 
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info) {
+        SubmissionModel submission = contestService.submitInContest(id, info);
+        return new ResponseEntity<>(submission, HttpStatus.OK);
+    }
 
     @GetMapping("/{id}/problems")
     public ResponseEntity<List<ProblemModel>> getContestProblems(@PathVariable Long id){
