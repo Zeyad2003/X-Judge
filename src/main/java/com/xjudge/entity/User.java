@@ -56,6 +56,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     UserRole role;
 
+    private boolean isVerified;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "statistics_id")
     private UserStatistics userStatistics;
