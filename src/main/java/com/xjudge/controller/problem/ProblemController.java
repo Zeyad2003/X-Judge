@@ -38,7 +38,7 @@ public class ProblemController {
         return new ResponseEntity<>(pagedResult.getContent(), HttpStatus.OK);
     }
 
-    @PostMapping("/{problemSource}-{problemCode}")
+    @GetMapping("/{problemSource}-{problemCode}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
     public ResponseEntity<Problem> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource){
         return new ResponseEntity<>(problemService.getProblemByCode(problemCode, problemSource), HttpStatus.OK);
