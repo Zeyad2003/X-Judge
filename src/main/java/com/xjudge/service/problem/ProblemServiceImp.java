@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,24 +26,6 @@ public class ProblemServiceImp implements ProblemService {
     private final SubmissionAutomation submissionAutomation;
     private final SubmissionService submissionService;
 
-//    final String PROBLEM_NOT_FOUND = "PROBLEM_NOT_FOUND";
-//
-//    @Override
-//    public ContestProblemResp getProblemDataForContest(String problemCode) {
-//
-//        int contestId = Integer.parseInt(problemCode.substring(0 , problemCode.length() - 1));
-//        char problemId = problemCode.charAt(problemCode.length() - 1);
-//        Problem problem = getProblemAutomation.GetProblem(contestId , problemId);
-//
-//        if(problem == null) throw new EntityNotFoundException(PROBLEM_NOT_FOUND);
-//
-//        return ContestProblemResp.builder()
-//                .problemId(problem.getId())
-//                .problemCode(problem.getProblemCode())
-//                .title(problem.getProblemTitle())
-//                .platform(problem.getProblemSource())
-//                .build();
-//    }
 
     @Override
     public Page<Problem> getAllProblems(Pageable pageable) {
@@ -57,12 +38,11 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
-    public Problem getProblemByCode(String problemCode) {
-        if (problemCode.startsWith("CodeForces")) {
-            problemCode = problemCode.substring(11);
+    public Problem getProblemByCode(String problemCode, String problemSource) {
+        if (problemSource.equalsIgnoreCase("codeforces")) {
+//            problemCode = problemCode.substring(11);
             Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
-            if (problem.isPresent()) return problem.get();
-            return getProblem(problemCode);
+            return problem.orElseGet(() -> getProblem(problemCode));
         }
         throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
     }

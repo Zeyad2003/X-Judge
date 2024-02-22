@@ -48,7 +48,7 @@ public class ContestServiceImp implements ContestService {
         contestRepo.save(contest);
 
         //TODO: handle the group relation
-        handleContestProblemsetRelation(creationModel.getProblems(), contest);
+        handleContestProblemSetRelation(creationModel.getProblems(), contest);
         handleContestUserRelation(user, contest);
 
         return contest;
@@ -80,7 +80,7 @@ public class ContestServiceImp implements ContestService {
         contestRepo.save(contest);
 
         //TODO: handle the group relation
-        handleContestProblemsetRelation(updatingModel.getProblems(), contest);
+        handleContestProblemSetRelation(updatingModel.getProblems(), contest);
         handleContestUserRelation(user, contest);
 
         return contest;
@@ -90,88 +90,12 @@ public class ContestServiceImp implements ContestService {
     public void deleteContest(Long id) {
         contestRepo.deleteById(id);
     }
-/*
-    @Override
-    public List<ContestUpdatingModel> getAllContests() {
-        return contestRepo.findAll()
-                .stream()
-                .map(contest -> mapper.toContestDataResp(contest))
-                .toList();
-    }
 
-    @Override
-    public ContestUpdatingModel getContest(Long id) {
-        return mapper.toContestDataResp(
-                contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"))
-        );
-    }
-
-    @Override
-    public ContestUserDataModel updateContest(Long id , ContestUserDataModel model) {
-        Contest contest = contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"));
-
-        contest.setContestDescription(model.getContestDescription());
-        contest.setContestLength(model.getContestLength());
-        contest.setContestTitle(model.getContestTitle());
-        contest.setContestVisibility(model.getContestVisibility());
-        contest.setContestType(model.getContestType());
-        contest.setContestBeginTime(model.getContestBeginTime());
-
-        return mapper.toModel(contestRepo.save(contest));
-    }
-
-    @Override
-    public void deleteContest(Long id) {
-        Contest contest = contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"));
-        contestRepo.delete(contest);
-    }
-
-    @Override
-    public List<ContestProblemResp> gerContestProblems(Long id) {
-        Contest contest = contestRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("CONTEST_NOT_FOUND"));
-        return contest.getProblemSet()
-                .stream()
-                .map(contestProblem ->
-                        ContestProblemResp.builder()
-                                .problemId(contestProblem.getProblem().getId())
-                                .problemCode(contestProblem.getCode())
-                                .platform(contestProblem.getProblem().getProblemSource())
-                                .title(contestProblem.getAlias())
-                                .build()
-                        )
-                .toList();
-    }
-
-    private List<ContestProblem> getContestProblemData(List<ContestProblemData> problemSet , Contest contest){
-        return problemSet.stream()
-                .map((contestProblemData -> contestProblemMapper(contestProblemData , contest)))
-                .collect(Collectors.toList());
-    }
-
-    private ContestProblem contestProblemMapper(ContestProblemData data , Contest contest){
-
-        Problem problem = problemRepo.findById(data.getProblemId())
-                .orElseThrow(() -> new EntityNotFoundException("PROBLEM_NOT_FOUND"));
-
-        ContestProblem contestProblem = mapper.toContestProblem(data);
-        contestProblem.setProblem(problem);
-        contestProblem.setContest(contest);
-
-
-        return contestProblem;
-    }
-
-    private boolean isUserInGroup(User user , List<User> users) {
-        return users.stream()
-                .anyMatch(user1 -> user1.equals(user));
-    }
-    */
-
-    private void handleContestProblemsetRelation(List<ContestProblemset> problemset, Contest contest) {
+    private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
         contestProblemRepo.deleteAllByContestId(contest.getId());
-        for (ContestProblemset problemaya : problemset) {
-            String code = problemaya.ojType() + "-" + problemaya.problemCode();
-            Problem problem = problemService.getProblemByCode(code);
+        for (ContestProblemset problemaya : problemSet) {
+//            String code = problemaya.ojType() + "-" + problemaya.problemCode();
+            Problem problem = problemService.getProblemByCode(problemaya.problemCode(), problemaya.ojType().name());
 
             ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
 

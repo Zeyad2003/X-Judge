@@ -24,9 +24,17 @@ public class Handler {
         return createResponseEntity(exception, exception.getClass().getName(), HttpStatus.BAD_REQUEST, webRequest);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> runtimeException(Exception exception, WebRequest webRequest) {
-        return createResponseEntity(exception, exception.getClass().getName(), HttpStatus.INTERNAL_SERVER_ERROR, webRequest);
+    @ExceptionHandler(XJudgeValidationException.class)
+    public ResponseEntity<?> xJudgeValidationException(XJudgeValidationException exception , WebRequest webRequest){
+        ExceptionModel errorDetails = new XJudgeValidationExceptionModel(
+                exception.getHttpStatus().value(),
+                exception.getMessage() ,
+                exception.getLocation(),
+                DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
+                webRequest.getDescription(false) ,
+                exception.getErrors()
+        );
+        return new ResponseEntity<>(errorDetails , exception.getHttpStatus());
     }
 
     private ResponseEntity<?> createResponseEntity(Exception exception, String location, HttpStatus status, WebRequest webRequest) {

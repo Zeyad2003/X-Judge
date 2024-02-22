@@ -1,6 +1,7 @@
 package com.xjudge.controller.contest;
 
 import com.xjudge.entity.Contest;
+import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestCreationModel;
 import com.xjudge.model.contest.ContestProblemset;
 import com.xjudge.model.contest.ContestUpdatingModel;
@@ -8,6 +9,7 @@ import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.validation.Valid;
+import jakarta.xml.bind.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.xjudge.service.contest.ContestService;
@@ -38,7 +41,10 @@ public class ContestController {
     }
 
     @PostMapping
-    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel) {
+    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel , BindingResult result) {
+        if(result.hasErrors()){
+            throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR, ContestController.class.getName() , HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(contestService.createContest(creationModel), HttpStatus.OK);
     }
 
@@ -48,7 +54,11 @@ public class ContestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Contest> updateContest(@PathVariable Long id, @Valid @RequestBody ContestUpdatingModel model) {
+    public ResponseEntity<Contest> updateContest(@PathVariable Long id
+            , @Valid @RequestBody ContestUpdatingModel model, BindingResult result) {
+        if(result.hasErrors()){
+            throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(contestService.updateContest(id, model), HttpStatus.OK);
     }
 
@@ -58,19 +68,4 @@ public class ContestController {
         return new ResponseEntity<>("The Contest has been deleted successfully!!", HttpStatus.NO_CONTENT);
     }
 
-  /*
-    @PutMapping("/{id}")
-    public ResponseEntity<ContestUserDataModel> updateContest(@PathVariable Long id, @RequestBody ContestUserDataModel model) {
-
-        if (id <= 0) throw new BadRequestException("CONTEST_ID_LESS_THAN_ZERO");
-        return new ResponseEntity<>(service.updateContest(id, model), HttpStatus.OK);
-
-    }
-
-    @GetMapping("/{id}/problem")
-    public ResponseEntity<List<ContestProblemResp>> getContestProblems(@PathVariable Long id) {
-        if (id <= 0) throw new BadRequestException("CONTEST_ID_LESS_THAN_ZERO");
-        return new ResponseEntity<>(service.gerContestProblems(id), HttpStatus.OK);
-    }
-*/
 }
