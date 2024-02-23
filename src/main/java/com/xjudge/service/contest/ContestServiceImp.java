@@ -130,6 +130,14 @@ public class ContestServiceImp implements ContestService {
         return submissionMapper.toModel(submission);
     }
 
+    @Override
+    public List<SubmissionModel> getContestSubmissions(Long id) {
+        Contest contest = getContest(id);
+        List<Submission> submissions = submissionService.getSubmissionsByContestId(contest.getId());
+
+        return submissionMapper.toModels(submissions);
+    }
+
 
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
         contestProblemRepo.deleteAllByContestId(contest.getId());

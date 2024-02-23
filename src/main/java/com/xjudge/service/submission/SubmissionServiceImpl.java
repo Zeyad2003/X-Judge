@@ -5,6 +5,8 @@ import com.xjudge.repository.SubmissionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class SubmissionServiceImpl implements SubmissionService {
@@ -19,5 +21,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Submission save(Submission submission) {
         return submissionRepo.save(submission);
+    }
+
+    @Override
+    public List<Submission> getSubmissionsByContestId(Long contestId) {
+        return submissionRepo.findAllByContestId(contestId);
     }
 }

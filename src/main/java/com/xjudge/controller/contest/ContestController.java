@@ -76,4 +76,9 @@ public class ContestController {
         return new ResponseEntity<>(contestService.getContestProblems(id), HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/submissions")
+    public ResponseEntity<List<SubmissionModel>> getContestSubmissions(@PathVariable Long id){
+        return new ResponseEntity<>(contestService.getContestSubmissions(id), HttpStatus.OK);
+    }
+
 }
