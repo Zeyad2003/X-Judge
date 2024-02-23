@@ -72,15 +72,15 @@ public class GroupController {
         return ResponseEntity.ok("Invitation declined successfully.");
     }
 
-    @PostMapping("/{groupId}/join/{userId}")
-    public ResponseEntity<?> joinUserGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        groupService.join(groupId, userId);
+    @PostMapping("/{groupId}/join")
+    public ResponseEntity<?> joinUserGroup(@PathVariable Long groupId, Principal connectedUser) {
+        groupService.join(groupId, connectedUser);
         return ResponseEntity.ok("User joined successfully.");
     }
 
-    @PostMapping("/{groupId}/leave/{userId}")
-    public ResponseEntity<?> leaveUserGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-        groupService.leave(groupId, userId);
+    @PostMapping("/{groupId}/leave")
+    public ResponseEntity<?> leaveUserGroup(@PathVariable Long groupId, Principal connectedUser) {
+        groupService.leave(groupId, connectedUser);
         return ResponseEntity.ok("User left successfully.");
     }
 
