@@ -1,11 +1,14 @@
-package com.xjudge.model.contest;
+package com.xjudge.model.contest.modification;
 
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * The base model that contain the common fields for the contest.
@@ -13,7 +16,7 @@ import lombok.Data;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class ContestBaseModel {
+public class ContestModificationModel {
     @NotNull(message = "The user handle is required to create a contest.")
     @NotBlank(message = "UserHandle can't be empty.")
     private String userHandle;
@@ -37,5 +40,9 @@ public abstract class ContestBaseModel {
     private String password;
 
     private String description;
+
+    @NotNull(message = "The problemset can't be null.")
+    @Size(min = 1, message = "At least one problem is required to create a contest.")
+    private List<ContestProblemset> problems;
 
 }

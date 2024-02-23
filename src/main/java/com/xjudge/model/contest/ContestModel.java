@@ -3,10 +3,11 @@ package com.xjudge.model.contest;
 import java.time.Instant;
 import java.util.List;
 
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -15,15 +16,37 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class ContestOverviewModel extends ContestBaseModel {
+public class ContestModel {
     @NotNull(message = "The contest id is required.")
     @Min(value = 1, message = "The contest id must be positive.")
     Long id;
 
+    @NotNull(message = "The user handle is required.")
+    @NotBlank(message = "UserHandle can't be empty.")
+    String userHandle;
+
+    @NotNull(message = "The contest title is required.")
+    @NotBlank(message = "Contest title can't be empty.")
+    String title;
+
+    @NotNull(message = "The contest length is required.")
+    @Max(value = 31536000, message = "The contest length must be less than 1 year.")
+    Integer durationSeconds;
+
     @NotNull(message = "The contest begin time is required.")
-    @PastOrPresent(message = "The contest begin time must be in the past or present.")
-    Instant beginTime;
+    private Instant beginTime;
+
+    @NotNull(message = "You must select the type of the contest.")
+    ContestType type;
+
+    @NotNull(message = "You must select the visibility of the contest.")
+    ContestVisibility visibility;
+
+    String groupName;
+
+    String password;
+
+    String description;
 
     Boolean isFavourite;
 

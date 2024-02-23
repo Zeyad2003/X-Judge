@@ -1,4 +1,4 @@
-package com.xjudge.model.contest;
+package com.xjudge.model.contest.modification;
 
 import jakarta.validation.constraints.Min;
 import com.xjudge.model.enums.OnlineJudgeType;

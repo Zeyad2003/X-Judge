@@ -7,9 +7,9 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.ContestMapper;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.mapper.SubmissionMapper;
-import com.xjudge.model.contest.ContestCreationModel;
-import com.xjudge.model.contest.ContestProblemset;
-import com.xjudge.model.contest.ContestUpdatingModel;
+import com.xjudge.model.contest.modification.ContestModificationModel;
+import com.xjudge.model.contest.modification.ContestCreationModel;
+import com.xjudge.model.contest.modification.ContestProblemset;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -76,7 +76,7 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public Contest updateContest(Long id, ContestUpdatingModel updatingModel) {
+    public Contest updateContest(Long id, ContestModificationModel updatingModel) {
         if (!contestRepo.existsById(id)) {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }

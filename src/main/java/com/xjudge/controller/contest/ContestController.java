@@ -1,10 +1,9 @@
 package com.xjudge.controller.contest;
 
 import com.xjudge.entity.Contest;
-import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeValidationException;
-import com.xjudge.model.contest.ContestCreationModel;
-import com.xjudge.model.contest.ContestUpdatingModel;
+import com.xjudge.model.contest.modification.ContestModificationModel;
+import com.xjudge.model.contest.modification.ContestCreationModel;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -53,7 +52,7 @@ public class ContestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id
-            , @Valid @RequestBody ContestUpdatingModel model, BindingResult result) {
+            , @Valid @RequestBody ContestModificationModel model, BindingResult result) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
         }
@@ -61,9 +60,9 @@ public class ContestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteContest(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteContest(@PathVariable Long id) {
         contestService.deleteContest(id);
-        return new ResponseEntity<>("The Contest has been deleted successfully!!", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/{id}/submit")
