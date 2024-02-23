@@ -23,9 +23,9 @@ public interface GroupService {
     void inviteUser(Long groupId, Long receiverId, Principal connectedUser);
 
     // Join and leave group
-    void join(Long groupId, Long userId);
+    void join(Long groupId, Principal connectedUser);
     void join(Group group, User user);
-    void leave(Long groupId, Long userId);
+    void leave(Long groupId, Principal connectedUser);
 
     // Group information
     List<Contest> Contests(Long groupId);

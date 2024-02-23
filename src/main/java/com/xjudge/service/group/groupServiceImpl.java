@@ -118,13 +118,11 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    public void join(Long groupId, Long userId) {
+    public void join(Long groupId, Principal connectedUser) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
         );
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
-        );
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         if (isPrivate(group)) {
             throw new SubmitException("Group is private", HttpStatus.FORBIDDEN);
         }
@@ -153,11 +151,9 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    public void leave(Long groupId, Long userId) {
+    public void leave(Long groupId, Principal connectedUser) {
         Group group = getSpecificGroup(groupId);
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
-        );
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
         UserGroup userGroup = userGroupService.findByUserAndGroup(user, group);
         userGroupService.deleteById(userGroup.getId());
     }
