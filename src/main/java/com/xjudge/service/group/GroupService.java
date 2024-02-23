@@ -5,6 +5,7 @@ import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
 import com.xjudge.model.group.GroupRequest;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface GroupService {
@@ -12,14 +13,14 @@ public interface GroupService {
     // CRUD operations
     List<Group> publicGroups();
     Group getSpecificGroup(Long id);
-    Group create(GroupRequest groupRequest);
+    Group create(GroupRequest groupRequest, Principal connectedUser);
 
     Group update(Long groupId, GroupRequest groupRequest);
     void delete(Long groupId);
 
     // Contest and invitation
     void addContest(Long contestId, Long groupId);
-    void inviteUser(Long groupId, String senderToken, Long receiverId);
+    void inviteUser(Long groupId, Long receiverId, Principal connectedUser);
 
     // Join and leave group
     void join(Long groupId, Long userId);

@@ -38,6 +38,9 @@ public class Group {
     @Enumerated(EnumType.STRING)
     GroupVisibility groupVisibility;
 
+    @OneToOne
+    private User leader;
+
     @OneToMany
     @JoinColumn(name = "group_id")
     List<Contest> groupContests;

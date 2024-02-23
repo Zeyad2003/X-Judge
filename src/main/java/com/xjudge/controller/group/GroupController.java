@@ -1,13 +1,13 @@
-package com.xjudge.controller;
+package com.xjudge.controller.group;
 
-import com.xjudge.config.security.JwtService;
-import com.xjudge.entity.User;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.service.group.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/group")
@@ -27,8 +27,8 @@ public class GroupController {
     }
 
     @PostMapping("/create-group")
-    public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest) {
-        return ResponseEntity.ok(groupService.create(groupRequest));
+    public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest, Principal connectedUser) {
+        return ResponseEntity.ok(groupService.create(groupRequest, connectedUser));
     }
 
     @PutMapping("/{groupId}")
@@ -49,8 +49,8 @@ public class GroupController {
     }
 ////////////////////////////////////////////////////////////////////////////////
     @PostMapping("/invite")
-    public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest) {
-        groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getToken(), invitationRequest.getReceiverId());
+    public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest, Principal connectedUser) {
+        groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getReceiverId(), connectedUser);
         return ResponseEntity.ok("Invitation sent successfully.");
     }
 
