@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,9 +37,6 @@ public class Group {
     @Enumerated(EnumType.STRING)
     GroupVisibility groupVisibility;
 
-    @OneToOne
-    private User leader;
-
     @OneToMany
     @JoinColumn(name = "group_id")
     List<Contest> groupContests;
@@ -49,18 +45,4 @@ public class Group {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private List<UserGroup> users;
 
-    public void addUser(UserGroup user) {
-        if (users == null) {
-            users = new ArrayList<>();
-        }
-        users.add(user);
-    }
-
-    public void deleteUser(UserGroup user) {
-        users.remove(user);
-    }
-
-    public boolean userFound(User user) {
-        return users.stream().anyMatch(userGroup -> userGroup.getUser().equals(user));
-    }
 }

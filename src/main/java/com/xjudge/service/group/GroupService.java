@@ -24,6 +24,7 @@ public interface GroupService {
 
     // Join and leave group
     void join(Long groupId, Long userId);
+    void join(Group group, User user);
     void leave(Long groupId, Long userId);
 
     // Group information
@@ -33,5 +34,6 @@ public interface GroupService {
     // Public or private group
     boolean isPublic(Group group);
     boolean isPrivate(Group group);
-
+    void acceptInvitation(Long invitationId, Principal connectedUser);
+    void declineInvitation(Long invitationId, Principal connectedUser);
 }

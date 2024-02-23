@@ -51,7 +51,6 @@ public class groupServiceImpl implements GroupService {
                 .groupName(groupRequest.getName())
                 .groupDescription(groupRequest.getDescription())
                 .groupVisibility(groupRequest.getVisibility())
-                .leader(leader)
                 .build());
         userGroupService.save(UserGroup.builder()
                 .user(leader)
@@ -109,9 +108,6 @@ public class groupServiceImpl implements GroupService {
                 () -> new SubmitException("Receiver not found", HttpStatus.NOT_FOUND)
         );
         User sender = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
-        if (!group.getLeader().equals(sender)) {
-            throw new SubmitException("You are not the leader of the group", HttpStatus.FORBIDDEN);
-        }
         invitationService.save(Invitation.builder()
                 .receiver(receiver)
                 .sender(sender)
@@ -144,16 +140,25 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
+    public void join(Group group, User user) {
+        // Check if the user is not already in the group
+        if (userGroupService.existsByUserAndGroup(user, group)) {
+            throw new SubmitException("User is already in the group", HttpStatus.ALREADY_REPORTED);
+        }
+        userGroupService.save(UserGroup.builder()
+                .user(user)
+                .group(group)
+                .joinDate(LocalDate.now())
+                .role(UserRole.MEMBER).build());
+    }
+
+    @Override
     public void leave(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(
-                () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
-        );
+        Group group = getSpecificGroup(groupId);
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
         );
-        UserGroup userGroup = userGroupService.findByUserAndGroup(user, group).orElseThrow(
-                () -> new SubmitException("User not found in the group", HttpStatus.NOT_FOUND)
-        );
+        UserGroup userGroup = userGroupService.findByUserAndGroup(user, group);
         userGroupService.deleteById(userGroup.getId());
     }
 
@@ -181,5 +186,35 @@ public class groupServiceImpl implements GroupService {
     @Override
     public boolean isPrivate(Group group) {
         return !isPublic(group);
+    }
+
+    @Override
+    @Transactional
+    public void acceptInvitation(Long invitationId, Principal connectedUser) {
+        Invitation invitation = invitationService.findById(invitationId);
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!invitation.getReceiver().equals(user)) {
+            throw new SubmitException("User is not the receiver of the invitation", HttpStatus.FORBIDDEN);
+        }
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new SubmitException("Invitation is not pending", HttpStatus.FORBIDDEN);
+        }
+        invitation.setStatus(InvitationStatus.ACCEPTED);
+        invitationService.save(invitation);
+        join(invitation.getGroup(), user);
+    }
+
+    @Override
+    public void declineInvitation(Long invitationId, Principal connectedUser) {
+        Invitation invitation = invitationService.findById(invitationId);
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!invitation.getReceiver().equals(user)) {
+            throw new SubmitException("User is not the receiver of the invitation", HttpStatus.FORBIDDEN);
+        }
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new SubmitException("Invitation is not pending", HttpStatus.FORBIDDEN);
+        }
+        invitation.setStatus(InvitationStatus.DECLINED);
+        invitationService.save(invitation);
     }
 }

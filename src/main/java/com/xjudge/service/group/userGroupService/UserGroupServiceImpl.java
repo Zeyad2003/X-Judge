@@ -3,11 +3,11 @@ package com.xjudge.service.group.userGroupService;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
 import com.xjudge.entity.UserGroup;
+import com.xjudge.exception.SubmitException;
 import com.xjudge.repository.UserGroupRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +20,17 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public Optional<UserGroup> findByUserAndGroup(User user, Group group) {
-        return userGroupRepository.findByUserAndGroup(user, group);
+    public UserGroup findByUserAndGroup(User user, Group group) {
+        return userGroupRepository.findByUserAndGroup(user, group).orElseThrow(
+                () -> new SubmitException("User not found in group.", HttpStatus.NOT_FOUND)
+        );
+    }
+
+    @Override
+    public UserGroup findByUserHandleAndGroupId(String userHandle, Long groupId) {
+        return userGroupRepository.findByUserUserHandleAndGroupGroupId(userHandle, groupId).orElseThrow(
+                () -> new SubmitException("User not found in group.", HttpStatus.NOT_FOUND)
+        );
     }
 
     @Override
