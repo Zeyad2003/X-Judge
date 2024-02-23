@@ -1,6 +1,5 @@
 package com.xjudge.service.group;
 
-import com.xjudge.config.security.JwtService;
 import com.xjudge.entity.*;
 import com.xjudge.enums.GroupVisibility;
 import com.xjudge.enums.InvitationStatus;
@@ -8,14 +7,16 @@ import com.xjudge.enums.UserRole;
 import com.xjudge.exception.SubmitException;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.repository.GroupRepository;
-import com.xjudge.repository.InvitationRepository;
-import com.xjudge.repository.UserGroupRepository;
 import com.xjudge.repository.UserRepo;
+import com.xjudge.service.group.userGroupService.UserGroupService;
+import com.xjudge.service.invitiation.InvitationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +27,8 @@ public class groupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
     private final UserRepo userRepository; // Don't user repository, use user service layer
-    private final InvitationRepository invitationRepository; // Don't invitation repository, use invitation service layer
-    private final UserGroupRepository userGroupRepository;
-    private final JwtService jwtService; // ✅
+    private final InvitationService invitationService;
+    private final UserGroupService userGroupService;
 
     @Override
     public List<Group> publicGroups() {
@@ -44,12 +44,21 @@ public class groupServiceImpl implements GroupService {
 
 
     @Override
-    public Group create(GroupRequest groupRequest) {
-        return groupRepository.save(Group.builder()
+    @Transactional
+    public Group create(GroupRequest groupRequest, Principal connectedUser) {
+        User leader = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Group group = groupRepository.save(Group.builder()
                 .groupName(groupRequest.getName())
                 .groupDescription(groupRequest.getDescription())
                 .groupVisibility(groupRequest.getVisibility())
                 .build());
+        userGroupService.save(UserGroup.builder()
+                .user(leader)
+                .group(group)
+                .joinDate(LocalDate.now())
+                .role(UserRole.LEADER)
+                .build());
+        return group;
     }
 
 
@@ -70,7 +79,7 @@ public class groupServiceImpl implements GroupService {
     public void delete(Long groupId) {
         groupRepository.findById(groupId)
                 .ifPresentOrElse(groupRepository::delete,
-                        () -> { throw new SubmitException("Group with ID " + groupId + " not found", HttpStatus.NOT_FOUND); });
+                        () -> { throw new SubmitException("Group not found", HttpStatus.NOT_FOUND); });
     }
 
     @Override
@@ -91,18 +100,15 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    public void inviteUser(Long groupId, String senderToken, Long receiverId) {
+    public void inviteUser(Long groupId, Long receiverId, Principal connectedUser) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
-        );
-        String senderHandle = jwtService.extractByUserHandle(senderToken); //get sender handle from token
-        User sender = userRepository.findUserByUserHandle(senderHandle).orElseThrow(
-                () -> new SubmitException("sender not found", HttpStatus.NOT_FOUND)
         );
         User receiver = userRepository.findById(receiverId).orElseThrow(
                 () -> new SubmitException("Receiver not found", HttpStatus.NOT_FOUND)
         );
-        invitationRepository.save(Invitation.builder()
+        User sender = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        invitationService.save(Invitation.builder()
                 .receiver(receiver)
                 .sender(sender)
                 .group(group)
@@ -112,7 +118,6 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
     public void join(Long groupId, Long userId) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
@@ -120,11 +125,14 @@ public class groupServiceImpl implements GroupService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
         );
+        if (isPrivate(group)) {
+            throw new SubmitException("Group is private", HttpStatus.FORBIDDEN);
+        }
         // Check if the user is not already in the group
-        if (userGroupRepository.existsByUserAndGroup(user, group)) {
+        if (userGroupService.existsByUserAndGroup(user, group)) {
             throw new SubmitException("User is already in the group", HttpStatus.ALREADY_REPORTED);
         }
-        userGroupRepository.save(UserGroup.builder()
+        userGroupService.save(UserGroup.builder()
                 .user(user)
                 .group(group)
                 .joinDate(LocalDate.now())
@@ -132,18 +140,26 @@ public class groupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
+    public void join(Group group, User user) {
+        // Check if the user is not already in the group
+        if (userGroupService.existsByUserAndGroup(user, group)) {
+            throw new SubmitException("User is already in the group", HttpStatus.ALREADY_REPORTED);
+        }
+        userGroupService.save(UserGroup.builder()
+                .user(user)
+                .group(group)
+                .joinDate(LocalDate.now())
+                .role(UserRole.MEMBER).build());
+    }
+
+    @Override
     public void leave(Long groupId, Long userId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(
-                () -> new SubmitException("Group not found", HttpStatus.NOT_FOUND)
-        );
+        Group group = getSpecificGroup(groupId);
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new SubmitException("User not found", HttpStatus.NOT_FOUND)
         );
-        UserGroup userGroup = userGroupRepository.findByUserAndGroup(user, group).orElseThrow(
-                () -> new SubmitException("User not found in the group", HttpStatus.NOT_FOUND)
-        );
-        userGroupRepository.deleteById(userGroup.getId());
+        UserGroup userGroup = userGroupService.findByUserAndGroup(user, group);
+        userGroupService.deleteById(userGroup.getId());
     }
 
     @Override
@@ -170,5 +186,35 @@ public class groupServiceImpl implements GroupService {
     @Override
     public boolean isPrivate(Group group) {
         return !isPublic(group);
+    }
+
+    @Override
+    @Transactional
+    public void acceptInvitation(Long invitationId, Principal connectedUser) {
+        Invitation invitation = invitationService.findById(invitationId);
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!invitation.getReceiver().equals(user)) {
+            throw new SubmitException("User is not the receiver of the invitation", HttpStatus.FORBIDDEN);
+        }
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new SubmitException("Invitation is not pending", HttpStatus.FORBIDDEN);
+        }
+        invitation.setStatus(InvitationStatus.ACCEPTED);
+        invitationService.save(invitation);
+        join(invitation.getGroup(), user);
+    }
+
+    @Override
+    public void declineInvitation(Long invitationId, Principal connectedUser) {
+        Invitation invitation = invitationService.findById(invitationId);
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        if (!invitation.getReceiver().equals(user)) {
+            throw new SubmitException("User is not the receiver of the invitation", HttpStatus.FORBIDDEN);
+        }
+        if (invitation.getStatus() != InvitationStatus.PENDING) {
+            throw new SubmitException("Invitation is not pending", HttpStatus.FORBIDDEN);
+        }
+        invitation.setStatus(InvitationStatus.DECLINED);
+        invitationService.save(invitation);
     }
 }

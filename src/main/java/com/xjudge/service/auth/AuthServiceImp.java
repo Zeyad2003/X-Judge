@@ -166,11 +166,15 @@ public class AuthServiceImp implements AuthService{
         VerificationToken verificationToken = verificationTokenService.findByToken(token);
 
         if (verificationToken.getVerifiedAt() != null) {
-            throw new AuthException("Token already verified", HttpStatus.BAD_REQUEST, new HashMap<>());
+            redirectAttributes.addFlashAttribute("emailVerificationError", "Token already verified");
+            redirectToLoginPage(response);
+            return "Redirected to login page with error...";
         }
 
         if (verificationToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-            throw new AuthException("Token expired", HttpStatus.BAD_REQUEST, new HashMap<>());
+            redirectAttributes.addFlashAttribute("emailVerificationError", "Token expired");
+            redirectToLoginPage(response);
+            return "Redirected to login page with error...";
         }
 
         User user = verificationToken.getUser();
@@ -180,12 +184,8 @@ public class AuthServiceImp implements AuthService{
         verificationToken.setVerifiedAt(LocalDateTime.now());
         verificationTokenService.save(verificationToken);
 
-        redirectAttributes.addFlashAttribute("emailVerificationMessage", "Email verification successful. You can now login.");
-        try {
-            response.sendRedirect("http://localhost:4200/login");
-        } catch (IOException e) {
-            throw new AuthException("Redirect failed", HttpStatus.INTERNAL_SERVER_ERROR, new HashMap<>());
-        }
+        redirectAttributes.addFlashAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
+        redirectToLoginPage(response);
         return "Redirected to login page...";
     }
 
@@ -236,7 +236,7 @@ public class AuthServiceImp implements AuthService{
                 + "<div style='padding: 20px;'>"
                 + "<p>Dear " + user.getUserFirstName() + ",</p>"
                 + "<p>We received a request to reset your password. Please click the link below to set a new password:</p>"
-                + "<p><a href='http://localhost:4200/resetPasswordtoken=" + token + "'>Reset Password</a></p>"
+                + "<p><a href='http://localhost:4200/resetPassword?token=" + token + "'>Reset Password</a></p>"
                 + "<p>If you did not request a password reset, please ignore this email.</p>"
                 + "<p>Best Regards,</p>"
                 + "<p>The xJudge Team</p>"
@@ -292,5 +292,13 @@ public class AuthServiceImp implements AuthService{
             }
         }
         return errors;
+    }
+
+    private void redirectToLoginPage(HttpServletResponse response) {
+        try {
+            response.sendRedirect("http://localhost:4200/login");
+        } catch (IOException e) {
+            throw new AuthException("Redirect failed", HttpStatus.INTERNAL_SERVER_ERROR, new HashMap<>());
+        }
     }
 }
