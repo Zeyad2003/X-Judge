@@ -1,16 +1,15 @@
 package com.xjudge.service.auth;
 
-import com.xjudge.entity.PasswordResetToken;
+import com.xjudge.entity.Token;
 import com.xjudge.entity.User;
-import com.xjudge.entity.VerificationToken;
+import com.xjudge.enums.TokenType;
 import com.xjudge.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
-import com.xjudge.service.auth.resetPasswordToken.ResetPasswordService;
-import com.xjudge.service.auth.verificationToken.VerificationTokenService;
 import com.xjudge.service.email.EmailService;
+import com.xjudge.service.token.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,8 +41,7 @@ public class AuthServiceImp implements AuthService{
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
     EmailService emailService;
-    VerificationTokenService verificationTokenService;
-    ResetPasswordService resetPasswordService;
+    TokenService tokenService;
 
     @Autowired
     public AuthServiceImp(UserRepo userRepo,
@@ -51,15 +49,13 @@ public class AuthServiceImp implements AuthService{
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
                           EmailService emailService,
-                          VerificationTokenService verificationTokenService,
-                          ResetPasswordService resetPasswordService) {
+                          TokenService tokenService) {
         this.userRepo = userRepo;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
-        this.verificationTokenService = verificationTokenService;
-        this.resetPasswordService = resetPasswordService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -114,9 +110,10 @@ public class AuthServiceImp implements AuthService{
 
         emailService.send(userDetails.getUserEmail() , "Email Verification" , emailContent);
 
-        verificationTokenService.save(VerificationToken.builder()
+        tokenService.save(Token.builder()
                 .token(verificationToken)
                 .user(userDetails)
+                .tokenType(TokenType.EMAIL_VERIFICATION)
                 .expiredAt(LocalDateTime.now().plusMinutes(15))
                 .verifiedAt(null)
                 .build());
@@ -163,7 +160,14 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public String verifyRegistrationToken(String token, HttpServletResponse response, RedirectAttributes redirectAttributes) {
-        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+        //VerificationToken verificationToken = verificationTokenService.findByToken(token);
+        Token verificationToken = tokenService.findByToken(token);
+
+        if (verificationToken.getTokenType() != TokenType.EMAIL_VERIFICATION) {
+            redirectAttributes.addFlashAttribute("emailVerificationError", "Invalid token");
+            redirectToLoginPage(response);
+            return "Redirected to login page with error...";
+        }
 
         if (verificationToken.getVerifiedAt() != null) {
             redirectAttributes.addFlashAttribute("emailVerificationError", "Token already verified");
@@ -182,7 +186,7 @@ public class AuthServiceImp implements AuthService{
         userRepo.save(user);
 
         verificationToken.setVerifiedAt(LocalDateTime.now());
-        verificationTokenService.save(verificationToken);
+        tokenService.save(verificationToken);
 
         redirectAttributes.addFlashAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
         redirectToLoginPage(response);
@@ -222,9 +226,10 @@ public class AuthServiceImp implements AuthService{
         );
 
         String token = UUID.randomUUID().toString() + UUID.randomUUID();
-        resetPasswordService.save(PasswordResetToken.builder()
+        tokenService.save(Token.builder()
                 .token(token)
                 .user(user)
+                .tokenType(TokenType.PASSWORD_RESET)
                 .expiredAt(LocalDateTime.now().plusMinutes(15))
                 .verifiedAt(null)
                 .build());
@@ -255,7 +260,11 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        PasswordResetToken passwordResetToken = resetPasswordService.findByToken(resetPasswordRequest.getToken());
+        Token passwordResetToken = tokenService.findByToken(resetPasswordRequest.getToken());
+
+        if (passwordResetToken.getTokenType() != TokenType.PASSWORD_RESET) {
+            throw new AuthException("Invalid token", HttpStatus.BAD_REQUEST, new HashMap<>());
+        }
 
         if (passwordResetToken.getVerifiedAt() != null) {
             throw new AuthException("Token already used", HttpStatus.BAD_REQUEST, new HashMap<>());
@@ -275,7 +284,7 @@ public class AuthServiceImp implements AuthService{
         userRepo.save(user);
 
         passwordResetToken.setVerifiedAt(LocalDateTime.now());
-        resetPasswordService.save(passwordResetToken);
+        tokenService.save(passwordResetToken);
 
         return ResetPasswordResponse
                 .builder()

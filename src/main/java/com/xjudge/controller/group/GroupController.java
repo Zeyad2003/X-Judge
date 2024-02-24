@@ -72,13 +72,13 @@ public class GroupController {
         return ResponseEntity.ok("Invitation declined successfully.");
     }
 
-    @PostMapping("/{groupId}/join")
+    @PostMapping("/{groupId}/join") // request private group join
     public ResponseEntity<?> joinUserGroup(@PathVariable Long groupId, Principal connectedUser) {
         groupService.join(groupId, connectedUser);
         return ResponseEntity.ok("User joined successfully.");
     }
 
-    @PostMapping("/{groupId}/leave")
+    @PostMapping("/{groupId}/leave") // TODO: security
     public ResponseEntity<?> leaveUserGroup(@PathVariable Long groupId, Principal connectedUser) {
         groupService.leave(groupId, connectedUser);
         return ResponseEntity.ok("User left successfully.");
