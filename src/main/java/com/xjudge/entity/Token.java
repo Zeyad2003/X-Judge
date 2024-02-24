@@ -1,5 +1,6 @@
 package com.xjudge.entity;
 
+import com.xjudge.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +12,9 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class VerificationToken {
+@NoArgsConstructor
+public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +22,13 @@ public class VerificationToken {
 
     private String token;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
+
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
     private LocalDateTime expiredAt;
-
     private LocalDateTime verifiedAt;
 }
