@@ -78,7 +78,7 @@ public class GroupController {
         return ResponseEntity.ok("User joined successfully.");
     }
 
-    @PostMapping("/{groupId}/leave") // TODO: security
+    @PostMapping("/{groupId}/leave") // security handled in user group service layer ✅
     public ResponseEntity<?> leaveUserGroup(@PathVariable Long groupId, Principal connectedUser) {
         groupService.leave(groupId, connectedUser);
         return ResponseEntity.ok("User left successfully.");
