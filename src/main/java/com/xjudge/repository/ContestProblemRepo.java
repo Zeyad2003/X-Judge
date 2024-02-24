@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface ContestProblemRepo extends JpaRepository<ContestProblem , ContestProblemKey> {
     @Transactional
     void deleteAllByContestId(Long contestId);
+
+    ContestProblem findByProblemHashtag(String problemHashtag);
 }

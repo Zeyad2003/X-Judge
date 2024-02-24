@@ -117,6 +117,14 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
+    public ProblemModel getContestProblem(Long id, String problemHashtag) {
+        return problemMapper.toModel(
+                contestProblemRepo.findByProblemHashtag(problemHashtag).getProblem(),
+                problemHashtag
+        );
+    }
+
+    @Override
     public SubmissionModel submitInContest(Long id, SubmissionInfoModel info) {
         Contest contest = getContest(id);
         Submission submission = problemService.submit(info);

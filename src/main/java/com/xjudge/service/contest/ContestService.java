@@ -24,6 +24,8 @@ public interface ContestService {
 
     List<ProblemModel> getContestProblems(Long id);
 
+    ProblemModel getContestProblem(Long id, String problemHashtag);
+
     SubmissionModel submitInContest(Long id, SubmissionInfoModel info);
 
     List<SubmissionModel> getContestSubmissions(Long id);
