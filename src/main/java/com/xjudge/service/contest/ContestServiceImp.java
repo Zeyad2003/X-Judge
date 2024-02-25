@@ -87,9 +87,17 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public Contest updateContest(Long id, ContestModificationModel updatingModel , Authentication authentication) {
-        if (!contestRepo.existsById(id)) {
+        Optional<Contest> contestOptional = contestRepo.findById(id);
+
+        if(contestOptional.isEmpty()){
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
+
+        Contest contest = contestMapper.toContest(updatingModel);
+        contest.setId(id);
+        contest.setUsers(contestOptional.get().getUsers());
+        contest.setProblemSet(new HashSet<>());
+        contest.setBeginTime(contestOptional.get().getBeginTime());
 
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
@@ -97,20 +105,20 @@ public class ContestServiceImp implements ContestService {
 
         User user = userService.getUserByHandle(authentication.getName());
 
-        Contest contest = contestMapper.toContest(updatingModel);
-        contest.setId(id);
-
-        contestRepo.save(contest);
 
         //TODO: handle the group relation
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
         handleContestUserRelation(user, contest);
 
-        return contest;
+
+        return contestRepo.save(contest);
     }
 
     @Override
     public void deleteContest(Long id) {
+        if(contestRepo.existsById(id)){
+            throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+        }
         contestRepo.deleteById(id);
     }
 

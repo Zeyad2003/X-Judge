@@ -4,6 +4,7 @@ import com.xjudge.entity.User;
 import com.xjudge.model.auth.AuthRequest;
 import com.xjudge.model.auth.AuthResponse;
 import com.xjudge.model.auth.UserRegisterRequest;
+import com.xjudge.model.enums.UserRole;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class AuthServiceImp implements AuthService{
                 .photoUrl(registerRequest.getUserPhotoUrl())
                 .registrationDate(LocalDate.now())
                 .school(registerRequest.getUserSchool())
+                .role(UserRole.USER)
                 .build();
 
         userRepo.save(userDetails);
