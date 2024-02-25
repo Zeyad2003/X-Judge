@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender emailSender;
-    String XJUDGE_EMAIL = "no-reply@xjudge.com";
+    String XJUDGE_EMAIL = "xjudgehelp@gmail.com";
 
     @Override
     @Async("emailExecutor")
