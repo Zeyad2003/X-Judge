@@ -12,7 +12,9 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "contest_problem")
+@Table(name = "contest_problem", uniqueConstraints = {
+        @UniqueConstraint(name = "contest_hashtag_unique", columnNames = {"contest_id", "problem_hashtag"})
+})
 public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     @EmbeddedId
