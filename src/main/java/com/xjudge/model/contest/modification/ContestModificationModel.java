@@ -17,9 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContestModificationModel {
-    @NotNull(message = "The user handle is required to create a contest.")
-    @NotBlank(message = "UserHandle can't be empty.")
-    private String userHandle;
 
     @NotNull(message = "The contest title is required to create a contest.")
     @NotBlank(message = "Contest title can't be empty.")
@@ -41,7 +38,7 @@ public class ContestModificationModel {
 
     private String description;
 
-    @NotNull(message = "The problemset can't be null.")
+    @NotNull(message = "The problem Set can't be null.")
     @Size(min = 1, message = "At least one problem is required to create a contest.")
     private List<ContestProblemset> problems;
 

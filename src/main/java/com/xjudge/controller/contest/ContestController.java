@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,11 +39,11 @@ public class ContestController {
     }
 
     @PostMapping
-    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel , BindingResult result) {
+    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel , BindingResult result , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR, ContestController.class.getName() , HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(contestService.createContest(creationModel), HttpStatus.OK);
+        return new ResponseEntity<>(contestService.createContest(creationModel , authentication), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -52,11 +53,12 @@ public class ContestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id
-            , @Valid @RequestBody ContestModificationModel model, BindingResult result) {
+            , @Valid @RequestBody ContestModificationModel model, BindingResult result
+        , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(contestService.updateContest(id, model), HttpStatus.OK);
+        return new ResponseEntity<>(contestService.updateContest(id, model , authentication), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
