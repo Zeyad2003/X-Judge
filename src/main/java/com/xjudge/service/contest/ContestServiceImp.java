@@ -187,7 +187,6 @@ public class ContestServiceImp implements ContestService {
                     .build();
 
             contest.getProblemSet().add(contestProblem);
-//            contestProblemRepo.save(contestProblem);
         }
     }
 
