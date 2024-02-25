@@ -8,17 +8,18 @@ import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 public interface ContestService {
     Page<Contest> getAllContests(Pageable pageable);
 
-    Contest createContest(ContestCreationModel creationModel);
+    Contest createContest(ContestCreationModel creationModel , Authentication authentication);
 
     Contest getContest(Long id);
 
-    Contest updateContest(Long id, ContestModificationModel model);
+    Contest updateContest(Long id, ContestModificationModel model , Authentication authentication);
 
     void deleteContest(Long id);
 

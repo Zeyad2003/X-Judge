@@ -4,6 +4,7 @@ import com.xjudge.entity.*;
 import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
+import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.mapper.ContestMapper;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.mapper.SubmissionMapper;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -48,17 +50,25 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public Contest createContest(@NotNull ContestCreationModel creationModel) {
-        User user = userService.getUserByHandle(creationModel.getUserHandle());
+    public Contest createContest(@NotNull ContestCreationModel creationModel , Authentication authentication) {
+        if(authentication.getName() == null) {
+            throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userService.getUserByHandle(authentication.getName());
 
         Contest contest = contestMapper.toContest(creationModel);
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
+        contest.setUsers(new HashSet<>());
+        contest.setProblemSet(new HashSet<>());
 
-        contestRepo.save(contest);
+
 
         //TODO: handle the group relation
         handleContestProblemSetRelation(creationModel.getProblems(), contest);
         handleContestUserRelation(user, contest);
+
+        contestRepo.save(contest);
 
         return contest;
     }
@@ -76,12 +86,16 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public Contest updateContest(Long id, ContestModificationModel updatingModel) {
+    public Contest updateContest(Long id, ContestModificationModel updatingModel , Authentication authentication) {
         if (!contestRepo.existsById(id)) {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
-        User user = userService.getUserByHandle(updatingModel.getUserHandle());
+        if(authentication.getName() == null) {
+            throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userService.getUserByHandle(authentication.getName());
 
         Contest contest = contestMapper.toContest(updatingModel);
         contest.setId(id);
@@ -164,7 +178,8 @@ public class ContestServiceImp implements ContestService {
                     .problemHashtag(problemaya.problemHashtag())
                     .build();
 
-            contestProblemRepo.save(contestProblem);
+            contest.getProblemSet().add(contestProblem);
+//            contestProblemRepo.save(contestProblem);
         }
     }
 
@@ -175,9 +190,12 @@ public class ContestServiceImp implements ContestService {
                 .contest(contest)
                 .user(user)
                 .isOwner(true)
+                .isFavorite(false)
+                .isParticipant(false)
                 .build();
 
-        userContestRepo.save(userContest);
+        contest.getUsers().add(userContest);
+//        userContestRepo.save(userContest);
     }
 
 }

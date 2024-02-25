@@ -56,10 +56,10 @@ public class Contest extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
-    private Set<UserContest> users = new HashSet<>();
+    private Set<UserContest> users ;
 
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
-    Set<ContestProblem> problemSet = new HashSet<>();
+    Set<ContestProblem> problemSet;
 
 }
