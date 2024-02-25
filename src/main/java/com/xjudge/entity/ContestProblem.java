@@ -38,7 +38,6 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     private String problemCode;
 
-    @Column(unique = true)
     private String problemHashtag;
 
 }
