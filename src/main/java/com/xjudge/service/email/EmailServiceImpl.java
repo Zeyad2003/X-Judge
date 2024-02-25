@@ -16,7 +16,7 @@ public class EmailServiceImpl implements EmailService {
     String XJUDGE_EMAIL = "xjudgehelp@gmail.com";
 
     @Override
-    @Async("emailExecutor")
+    @Async
     public void send(String to, String subject, String body) {
         try {
             MimeMessage message = emailSender.createMimeMessage();
