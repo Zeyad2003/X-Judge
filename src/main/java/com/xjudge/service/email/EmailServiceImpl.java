@@ -4,7 +4,6 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 
@@ -16,7 +15,6 @@ public class EmailServiceImpl implements EmailService {
     String XJUDGE_EMAIL = "xjudgehelp@gmail.com";
 
     @Override
-    @Async
     public void send(String to, String subject, String body) {
         try {
             MimeMessage message = emailSender.createMimeMessage();
