@@ -93,7 +93,7 @@ public class AuthServiceImp implements AuthService{
 
         userRepo.save(userDetails);
 
-        String verificationToken = UUID.randomUUID().toString() + UUID.randomUUID();
+        String verificationToken = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
                 + "<div style='text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 1px solid #ddd;'>"
                 + "<h1>Welcome to xJudge</h1>"
@@ -225,7 +225,7 @@ public class AuthServiceImp implements AuthService{
                 () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
         );
 
-        String token = UUID.randomUUID().toString() + UUID.randomUUID();
+        String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
                 .token(token)
                 .user(user)
