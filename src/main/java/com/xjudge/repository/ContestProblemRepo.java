@@ -12,4 +12,6 @@ public interface ContestProblemRepo extends JpaRepository<ContestProblem , Conte
     void deleteAllByContestId(Long contestId);
 
     ContestProblem findByProblemHashtag(String problemHashtag);
+
+    Boolean existsByProblemHashtag(String problemHashtag);
 }

@@ -127,11 +127,7 @@ public class ContestServiceImp implements ContestService {
         Contest contest = getContest(id);
 
         List<ProblemModel> problems = new ArrayList<>(contest.getProblemSet().stream()
-                .map(contestProblem -> {
-                    Problem problem = contestProblem.getProblem();
-                    String problemHashtag = contestProblem.getProblemHashtag();
-                    return problemMapper.toModel(problem, problemHashtag);
-                }).toList());
+                .map(contestProblem -> getContestProblem(id, contestProblem.getProblemHashtag())).toList());
 
         problems.sort(Comparator.comparing(ProblemModel::problemHashtag));
 
@@ -140,10 +136,24 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public ProblemModel getContestProblem(Long id, String problemHashtag) {
-        return problemMapper.toModel(
+        if (!contestProblemRepo.existsByProblemHashtag(problemHashtag))
+            throw new XJudgeException("There's no problem with this hashtag = " + problemHashtag, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+
+        Contest contest = getContest(id);
+
+        ProblemModel problemModel = problemMapper.toModel(
                 contestProblemRepo.findByProblemHashtag(problemHashtag).getProblem(),
                 problemHashtag
         );
+
+        handleSpoilerData(problemModel, contest);
+
+        return problemModel;
+    }
+
+    //TODO: implement this method
+    private void handleSpoilerData(ProblemModel problemModel, Contest contest) {
+        // if contest still running, remove
     }
 
     @Override
