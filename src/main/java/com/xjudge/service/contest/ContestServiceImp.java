@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -183,7 +184,12 @@ public class ContestServiceImp implements ContestService {
 
 
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
+        if(!checkIfProblemHashtagDuplicated(problemSet)){
+            throw new XJudgeException("problemHashtag should not be duplicated" , ContestServiceImp.class.getName(), HttpStatus.BAD_REQUEST);
+        }
+
         contestProblemRepo.deleteAllByContestId(contest.getId());
+
         for (ContestProblemset problemaya : problemSet) {
             Problem problem = problemService.getProblemByCodeAndSource(problemaya.problemCode(), problemaya.ojType().name());
 
@@ -215,6 +221,13 @@ public class ContestServiceImp implements ContestService {
                 .build();
 
         contest.getUsers().add(userContest);
+    }
+
+    private boolean checkIfProblemHashtagDuplicated(List<ContestProblemset> problemset){
+        return problemset.stream()
+                .map(ContestProblemset::problemHashtag)
+                .collect(Collectors.toSet())
+                .size() == problemset.size();
     }
 
 }
