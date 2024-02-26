@@ -68,7 +68,10 @@ public class ContestController {
     }
 
     @PostMapping("/{id}/submit")
-    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info) {
+    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info , BindingResult result) {
+        if(result.hasErrors()){
+            throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
+        }
         SubmissionModel submission = contestService.submitInContest(id, info);
         return new ResponseEntity<>(submission, HttpStatus.OK);
     }

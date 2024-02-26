@@ -14,4 +14,5 @@ public interface ContestProblemRepo extends JpaRepository<ContestProblem , Conte
     ContestProblem findContestProblemByProblemHashtagAndContestId(String problemHashtag , Long contestId);
 
     Boolean existsByProblemHashtagAndContestId(String problemHashtag , Long contestId);
+    Boolean existsByProblemCodeAndContestId(String problemCode , Long contestId);
 }
