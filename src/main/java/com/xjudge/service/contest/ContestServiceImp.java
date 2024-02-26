@@ -36,7 +36,6 @@ public class ContestServiceImp implements ContestService {
 
     private final ContestRepo contestRepo;
     private final ContestProblemRepo contestProblemRepo;
-    private final UserContestRepo userContestRepo;
     private final ContestMapper contestMapper;
     private final ProblemMapper problemMapper;
     private final UserService userService;
@@ -116,7 +115,7 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public void deleteContest(Long id) {
-        if(contestRepo.existsById(id)){
+        if(!contestRepo.existsById(id)){
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
         contestRepo.deleteById(id);
@@ -126,8 +125,11 @@ public class ContestServiceImp implements ContestService {
     public List<ProblemModel> getContestProblems(Long id) {
         Contest contest = getContest(id);
 
-        List<ProblemModel> problems = new ArrayList<>(contest.getProblemSet().stream()
-                .map(contestProblem -> getContestProblem(id, contestProblem.getProblemHashtag())).toList());
+        List<ProblemModel> problems = new ArrayList<>(
+                contest.getProblemSet()
+                        .stream()
+                        .map(contestProblem -> problemMapper.toModel(contestProblem.getProblem() , contestProblem.getProblemHashtag()))
+                        .toList());
 
         problems.sort(Comparator.comparing(ProblemModel::problemHashtag));
 
@@ -136,7 +138,7 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public ProblemModel getContestProblem(Long id, String problemHashtag) {
-        if (!contestProblemRepo.existsByProblemHashtag(problemHashtag))
+        if (!contestProblemRepo.existsByProblemHashtagAndContestId(problemHashtag , id))
             throw new XJudgeException("There's no problem with this hashtag = " + problemHashtag, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
 
         Contest contest = getContest(id);
@@ -212,7 +214,6 @@ public class ContestServiceImp implements ContestService {
                 .build();
 
         contest.getUsers().add(userContest);
-//        userContestRepo.save(userContest);
     }
 
 }
