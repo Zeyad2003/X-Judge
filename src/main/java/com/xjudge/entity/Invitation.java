@@ -1,6 +1,6 @@
 package com.xjudge.entity;
 
-import com.xjudge.enums.InvitationStatus;
+import com.xjudge.model.enums.InvitationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -2,10 +2,12 @@ package com.xjudge.service.auth;
 
 import com.xjudge.entity.Token;
 import com.xjudge.entity.User;
-import com.xjudge.enums.TokenType;
-import com.xjudge.enums.UserRole;
+
+import com.xjudge.model.enums.TokenType;
+import com.xjudge.model.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
+
 import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
 import com.xjudge.service.email.EmailService;
@@ -65,12 +67,12 @@ public class AuthServiceImp implements AuthService{
         Map<String, String> errors = checkErrors(bindingResult);
 
         // Check if user with the same handle exists
-        if (userRepo.existsByUserHandle(registerRequest.getUserHandle())) {
+        if (userRepo.existsByHandle(registerRequest.getUserHandle())) {
             errors.put("userHandle" , "User with this handle already exists");
         }
 
         // Check if user with the same email exists
-        if (userRepo.existsByUserEmail(registerRequest.getUserEmail())) {
+        if (userRepo.existsByEmail(registerRequest.getUserEmail())) {
             errors.put("userEmail" , "User with this email already exists");
         }
 
@@ -79,14 +81,14 @@ public class AuthServiceImp implements AuthService{
         }
 
         User userDetails = User.builder()
-                .userHandle(registerRequest.getUserHandle())
-                .userPassword(passwordEncoder.encode(registerRequest.getUserPassword()))
-                .userEmail(registerRequest.getUserEmail())
-                .userFirstName(registerRequest.getUserFirstName())
-                .userLastName(registerRequest.getUserLastName())
-                .userPhotoUrl(registerRequest.getUserPhotoUrl())
-                .userRegistrationDate(LocalDate.now())
-                .userSchool(registerRequest.getUserSchool())
+                .handle(registerRequest.getUserHandle())
+                .password(passwordEncoder.encode(registerRequest.getUserPassword()))
+                .email(registerRequest.getUserEmail())
+                .firstName(registerRequest.getUserFirstName())
+                .lastName(registerRequest.getUserLastName())
+                .photoUrl(registerRequest.getUserPhotoUrl())
+                .registrationDate(LocalDate.now())
+                .school(registerRequest.getUserSchool())
                 .role(UserRole.USER)
                 .isVerified(false)
                 .build();
@@ -99,7 +101,7 @@ public class AuthServiceImp implements AuthService{
                 + "<h1>Welcome to xJudge</h1>"
                 + "</div>"
                 + "<div style='padding: 20px;'>"
-                + "<p>Dear " + userDetails.getUserFirstName() + ",</p>"
+                + "<p>Dear " + userDetails.getUsername() + ",</p>"
                 + "<p>Thank you for registering at xJudge. Please click the link below to verify your email:</p>"
                 + "<p><a href='http://localhost:7070/auth/verify-email?token=" + verificationToken + "'>Verify Email</a></p>"
                 + "<p>If you did not register at xJudge, please ignore this email.</p>"
@@ -108,7 +110,7 @@ public class AuthServiceImp implements AuthService{
                 + "</div>"
                 + "</div>";
 
-        emailService.send(userDetails.getUserEmail() , "Email Verification" , emailContent);
+        emailService.send(userDetails.getEmail() , "Email Verification" , emailContent);
 
         tokenService.save(Token.builder()
                 .token(verificationToken)
@@ -143,7 +145,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         User user = userRepo
-                .findUserByUserHandle(loginRequest.getUserHandle())
+                .findByHandle(loginRequest.getUserHandle())
                 .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
 
         if (!user.isVerified()) {
@@ -197,7 +199,7 @@ public class AuthServiceImp implements AuthService{
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
         User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getUserPassword())) {
+        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new AuthException("Old password is incorrect", HttpStatus.BAD_REQUEST, new HashMap<>());
         }
 
@@ -209,8 +211,9 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("New password cannot be the same as old password", HttpStatus.BAD_REQUEST, new HashMap<>());
         }
 
-        user.setUserPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepo.save(user);
+
         return ChangePasswordResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
@@ -221,7 +224,7 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userRepo.findUserByUserEmail(forgotPasswordRequest.getEmail()).orElseThrow(
+        User user = userRepo.findUserByEmail(forgotPasswordRequest.getEmail()).orElseThrow(
                 () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
         );
 
@@ -239,7 +242,7 @@ public class AuthServiceImp implements AuthService{
                 + "<h1>Password Reset Request</h1>"
                 + "</div>"
                 + "<div style='padding: 20px;'>"
-                + "<p>Dear " + user.getUserFirstName() + ",</p>"
+                + "<p>Dear " + user.getUsername() + ",</p>"
                 + "<p>We received a request to reset your password. Please click the link below to set a new password:</p>"
                 + "<p><a href='http://localhost:4200/resetPassword?token=" + token + "'>Reset Password</a></p>"
                 + "<p>If you did not request a password reset, please ignore this email.</p>"
@@ -248,7 +251,7 @@ public class AuthServiceImp implements AuthService{
                 + "</div>"
                 + "</div>";
 
-        emailService.send(user.getUserEmail(), "Reset Password", emailContent);
+        emailService.send(user.getEmail(), "Reset Password", emailContent);
 
         return ForgotPasswordResponse
                 .builder()
@@ -280,7 +283,7 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Passwords do not match", HttpStatus.BAD_REQUEST, new HashMap<>());
         }
 
-        user.setUserPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
+        user.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
         userRepo.save(user);
 
         passwordResetToken.setVerifiedAt(LocalDateTime.now());

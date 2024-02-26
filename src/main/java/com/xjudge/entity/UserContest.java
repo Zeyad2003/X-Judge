@@ -1,30 +1,47 @@
 package com.xjudge.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xjudge.entity.key.UserContestKey;
+import jakarta.persistence.*;
+import lombok.*;
 
-/**
- * <strong>UserContest Entity</strong>
- * <p>Represents a user's data in a contest. {Favorite}</p>
- */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_contest")
-public class UserContest {
-    @Id
-    @Column(name = "user_id")
-    private Long userId;
+public class UserContest extends BaseEntity<UserContestKey> {
 
-    @Id
-    @Column(name = "contest_id")
-    private Long contestId;
+    @EmbeddedId
+    UserContestKey id;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "contest_id")
+    @MapsId("contestId")
+    @ToString.Exclude
+    @JsonIgnore
+    private Contest contest;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_id")
+    @MapsId("userId")
+    @ToString.Exclude
+    @JsonIgnore
+    private User user;
 
     private Boolean isFavorite;
+
+    private Boolean isOwner = false;
+
+    private Boolean isParticipant;
+
+    private Integer userContestPenalty;
+
+    private Integer userContestRank;
+
+    private Integer userContestScore;
+
 }

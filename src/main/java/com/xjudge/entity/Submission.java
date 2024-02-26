@@ -1,41 +1,64 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 
-/**
- * <strong>Submission Entity</strong>
- * <p>Submission entity is used to store all submission details</p>
- */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="submission")
-public class Submission {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Submission extends BaseEntity<Long> {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long submissionId;
+    private Long id;
 
-    private String submissionUserHandle;
+    private String remoteRunId;
 
-    private String submissionProblemId;
+    private OnlineJudgeType ojType;
 
-    @Column(columnDefinition = "TEXT")
-    private String submissionCode;
+    @Column(columnDefinition = "LONGTEXT")
+    @Size(min = 20, max = 65535)
+    private String solution;
 
-    private String submissionLanguage;
+    private String language;
 
-    private Instant submissionTime;
+    private Instant submitTime;
 
-    private String submissionVerdict;
+    private String memoryUsage;
 
-    private BigDecimal submissionMemoryUsage;
+    private String timeUsage;
 
-    private BigDecimal submissionTimeUsage;
+    private String verdict;
+
+    private Boolean isOpen;
+
+    private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contest_id")
+    @ToString.Exclude
+    private Contest contest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "problem_id", nullable = false)
+    @ToString.Exclude
+    private Problem problem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
+
 }

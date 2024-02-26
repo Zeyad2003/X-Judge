@@ -1,74 +1,65 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.xjudge.util.JsonDataConverter;
+import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Map;
 
-/**
- * <strong>Problem Entity</strong>
- * <p>Problem entity is used to store all problem details</p>
- */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "problem")
-public class Problem {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Problem extends BaseEntity<Long> {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long problemId;
+    private Long id;
 
     private String problemCode;
 
-    private int problemRate;
-
-    private String problemTitle;
-
-    private String inputFile;
-
-    private String outputFile;
+    private String title;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemStatement;
+    private String statement;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemInput;
+    private String input;
 
     @Column(columnDefinition = "LONGTEXT")
     @Lob
-    private String problemOutput;
+    private String output;
 
-    private String problemSource;
+    @Enumerated(EnumType.STRING)
+    private OnlineJudgeType source;
 
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private String problemNote;
+    private String timeLimit;
 
-    private String problemTimeLimit;
+    private String memoryLimit;
 
-    private String problemMemoryLimit;
+    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY)
+    @ToString.Exclude
+    Set<Submission> submissions = new HashSet<>();
 
-    private String problemTutorial;
+    @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<ContestProblem> contests = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    List<Sample> problemSamples;
+    @Convert(converter = JsonDataConverter.class)
+    @Column(columnDefinition = "json")
+    private Map<String, Object> extraInfo = new HashMap<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "problem_tags",
-            joinColumns = @JoinColumn(name = "problem_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private List<Tag> tags;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "problem_id")
-    List<Submission> problemSubmission;
-  
 }

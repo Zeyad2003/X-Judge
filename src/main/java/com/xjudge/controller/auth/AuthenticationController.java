@@ -4,7 +4,9 @@ import com.xjudge.model.auth.*;
 import com.xjudge.service.auth.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,14 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthenticationController {
-    AuthService authService;
-
-    @Autowired
-    public AuthenticationController(AuthService authService){
-        this.authService = authService;
-    }
+    private final AuthService authService;
 
     @PostMapping("/register")
     ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){

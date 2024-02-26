@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
     Optional<UserGroup> findByUserAndGroup(User user, Group group);
     boolean existsByUserAndGroup(User user, Group group);
-    Optional<UserGroup> findByUserUserHandleAndGroupGroupId(String userHandle, Long groupId);
+    Optional<UserGroup> findByUserHandleAndGroupId(String userHandle, Long groupId);
+
 }

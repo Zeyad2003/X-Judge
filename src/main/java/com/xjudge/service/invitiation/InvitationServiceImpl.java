@@ -1,8 +1,9 @@
 package com.xjudge.service.invitiation;
 
 import com.xjudge.entity.Invitation;
-import com.xjudge.exception.SubmitException;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.repository.InvitationRepository;
+import com.xjudge.service.group.groupServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public Invitation findById(Long id) {
         return invitationRepository.findById(id).orElseThrow(
-                () -> new SubmitException("Invitation not found", HttpStatus.NOT_FOUND)
+                () -> new XJudgeException("Invitation not found", groupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
     }
 }

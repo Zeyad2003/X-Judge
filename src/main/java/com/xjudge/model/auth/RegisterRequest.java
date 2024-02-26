@@ -1,6 +1,6 @@
 package com.xjudge.model.auth;
 
-import com.xjudge.enums.UserRole;
+import com.xjudge.model.enums.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

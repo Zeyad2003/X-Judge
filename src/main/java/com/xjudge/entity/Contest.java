@@ -1,63 +1,65 @@
 package com.xjudge.entity;
 
-
-import com.xjudge.enums.ContestType;
-import com.xjudge.enums.ContestVisibility;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+import org.hibernate.validator.constraints.time.DurationMax;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
+import java.util.*;
 
-/**
- * <strong>Contest Entity</strong>
- * <p>Represents a contest with a list of problems and submissions.</p>
- */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="contest")
-public class Contest {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public class Contest extends BaseEntity<Long> {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long contestId;
+    private Long id;
 
-    private String contestTitle;
+    @NotBlank(message = "Contest title can't be empty.")
+    @Column(nullable = false)
+    private String title;
 
-    private Instant contestBeginTime;
+    @Future(message = "The contest begin time must be in the future.")
+    @Column(nullable = false, updatable = false)
+    private Instant beginTime;
 
-    private Duration contestLength;
+    @DurationMax(days = 365, message = "The contest length must be less than 1 year.")
+    @Column(nullable = false)
+    private Duration duration;
 
     @Column(columnDefinition = "TEXT")
-    private String contestDescription;
+    private String description;
 
     @Enumerated(EnumType.STRING)
-    private ContestType contestType;
+    @Column(nullable = false)
+    private ContestType type;
 
     @Enumerated(EnumType.STRING)
-    private ContestVisibility contestVisibility;
+    @Column(nullable = false)
+    private ContestVisibility visibility;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "contest_id")
-    private List<Submission> contestSubmissions;
+    private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_contest",
-            joinColumns = @JoinColumn(name = "contest_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> contestUsers;
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Set<UserContest> users ;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "contest_problem",
-            joinColumns = @JoinColumn(name = "contest_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_id")
-    )
-    private List<Problem> problems;
+    @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    Set<ContestProblem> problemSet;
+
 }

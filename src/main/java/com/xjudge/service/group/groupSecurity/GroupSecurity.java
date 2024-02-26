@@ -30,6 +30,6 @@ public class GroupSecurity {
     }
 
     public boolean isPublic(Long groupId) {
-        return groupService.getSpecificGroup(groupId).getGroupVisibility().name().equals("PUBLIC");
+        return groupService.getSpecificGroup(groupId).getVisibility().name().equals("PUBLIC");
     }
 }

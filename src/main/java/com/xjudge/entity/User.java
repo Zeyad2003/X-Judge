@@ -1,70 +1,67 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xjudge.enums.UserRole;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.xjudge.model.enums.UserRole;
+
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-/**
- * <strong>User Entity</strong>
- * <p>User entity is used to store all user information</p>
- */
+import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(name = "user")
-public class User implements UserDetails {
+public class User extends BaseEntity<Long> implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    private Long id;
 
-    private String userPassword;
-
-    @Column(unique = true)
-    private String userHandle;
-
-    private String userFirstName;
-
-    private String userLastName;
+    private String password;
 
     @Column(unique = true)
-    private String userEmail;
+    private String handle;
 
-    private String userSchool;
+    private String firstName;
+
+    private String lastName;
+
+    @Column(unique = true)
+    private String email;
+
+    private String school;
 
     @Column(columnDefinition = "DATE")
-    private LocalDate userRegistrationDate;
+    private LocalDate registrationDate;
 
-    private String userPhotoUrl;
+    private String photoUrl;
 
     @Enumerated(EnumType.STRING)
     UserRole role;
 
     private boolean isVerified;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "statistics_id")
-    private UserStatistics userStatistics;
+    Long solvedCount;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    List<Submission> userSubmission;
+    Long attemptedCount;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    Set<Submission> submissions;
 
     @ManyToMany
     @JoinTable(
@@ -72,14 +69,18 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
-    private List<Problem> userFavoriteProblems;
+    @ToString.Exclude
+    private Set<Problem> favoriteProblems;
 
-    @ManyToMany(mappedBy = "contestUsers", fetch = FetchType.LAZY)
-    private List<Contest> userContests;
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private Set<UserContest> contests = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<UserGroup> groups;
+//======================================================================================================================
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -88,12 +89,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userPassword;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return userHandle;
+        return this.handle;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.xjudge.entity;
 
-import com.xjudge.enums.TokenType;
+import com.xjudge.model.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

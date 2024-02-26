@@ -1,12 +1,9 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xjudge.enums.GroupVisibility;
+import com.xjudge.model.enums.GroupVisibility;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,34 +12,38 @@ import java.util.List;
  * <strong>Group Entity</strong>
  * <p>Represents a group of users and the contests they are participating in with roles for those users.</p>
  */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name="`group`")
-public class Group {
+public class Group extends BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "group_id")
-    private Long groupId;
+    private Long id;
 
-    private String groupName;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String groupDescription;
+    private String description;
 
-    LocalDate groupCreationDate;
+    LocalDate creationDate;
 
     @Enumerated(EnumType.STRING)
-    GroupVisibility groupVisibility;
+    GroupVisibility visibility;
 
     @OneToMany
     @JoinColumn(name = "group_id")
+    @ToString.Exclude
     List<Contest> groupContests;
 
     @JsonIgnore
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    private List<UserGroup> users;
+    @ToString.Exclude
+    private List<UserGroup> groupUsers;
 
 }

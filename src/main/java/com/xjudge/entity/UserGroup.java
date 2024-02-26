@@ -1,11 +1,9 @@
 package com.xjudge.entity;
 
-import com.xjudge.enums.UserRole;
+import com.xjudge.model.enums.UserGroupRole;
+import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,13 +11,15 @@ import java.time.LocalDate;
  * <strong>UserGroup Entity</strong>
  * <p>Represents a user's data in a group. {Role, Date Joined}</p>
  */
-@Data
 @Entity
+@Getter
+@Setter
+@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "user_group")
-public class UserGroup {
+public class UserGroup extends BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,5 +36,5 @@ public class UserGroup {
     LocalDate joinDate;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private UserGroupRole role;
 }

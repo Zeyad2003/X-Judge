@@ -1,6 +1,6 @@
 package com.xjudge.model.group;
 
-import com.xjudge.enums.GroupVisibility;
+import com.xjudge.model.enums.GroupVisibility;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

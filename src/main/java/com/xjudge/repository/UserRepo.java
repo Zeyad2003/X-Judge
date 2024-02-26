@@ -2,12 +2,18 @@ package com.xjudge.repository;
 
 import com.xjudge.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface UserRepo extends JpaRepository<User , Long> {
-    Optional<User> findUserByUserHandle(String userHandle);
-    Optional<User> findUserByUserEmail(String userEmail);
-    boolean existsByUserHandle(String userHandle);
-    boolean existsByUserEmail(String userEmail);
+    Optional<User> findByHandle(String handle);
+
+    Optional<User> findUserByEmail(String userEmail);
+
+    boolean existsByHandle(String userHandle);
+
+    boolean existsByEmail(String userEmail);
+
 }

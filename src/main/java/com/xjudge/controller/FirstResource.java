@@ -1,9 +1,10 @@
 package com.xjudge.controller;
 
 import com.xjudge.entity.User;
-import com.xjudge.exception.SubmitException;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.repository.InvitationRepository;
 import com.xjudge.repository.UserRepo;
+import com.xjudge.service.group.groupServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class FirstResource {
     @GetMapping("/invitations/{id}")
     public ResponseEntity<?> testToGetUserInvitation(@PathVariable Long id) {
         User user = userRepo.findById(id).orElseThrow(
-                () -> new SubmitException("Lol", HttpStatus.NOT_FOUND)
+                () -> new XJudgeException("Lol", groupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
         return ResponseEntity.ok(invitationRepository.getInvitationsByReceiver(user));
     }
