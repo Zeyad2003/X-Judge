@@ -138,17 +138,18 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public ProblemModel getContestProblem(Long id, String problemHashtag) {
-        if (!contestProblemRepo.existsByProblemHashtagAndContestId(problemHashtag , id))
+        if (!contestProblemRepo.existsByProblemHashtagAndContestId(problemHashtag , id)) {
             throw new XJudgeException("There's no problem with this hashtag = " + problemHashtag, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+        }
 
-        Contest contest = getContest(id);
+        ContestProblem contestProblem =  contestProblemRepo.findContestProblemByProblemHashtagAndContestId(problemHashtag , id);
 
         ProblemModel problemModel = problemMapper.toModel(
-                contestProblemRepo.findByProblemHashtag(problemHashtag).getProblem(),
+               contestProblem.getProblem(),
                 problemHashtag
         );
 
-        handleSpoilerData(problemModel, contest);
+        handleSpoilerData(problemModel, contestProblem.getContest());
 
         return problemModel;
     }
