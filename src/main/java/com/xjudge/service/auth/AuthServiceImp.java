@@ -162,19 +162,19 @@ public class AuthServiceImp implements AuthService{
         Token verificationToken = tokenService.findByToken(token);
 
         if (verificationToken.getTokenType() != TokenType.EMAIL_VERIFICATION) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Invalid token");
+            redirectAttributes.addAttribute("emailVerificationError", "Invalid token");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
 
         if (verificationToken.getVerifiedAt() != null) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Token already verified");
+            redirectAttributes.addAttribute("emailVerificationError", "Token already verified");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
 
         if (verificationToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Token expired");
+            redirectAttributes.addAttribute("emailVerificationError", "Token expired");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
@@ -186,7 +186,7 @@ public class AuthServiceImp implements AuthService{
         verificationToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(verificationToken);
 
-        redirectAttributes.addFlashAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
+        redirectAttributes.addAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
         redirectToLoginPage(response);
         return "Redirected to login page...";
     }
