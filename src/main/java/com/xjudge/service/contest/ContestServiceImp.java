@@ -8,6 +8,7 @@ import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.mapper.ContestMapper;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.mapper.SubmissionMapper;
+import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.contest.modification.ContestModificationModel;
 import com.xjudge.model.contest.modification.ContestCreationModel;
 import com.xjudge.model.contest.modification.ContestProblemset;
@@ -43,6 +44,7 @@ public class ContestServiceImp implements ContestService {
     private final ProblemService problemService;
     private final SubmissionService submissionService;
     private final SubmissionMapper submissionMapper;
+    private final UserMapper userMapper;
 
     @Override
     public Page<Contest> getAllContests(Pageable pageable) {
@@ -55,7 +57,7 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userService.getUserByHandle(authentication.getName());
+        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
 
         Contest contest = contestMapper.toContest(creationModel);
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
@@ -103,7 +105,7 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userService.getUserByHandle(authentication.getName());
+        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
 
 
         //TODO: handle the group relation

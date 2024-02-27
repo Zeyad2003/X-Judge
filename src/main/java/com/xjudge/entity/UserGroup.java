@@ -1,5 +1,8 @@
 package com.xjudge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xjudge.entity.key.UserContestKey;
+import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
@@ -19,18 +22,23 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_group")
-public class UserGroup extends BaseEntity<Long> {
+public class UserGroup extends BaseEntity<UserGroupKey> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    UserGroupKey id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
+    @MapsId("userId")
+    @ToString.Exclude
+    @JsonIgnore
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "group_id")
+    @MapsId("groupId")
+    @ToString.Exclude
+    @JsonIgnore
     private Group group;
 
     LocalDate joinDate;

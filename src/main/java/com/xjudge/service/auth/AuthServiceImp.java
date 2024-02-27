@@ -3,6 +3,7 @@ package com.xjudge.service.auth;
 import com.xjudge.entity.Token;
 import com.xjudge.entity.User;
 
+import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.TokenType;
 import com.xjudge.model.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
@@ -42,6 +43,7 @@ public class AuthServiceImp implements AuthService{
     AuthenticationManager authenticationManager;
     EmailService emailService;
     TokenService tokenService;
+    UserMapper userMapper;
 
     @Autowired
     public AuthServiceImp(UserService userService,
@@ -49,13 +51,15 @@ public class AuthServiceImp implements AuthService{
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
                           EmailService emailService,
-                          TokenService tokenService) {
+                          TokenService tokenService,
+                          UserMapper userMapper) {
         this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.tokenService = tokenService;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -142,7 +146,7 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        User user = userService.getUserByHandle(loginRequest.getUserHandle());
+        User user = userMapper.toEntity(userService.findByHandle(loginRequest.getUserHandle()));
 
         if (!user.isVerified()) {
             throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
@@ -220,8 +224,7 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userService.getUserByEmail(forgotPasswordRequest.getEmail());
-
+        User user = userMapper.toEntity(userService.findByEmail(forgotPasswordRequest.getEmail()));
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
                 .token(token)
