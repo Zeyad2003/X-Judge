@@ -3,13 +3,11 @@ package com.xjudge.service.user;
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.repository.UserRepo;
-import com.xjudge.service.scraping.codeforces.CodeforcesGetProblem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,19 +15,29 @@ public class UserServiceImpl implements UserService{
     private final UserRepo userRepo;
 
     @Override
-    public User getUserByHandle(String userHandle) {
-        Optional<User> user = userRepo.findByHandle(userHandle);
-        if(user.isPresent()) return user.get();
+    public void save(User user) {
+        userRepo.save(user);
+    }
 
-        throw new XJudgeException("There's no handle {" + userHandle + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND);
+    @Override
+    public User getUserByHandle(String userHandle) {
+        return userRepo.findByHandle(userHandle).orElseThrow(
+                () -> new XJudgeException("There's no handle {" + userHandle + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+    }
+
+    @Override
+    public User getUserByEmail(String userEmail) {
+        return userRepo.findUserByEmail(userEmail).orElseThrow(
+                () -> new XJudgeException("There's no email {" + userEmail + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
     }
 
     @Override
     public User getUserById(Long userId) {
-        Optional<User> user = userRepo.findById(userId);
-        if(user.isPresent()) return user.get();
-
-        throw new XJudgeException("There's no user with id {" + userId + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND);
+        return userRepo.findById(userId).orElseThrow(
+                () -> new XJudgeException("There's no user with id {" + userId + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
     }
 
     @Override
@@ -50,5 +58,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> getAllUsers() {
         return userRepo.findAll();
+    }
+
+    @Override
+    public boolean existsByHandle(String userHandle) {
+        return userRepo.existsByHandle(userHandle);
+    }
+
+    @Override
+    public boolean existsByEmail(String userEmail) {
+        return userRepo.existsByEmail(userEmail);
     }
 }
