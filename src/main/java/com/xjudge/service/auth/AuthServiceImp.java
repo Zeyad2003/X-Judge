@@ -197,7 +197,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new AuthException("Old password is incorrect", HttpStatus.BAD_REQUEST, new HashMap<>());
