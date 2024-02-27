@@ -4,15 +4,13 @@ import com.xjudge.entity.User;
 import com.xjudge.model.user.UserModel;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
     void save(User user);
-    UserModel getUserByHandle(String userHandle);
-    UserModel getUserByEmail(String userEmail);
-    UserModel getUserById(Long userId);
-    UserModel saveUser(User user);
-    UserModel updateUser(User user);
+    UserModel findByHandle(String userHandle);
+    UserModel findByEmail(String userEmail);
+    UserModel findById(Long userId);
+    UserModel updateUser(Long id, UserModel user);
     void deleteUser(Long userId);
     List<UserModel> getAllUsers();
     boolean existsByHandle(String userHandle);
