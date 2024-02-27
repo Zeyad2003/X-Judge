@@ -8,17 +8,16 @@ import com.xjudge.model.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 
-import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
 import com.xjudge.service.email.EmailService;
 import com.xjudge.service.token.TokenService;
+import com.xjudge.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +36,7 @@ import java.util.UUID;
 @Service
 public class AuthServiceImp implements AuthService{
 
-
-    UserRepo userRepo; // Use service layer instead of repository layer directly
+    UserService userService;
     JwtService jwtService;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
@@ -46,13 +44,13 @@ public class AuthServiceImp implements AuthService{
     TokenService tokenService;
 
     @Autowired
-    public AuthServiceImp(UserRepo userRepo,
+    public AuthServiceImp(UserService userService,
                           JwtService jwtService,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
                           EmailService emailService,
                           TokenService tokenService) {
-        this.userRepo = userRepo;
+        this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -67,12 +65,12 @@ public class AuthServiceImp implements AuthService{
         Map<String, String> errors = checkErrors(bindingResult);
 
         // Check if user with the same handle exists
-        if (userRepo.existsByHandle(registerRequest.getUserHandle())) {
+        if (userService.existsByHandle(registerRequest.getUserHandle())) {
             errors.put("userHandle" , "User with this handle already exists");
         }
 
         // Check if user with the same email exists
-        if (userRepo.existsByEmail(registerRequest.getUserEmail())) {
+        if (userService.existsByEmail(registerRequest.getUserEmail())) {
             errors.put("userEmail" , "User with this email already exists");
         }
 
@@ -93,7 +91,7 @@ public class AuthServiceImp implements AuthService{
                 .isVerified(false)
                 .build();
 
-        userRepo.save(userDetails);
+        userService.save(userDetails);
 
         String verificationToken = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
@@ -144,9 +142,7 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        User user = userRepo
-                .findByHandle(loginRequest.getUserHandle())
-                .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
+        User user = userService.getUserByHandle(loginRequest.getUserHandle());
 
         if (!user.isVerified()) {
             throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
@@ -185,7 +181,7 @@ public class AuthServiceImp implements AuthService{
 
         User user = verificationToken.getUser();
         user.setVerified(true);
-        userRepo.save(user);
+        userService.save(user);
 
         verificationToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(verificationToken);
@@ -212,7 +208,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepo.save(user);
+        userService.save(user);
 
         return ChangePasswordResponse
                 .builder()
@@ -224,9 +220,7 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userRepo.findUserByEmail(forgotPasswordRequest.getEmail()).orElseThrow(
-                () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
-        );
+        User user = userService.getUserByEmail(forgotPasswordRequest.getEmail());
 
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
@@ -284,7 +278,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         user.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
-        userRepo.save(user);
+        userService.save(user);
 
         passwordResetToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(passwordResetToken);

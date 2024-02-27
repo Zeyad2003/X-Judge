@@ -44,6 +44,4 @@ public class RegisterRequest {
 
     @URL(message = "Invalid URL")
     private String userPhotoUrl;
-
-    private UserRole role;
 }
