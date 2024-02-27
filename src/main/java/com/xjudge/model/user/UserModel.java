@@ -1,6 +1,5 @@
 package com.xjudge.model.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,23 +11,20 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserModel {
 
-    private Long userId;
+    private Long id;
 
-    @JsonIgnore
-    private String userPassword;
+    private String handel;
 
-    private String userHandle;
+    private String firstName;
 
-    private String userFirstName;
+    private String lastName;
 
-    private String userLastName;
+    private String email;
 
-    private String userEmail;
+    private String school;
 
-    private String userSchool;
+    private LocalDate registrationDate;
 
-    private LocalDate userRegistrationDate;
-
-    private String userPhotoUrl;
+    private String photoUrl;
 
 }
