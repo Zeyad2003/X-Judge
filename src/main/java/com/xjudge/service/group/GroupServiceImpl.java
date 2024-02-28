@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
-    private final UserService userService; // Don't user repository, use user service layer
+    private final UserService userService;
     private final InvitationService invitationService;
     private final UserGroupService userGroupService;
     private final GroupMapper groupMapper;
