@@ -22,7 +22,7 @@ public class AuthenticationController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
+    ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
         return new ResponseEntity<>(authService.register(registerRequest, result) , HttpStatus.CREATED);
     }
 
@@ -37,17 +37,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/change-password")
-    ResponseEntity<ChangePasswordResponse> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+    ResponseEntity<AuthResponse> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
         return new ResponseEntity<>(authService.changePassword(changePasswordRequest, connectedUser), HttpStatus.OK);
     }
 
     @PostMapping("/forget-password")
-    ResponseEntity<ForgotPasswordResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
+    ResponseEntity<AuthResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
         return new ResponseEntity<>(authService.forgotPassword(forgotPasswordRequest), HttpStatus.OK);
     }
 
     @PostMapping("/reset-password")
-    ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+    ResponseEntity<AuthResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
         return new ResponseEntity<>(authService.resetPassword(resetPasswordRequest), HttpStatus.OK);
     }
 

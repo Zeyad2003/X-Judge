@@ -53,7 +53,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
     @Enumerated(EnumType.STRING)
     UserRole role;
 
-    private boolean isVerified;
+    private Boolean isVerified;
 
     Long solvedCount;
 

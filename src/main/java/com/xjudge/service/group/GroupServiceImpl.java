@@ -1,6 +1,7 @@
 package com.xjudge.service.group;
 
 import com.xjudge.entity.*;
+import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.GroupMapper;
 import com.xjudge.mapper.UserMapper;
@@ -15,6 +16,7 @@ import com.xjudge.service.invitiation.InvitationService;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,8 +62,13 @@ public class GroupServiceImpl implements GroupService {
                 .name(groupRequest.getName())
                 .description(groupRequest.getDescription())
                 .visibility(groupRequest.getVisibility())
+                .creationDate(LocalDate.now())
                 .build());
+
+        UserGroupKey userGroupKey = new UserGroupKey(leader.getId(), group.getId());
+
         userGroupService.save(UserGroup.builder()
+                .id(userGroupKey)
                 .user(leader)
                 .group(group)
                 .joinDate(LocalDate.now())
@@ -116,7 +123,11 @@ public class GroupServiceImpl implements GroupService {
         );
 
         User receiver = userMapper.toEntity(userService.findById(receiverId));
-        User sender = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User sender = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+
+        if (sender.getId().equals(receiver.getId())) {
+            throw new XJudgeException("User cannot invite himself", GroupServiceImpl.class.getName(), HttpStatus.FORBIDDEN);
+        }
 
         invitationService.save(Invitation.builder()
                 .receiver(receiver)

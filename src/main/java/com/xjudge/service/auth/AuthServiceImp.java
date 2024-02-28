@@ -10,6 +10,7 @@ import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 
 import com.xjudge.config.security.JwtService;
+import com.xjudge.model.user.UserModel;
 import com.xjudge.service.email.EmailService;
 import com.xjudge.service.token.TokenService;
 import com.xjudge.service.user.UserService;
@@ -64,7 +65,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
+    public AuthResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
 
         Map<String, String> errors = checkErrors(bindingResult);
 
@@ -91,6 +92,8 @@ public class AuthServiceImp implements AuthService{
                 .photoUrl(registerRequest.getUserPhotoUrl())
                 .registrationDate(LocalDate.now())
                 .school(registerRequest.getUserSchool())
+                .attemptedCount(0L)
+                .solvedCount(0L)
                 .role(UserRole.USER)
                 .isVerified(false)
                 .build();
@@ -122,7 +125,7 @@ public class AuthServiceImp implements AuthService{
                 .verifiedAt(null)
                 .build());
 
-        return RegisterResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("User registered successfully, please verify your email to login")
@@ -146,9 +149,12 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        User user = userMapper.toEntity(userService.findByHandle(loginRequest.getUserHandle()));
+        UserModel model = userService.findByHandle(loginRequest.getUserHandle());
+        System.out.println(model);
+        User user = userMapper.toEntity(model);
+        System.out.println(user);
 
-        if (!user.isVerified()) {
+        if (!user.getIsVerified()) {
             throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
         }
         String token = jwtService.generateToken(user);
@@ -184,7 +190,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         User user = verificationToken.getUser();
-        user.setVerified(true);
+        user.setIsVerified(true);
         userService.save(user);
 
         verificationToken.setVerifiedAt(LocalDateTime.now());
@@ -196,7 +202,7 @@ public class AuthServiceImp implements AuthService{
     }
 
     @Override
-    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
+    public AuthResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
         User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
@@ -214,7 +220,7 @@ public class AuthServiceImp implements AuthService{
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userService.save(user);
 
-        return ChangePasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password changed successfully")
@@ -223,7 +229,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+    public AuthResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
         User user = userMapper.toEntity(userService.findByEmail(forgotPasswordRequest.getEmail()));
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
@@ -250,7 +256,7 @@ public class AuthServiceImp implements AuthService{
 
         emailService.send(user.getEmail(), "Reset Password", emailContent);
 
-        return ForgotPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Reset password link has been sent to your email")
@@ -259,7 +265,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+    public AuthResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
         Token passwordResetToken = tokenService.findByToken(resetPasswordRequest.getToken());
 
         if (passwordResetToken.getTokenType() != TokenType.PASSWORD_RESET) {
@@ -286,7 +292,7 @@ public class AuthServiceImp implements AuthService{
         passwordResetToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(passwordResetToken);
 
-        return ResetPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password reset successfully")
