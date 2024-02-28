@@ -1,6 +1,7 @@
 package com.xjudge.service.group;
 
 import com.xjudge.entity.*;
+import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.GroupMapper;
 import com.xjudge.mapper.UserMapper;
@@ -60,8 +61,13 @@ public class GroupServiceImpl implements GroupService {
                 .name(groupRequest.getName())
                 .description(groupRequest.getDescription())
                 .visibility(groupRequest.getVisibility())
+                .creationDate(LocalDate.now())
                 .build());
+
+        UserGroupKey userGroupKey = new UserGroupKey(leader.getId(), group.getId());
+
         userGroupService.save(UserGroup.builder()
+                .id(userGroupKey)
                 .user(leader)
                 .group(group)
                 .joinDate(LocalDate.now())
