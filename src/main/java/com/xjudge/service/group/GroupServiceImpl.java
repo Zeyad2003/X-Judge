@@ -1,6 +1,7 @@
 package com.xjudge.service.group;
 
 import com.xjudge.entity.*;
+import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.GroupMapper;
 import com.xjudge.mapper.UserMapper;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
-    private final UserService userService; // Don't user repository, use user service layer
+    private final UserService userService;
     private final InvitationService invitationService;
     private final UserGroupService userGroupService;
     private final GroupMapper groupMapper;
@@ -60,8 +61,13 @@ public class GroupServiceImpl implements GroupService {
                 .name(groupRequest.getName())
                 .description(groupRequest.getDescription())
                 .visibility(groupRequest.getVisibility())
+                .creationDate(LocalDate.now())
                 .build());
+
+        UserGroupKey userGroupKey = new UserGroupKey(leader.getId(), group.getId());
+
         userGroupService.save(UserGroup.builder()
+                .id(userGroupKey)
                 .user(leader)
                 .group(group)
                 .joinDate(LocalDate.now())

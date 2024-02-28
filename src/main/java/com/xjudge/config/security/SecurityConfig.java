@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(configure -> configure
                         .requestMatchers("/auth/change-password").authenticated()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/group/public", "/group/{id}").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // create session for each request
                 .authenticationProvider(authenticationProvider)
