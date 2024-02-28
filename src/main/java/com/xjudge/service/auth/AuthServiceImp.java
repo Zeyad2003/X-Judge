@@ -64,7 +64,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
+    public AuthResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
 
         Map<String, String> errors = checkErrors(bindingResult);
 
@@ -122,7 +122,7 @@ public class AuthServiceImp implements AuthService{
                 .verifiedAt(null)
                 .build());
 
-        return RegisterResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("User registered successfully, please verify your email to login")
@@ -196,7 +196,7 @@ public class AuthServiceImp implements AuthService{
     }
 
     @Override
-    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
+    public AuthResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
         User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
@@ -214,7 +214,7 @@ public class AuthServiceImp implements AuthService{
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userService.save(user);
 
-        return ChangePasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password changed successfully")
@@ -223,7 +223,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+    public AuthResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
         User user = userMapper.toEntity(userService.findByEmail(forgotPasswordRequest.getEmail()));
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
@@ -250,7 +250,7 @@ public class AuthServiceImp implements AuthService{
 
         emailService.send(user.getEmail(), "Reset Password", emailContent);
 
-        return ForgotPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Reset password link has been sent to your email")
@@ -259,7 +259,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+    public AuthResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
         Token passwordResetToken = tokenService.findByToken(resetPasswordRequest.getToken());
 
         if (passwordResetToken.getTokenType() != TokenType.PASSWORD_RESET) {
@@ -286,7 +286,7 @@ public class AuthServiceImp implements AuthService{
         passwordResetToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(passwordResetToken);
 
-        return ResetPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password reset successfully")
