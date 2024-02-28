@@ -1,5 +1,6 @@
 package com.xjudge.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -20,7 +21,7 @@ public class UserModel {
 
     @NotBlank(message = "user handle is mandatory")
     @Size(max = 20 , message = "user handle length must be less than 20")
-    private String handel;
+    private String handle;
 
     @NotBlank(message = "user first name  is mandatory")
     @Size(min = 2, max = 30, message = "First name must be between 2 and 30 characters")
@@ -43,5 +44,12 @@ public class UserModel {
 
     @URL(message = "Invalid URL")
     private String photoUrl;
+
+    @JsonIgnore
+    private Boolean isVerified;
+
+    private Long solvedCount;
+
+    private Long attemptedCount;
 
 }
