@@ -48,12 +48,13 @@ public class UserServiceImpl implements UserService{
         User oldUser = userRepo.findById(id).orElseThrow(
                 () -> new XJudgeException("User not found", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
-        oldUser.setHandle(user.getHandel());
+        oldUser.setHandle(user.getHandle());
         oldUser.setFirstName(user.getFirstName());
         oldUser.setLastName(user.getLastName());
         oldUser.setEmail(user.getEmail());
         oldUser.setSchool(user.getSchool());
-        oldUser.setPhotoUrl(user.getPhotoUrl()); // api must store photo and return url
+        oldUser.setPhotoUrl(user.getPhotoUrl());
+        // api must store photo and return url
         return userMapper.toModel(oldUser);
     }
 

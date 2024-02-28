@@ -10,6 +10,7 @@ import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 
 import com.xjudge.config.security.JwtService;
+import com.xjudge.model.user.UserModel;
 import com.xjudge.service.email.EmailService;
 import com.xjudge.service.token.TokenService;
 import com.xjudge.service.user.UserService;
@@ -91,6 +92,8 @@ public class AuthServiceImp implements AuthService{
                 .photoUrl(registerRequest.getUserPhotoUrl())
                 .registrationDate(LocalDate.now())
                 .school(registerRequest.getUserSchool())
+                .attemptedCount(0L)
+                .solvedCount(0L)
                 .role(UserRole.USER)
                 .isVerified(false)
                 .build();
@@ -146,9 +149,12 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        User user = userMapper.toEntity(userService.findByHandle(loginRequest.getUserHandle()));
+        UserModel model = userService.findByHandle(loginRequest.getUserHandle());
+        System.out.println(model);
+        User user = userMapper.toEntity(model);
+        System.out.println(user);
 
-        if (!user.isVerified()) {
+        if (!user.getIsVerified()) {
             throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
         }
         String token = jwtService.generateToken(user);
@@ -184,7 +190,7 @@ public class AuthServiceImp implements AuthService{
         }
 
         User user = verificationToken.getUser();
-        user.setVerified(true);
+        user.setIsVerified(true);
         userService.save(user);
 
         verificationToken.setVerifiedAt(LocalDateTime.now());
