@@ -46,6 +46,7 @@ public class ContestServiceImp implements ContestService {
     private final SubmissionMapper submissionMapper;
     private final UserMapper userMapper;
 
+
     @Override
     public Page<Contest> getAllContests(Pageable pageable) {
         return contestRepo.findAll(pageable);
@@ -57,14 +58,13 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
-
         Contest contest = contestMapper.toContest(creationModel);
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
         contest.setUsers(new HashSet<>());
-        contest.setProblemSet(new HashSet<>());
+        contest.setProblemSet(new HashSet<>()) ;
+        contestRepo.save(contest);
 
-
+        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
 
         //TODO: handle the group relation
         handleContestProblemSetRelation(creationModel.getProblems(), contest);
