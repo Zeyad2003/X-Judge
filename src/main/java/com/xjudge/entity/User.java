@@ -59,27 +59,24 @@ public class User extends BaseEntity<Long> implements UserDetails {
 
     Long attemptedCount;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     Set<Submission> submissions;
 
-    @ManyToMany
-    @JoinTable(
-            name = "favorite_problems",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_id")
-    )
     @ToString.Exclude
-    private Set<Problem> favoriteProblems;
-
     @OneToMany(mappedBy = "user")
-    @ToString.Exclude
     private Set<UserContest> contests = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserGroup> groups;
+
+    @JsonIgnore
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserProblem> userProblems = new LinkedHashSet<>();
+
 //======================================================================================================================
 
     @Override
