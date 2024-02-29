@@ -1,6 +1,7 @@
 package com.xjudge.service.submission;
 
 import com.xjudge.entity.Submission;
+import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.repository.SubmissionRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<Submission> getSubmissionsByContestId(Long contestId) {
         return submissionRepo.findAllByContestId(contestId);
+    }
+
+    @Override
+    public Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType) {
+        return submissionRepo.getSolvedCount(problemCode, onlineJudgeType);
     }
 }

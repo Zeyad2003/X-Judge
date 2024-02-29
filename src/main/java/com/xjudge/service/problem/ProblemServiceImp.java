@@ -5,6 +5,7 @@ import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,8 +32,14 @@ public class ProblemServiceImp implements ProblemService {
     private final UserService userService;
 
     @Override
-    public Page<Problem> getAllProblems(Pageable pageable) {
-        return problemRepo.findAll(pageable);
+    public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
+        Page<Problem> problemList = problemRepo.findAll(pageable);
+        return problemList.map(problem -> ProblemsPageModel.builder()
+                .oj(OnlineJudgeType.CodeForces)
+                .problemCode(problem.getProblemCode())
+                .problemTitle(problem.getTitle())
+                .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
+                .build());
     }
 
     @Override
