@@ -3,7 +3,7 @@ package com.xjudge.service.invitiation;
 import com.xjudge.entity.Invitation;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.repository.InvitationRepository;
-import com.xjudge.service.group.groupServiceImpl;
+import com.xjudge.service.group.GroupServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public Invitation findById(Long id) {
         return invitationRepository.findById(id).orElseThrow(
-                () -> new XJudgeException("Invitation not found", groupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+                () -> new XJudgeException("Invitation not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
     }
 }

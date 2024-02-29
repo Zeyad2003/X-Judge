@@ -1,34 +1,76 @@
 package com.xjudge.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xjudge.entity.Problem;
+import com.xjudge.entity.Submission;
+import com.xjudge.entity.UserContest;
+import com.xjudge.entity.UserGroup;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserModel {
 
-    private Long userId;
+    private Long id;
+
+    @NotBlank(message = "user handle is mandatory")
+    @Size(max = 20 , message = "user handle length must be less than 20")
+    private String handle;
+
+    @NotBlank(message = "user first name  is mandatory")
+    @Size(min = 2, max = 30, message = "First name must be between 2 and 30 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "First name must contain only letters")
+    private String firstName;
+
+    @NotBlank(message = "user last name  is mandatory")
+    @Size(min = 2, max = 30, message = "Last name must be between 2 and 30 characters")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Last name must contain only letters")
+    private String lastName;
+
+    @NotBlank(message = "user email is mandatory")
+    @Email(message = "please enter valid email")
+    private String email;
+
+    @Size(max = 7 , message = "user school length must be less than 7")
+    private String school;
+
+    private LocalDate registrationDate;
+
+    @URL(message = "Invalid URL")
+    private String photoUrl;
 
     @JsonIgnore
-    private String userPassword;
+    private Boolean isVerified;
 
-    private String userHandle;
+    private Long solvedCount;
 
-    private String userFirstName;
+    private Long attemptedCount;
 
-    private String userLastName;
+    @JsonIgnore
+    Set<Submission> submissions;
 
-    private String userEmail;
+    @JsonIgnore
+    private Set<Problem> favoriteProblems;
 
-    private String userSchool;
+    @JsonIgnore
+    private Set<UserContest> contests = new HashSet<>();
 
-    private LocalDate userRegistrationDate;
-
-    private String userPhotoUrl;
+    @JsonIgnore
+    private List<UserGroup> groups;
 
 }

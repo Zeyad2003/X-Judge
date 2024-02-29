@@ -4,14 +4,12 @@ import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.repository.InvitationRepository;
 import com.xjudge.repository.UserRepo;
-import com.xjudge.service.group.groupServiceImpl;
+import com.xjudge.service.group.GroupServiceImpl;
+import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FirstResource {
     private final InvitationRepository invitationRepository;
     private final UserRepo userRepo;
+    private final UserService userService;
     String hello = """
             <!DOCTYPE html>
             <html>
@@ -54,8 +53,14 @@ public class FirstResource {
     @GetMapping("/invitations/{id}")
     public ResponseEntity<?> testToGetUserInvitation(@PathVariable Long id) {
         User user = userRepo.findById(id).orElseThrow(
-                () -> new XJudgeException("Lol", groupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+                () -> new XJudgeException("Lol", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
         return ResponseEntity.ok(invitationRepository.getInvitationsByReceiver(user));
+    }
+
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.findById(id) , HttpStatus.OK);
     }
 }
