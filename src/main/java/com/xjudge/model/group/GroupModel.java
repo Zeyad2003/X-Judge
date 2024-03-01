@@ -1,15 +1,15 @@
 package com.xjudge.model.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xjudge.entity.Contest;
+import com.xjudge.entity.UserGroup;
 import com.xjudge.model.enums.GroupVisibility;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +25,10 @@ public class GroupModel {
     LocalDate creationDate;
 
     GroupVisibility visibility;
+
+    @JsonIgnore
+    List<Contest> groupContests;
+
+    @JsonIgnore
+    List<UserGroup> groupUsers;
 }

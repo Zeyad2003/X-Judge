@@ -4,7 +4,6 @@ import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
@@ -17,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContestModificationModel {
+public class ContestClientRequest {
 
     @NotNull(message = "The contest title is required to create a contest.")
     @NotBlank(message = "Contest title can't be empty.")
