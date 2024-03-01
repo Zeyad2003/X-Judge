@@ -56,14 +56,7 @@ public class ContestServiceImp implements ContestService {
         }
 
 
-        Contest contest = null;
-        if(creationModel.getType() == ContestType.CLASSIC) {
-             contest = contestMapper.toContestClassical(creationModel);
-        }else{
-             contest = contestMapper.toContestGroup(creationModel);
-             Group group = groupMapper.toEntity(groupService.getSpecificGroupByName(creationModel.getGroupName()));
-             contest.setGroup(group);
-        }
+        Contest contest = mappingBasedOnContestType(creationModel);
 
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
         contest.setUsers(new HashSet<>());
@@ -102,7 +95,8 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
-        Contest contest = contestMapper.toContestClassical(updatingModel);
+        Contest contest = mappingBasedOnContestType(updatingModel);
+
         contest.setId(id);
         contest.setUsers(contestOptional.get().getUsers());
         contest.setProblemSet(new HashSet<>());
@@ -115,7 +109,6 @@ public class ContestServiceImp implements ContestService {
         User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
 
 
-        //TODO: handle the group relation
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
         handleContestUserRelation(user, contest);
 
@@ -232,6 +225,9 @@ public class ContestServiceImp implements ContestService {
                 .isOwner(true)
                 .isFavorite(false)
                 .isParticipant(false)
+                .userContestRank(0)
+                .userContestScore(0)
+                .userContestPenalty(0)
                 .build();
 
         contest.getUsers().add(userContest);
@@ -243,6 +239,19 @@ public class ContestServiceImp implements ContestService {
                 .map(contestProblemset -> contestProblemset.problemHashtag().toUpperCase())
                 .collect(Collectors.toSet())
                 .size() == problemset.size();
+    }
+
+    private Contest mappingBasedOnContestType(ContestClientRequest model){
+        if(model.getType() == ContestType.CLASSIC) {
+            return contestMapper.toContestClassical(model);
+        }
+
+        Contest contest = contestMapper.toContestGroup(model);
+        // handle contest relation
+        Group group = groupMapper.toEntity(groupService.getSpecificGroupByName(model.getGroupName()));
+        contest.setGroup(group);
+
+        return contest;
     }
 
 }
