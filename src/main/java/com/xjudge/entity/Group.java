@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ public class Group extends BaseEntity<Long> {
     @Column(name = "group_id")
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     @Column(columnDefinition = "TEXT")
@@ -36,8 +38,8 @@ public class Group extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     GroupVisibility visibility;
 
-    @OneToMany
-    @JoinColumn(name = "group_id")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.PERSIST , mappedBy = "group")
     @ToString.Exclude
     List<Contest> groupContests;
 
