@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -37,6 +38,10 @@ public class ContestModificationModel {
     private String password;
 
     private String description;
+
+    @NotNull(message = "The contest begin time is required to create a contest.")
+    @Future(message = "The contest begin time must be in the future.")
+    private Instant beginTime;
 
     @NotNull(message = "The problem Set can't be null.")
     @Size(min = 1, message = "At least one problem is required to create a contest.")
