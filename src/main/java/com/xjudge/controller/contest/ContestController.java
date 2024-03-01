@@ -2,8 +2,7 @@ package com.xjudge.controller.contest;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.exception.XJudgeValidationException;
-import com.xjudge.model.contest.modification.ContestModificationModel;
-import com.xjudge.model.contest.modification.ContestCreationModel;
+import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -39,7 +38,7 @@ public class ContestController {
     }
 
     @PostMapping
-    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestCreationModel creationModel , BindingResult result , Authentication authentication) {
+    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR, ContestController.class.getName() , HttpStatus.BAD_REQUEST);
         }
@@ -53,7 +52,7 @@ public class ContestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id
-            , @Valid @RequestBody ContestModificationModel model, BindingResult result
+            , @Valid @RequestBody ContestClientRequest model, BindingResult result
         , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);

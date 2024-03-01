@@ -54,6 +54,10 @@ public class Contest extends BaseEntity<Long> {
 
     private String password;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+
     @OneToMany(mappedBy = "contest", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private Set<UserContest> users ;
