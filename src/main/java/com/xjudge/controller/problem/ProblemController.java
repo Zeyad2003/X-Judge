@@ -2,6 +2,8 @@ package com.xjudge.controller.problem;
 
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeValidationException;
+import com.xjudge.model.Pagination.PaginationResponse;
+import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("problem")
@@ -31,11 +31,13 @@ public class ProblemController {
 
     @GetMapping
     @Operation(summary = "Retrieve all problems", description = "Get all problems available in the system with pagination.")
-    public ResponseEntity<List<Problem>> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                        @RequestParam(defaultValue = "25") Integer size) {
+    public ResponseEntity<?> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
+                                            @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<Problem> pagedResult = problemService.getAllProblems(paging);
-        return new ResponseEntity<>(pagedResult.getContent(), HttpStatus.OK);
+        PaginationResponse<Problem> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<Problem>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{problemSource}-{problemCode}")
