@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 public class PaginationResponse<T> {
     private int totalPages;
-    private List<T> data;
+    private List<T> paginatedData;
 }
