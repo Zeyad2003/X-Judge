@@ -11,6 +11,7 @@ import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.repository.GroupRepository;
+import com.xjudge.service.group.joinRequest.JoinRequestService;
 import com.xjudge.service.group.userGroupService.UserGroupService;
 import com.xjudge.service.invitiation.InvitationService;
 import com.xjudge.service.user.UserService;
@@ -37,6 +38,7 @@ public class GroupServiceImpl implements GroupService {
     private final UserGroupService userGroupService;
     private final GroupMapper groupMapper;
     private final UserMapper userMapper;
+    private final JoinRequestService joinRequestService;
 
     @Override
     public Page<GroupModel> getAllGroups(Pageable pageable) {
@@ -176,6 +178,43 @@ public class GroupServiceImpl implements GroupService {
                 .group(group)
                 .joinDate(LocalDate.now())
                 .role(UserGroupRole.MEMBER).build());
+    }
+
+    @Override
+    public void requestJoin(Long groupId, Principal connectedUser) {
+        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+        Group group = groupRepository.findById(groupId).orElseThrow(
+                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+        JoinRequest joinRequest = JoinRequest.builder()
+                .group(group)
+                .user(user)
+                .status(InvitationStatus.PENDING)
+                .date(LocalDate.now())
+                .build();
+        this.joinRequestService.save(joinRequest);
+    }
+
+    @Override
+    public void acceptRequest(Long requestId) {
+        // TODO check if user is the leader of the group in controller level before calling this method
+        JoinRequest joinRequest = joinRequestService.findById(requestId);
+        if (joinRequest.getStatus() != InvitationStatus.PENDING) {
+            throw new XJudgeException("Invalid request", GroupServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
+        }
+        joinRequest.setStatus(InvitationStatus.ACCEPTED);
+        joinRequestService.save(joinRequest);
+    }
+
+    @Override
+    public void declineRequest(Long requestId) {
+        // TODO check if user is the leader of the group in controller level before calling this method
+        JoinRequest joinRequest = joinRequestService.findById(requestId);
+        if (joinRequest.getStatus() != InvitationStatus.PENDING) {
+            throw new XJudgeException("Invalid request", GroupServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
+        }
+        joinRequest.setStatus(InvitationStatus.DECLINED);
+        joinRequestService.save(joinRequest);
     }
 
     @Override

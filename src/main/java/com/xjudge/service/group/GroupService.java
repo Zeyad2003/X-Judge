@@ -28,6 +28,9 @@ public interface GroupService {
     // Join and leave group
     void join(Long groupId, Principal connectedUser);
     void join(GroupModel group, User user);
+    void requestJoin(Long groupId, Principal connectedUser);
+    void acceptRequest(Long requestId);
+    void declineRequest(Long requestId);
     void leave(Long groupId, Principal connectedUser);
 
     // Group information

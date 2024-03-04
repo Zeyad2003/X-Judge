@@ -82,6 +82,26 @@ public class GroupController {
         return ResponseEntity.ok("Invitation declined successfully.");
     }
 
+    @PostMapping("/request-join/{groupId}")
+    public ResponseEntity<?> requestJoin(@PathVariable Long groupId, Principal connectedUser) {
+        groupService.requestJoin(groupId, connectedUser);
+        return ResponseEntity.ok("Request sent successfully.");
+    }
+
+    @PostMapping("/accept-request/{requestId}")
+    @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #requestId, {'LEADER','MANAGER'})")
+    public ResponseEntity<?> acceptRequest(@PathVariable Long requestId) {
+        groupService.acceptRequest(requestId);
+        return ResponseEntity.ok("Request accepted successfully.");
+    }
+
+    @PostMapping("/decline-request/{requestId}")
+    @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #requestId, {'LEADER','MANAGER'})")
+    public ResponseEntity<?> declineRequest(@PathVariable Long requestId) {
+        groupService.declineRequest(requestId);
+        return ResponseEntity.ok("Request declined successfully.");
+    }
+
     @PostMapping("/{groupId}/join") // request private group join
     public ResponseEntity<?> joinUserGroup(@PathVariable Long groupId, Principal connectedUser) {
         groupService.join(groupId, connectedUser);
