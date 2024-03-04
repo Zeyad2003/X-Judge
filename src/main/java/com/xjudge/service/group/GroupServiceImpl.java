@@ -15,6 +15,8 @@ import com.xjudge.service.group.userGroupService.UserGroupService;
 import com.xjudge.service.invitiation.InvitationService;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -37,11 +39,15 @@ public class GroupServiceImpl implements GroupService {
     private final UserMapper userMapper;
 
     @Override
-    public List<GroupModel> publicGroups() {
-        return  groupRepository.findByVisibility(GroupVisibility.PUBLIC)
-                .stream()
-                .map(groupMapper::toModel)
-                .toList();
+    public Page<GroupModel> getAllGroups(Pageable pageable) {
+        Page<Group> groups = groupRepository.findAll(pageable);
+        return groups.map(group -> GroupModel.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .creationDate(group.getCreationDate())
+                .visibility(group.getVisibility())
+                .build());
     }
 
     @Override

@@ -1,9 +1,15 @@
 package com.xjudge.controller.group;
 
+import com.xjudge.model.Pagination.PaginationResponse;
+import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.service.group.GroupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +24,12 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("/public")
-    public ResponseEntity<?> getAllPublicGroups() {
-        return ResponseEntity.ok(groupService.publicGroups());
+    public ResponseEntity<?> getAllPublicGroups(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<GroupModel> pagedResult = groupService.getAllGroups(paging);
+        PaginationResponse<GroupModel> response = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{groupId}")
