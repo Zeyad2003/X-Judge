@@ -24,7 +24,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("/public")
-    public ResponseEntity<?> getAllPublicGroups(@RequestParam(defaultValue = "0") Integer pageNo,
+    public ResponseEntity<?> getAllGroups(@RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<GroupModel> pagedResult = groupService.getAllGroups(paging);
@@ -33,7 +33,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}")
-    @PreAuthorize("@groupSecurity.isPublic(#groupId) || @groupSecurity.isMember(principal.username, #groupId)")
+    @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
     public ResponseEntity<?> getSpecificGroup(@PathVariable  Long groupId) {
         return ResponseEntity.ok(groupService.getSpecificGroup(groupId));
     }
