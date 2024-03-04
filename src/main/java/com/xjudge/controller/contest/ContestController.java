@@ -40,7 +40,7 @@ public class ContestController {
         return new ResponseEntity<>(pagedResult.getContent(), HttpStatus.OK);
     }
 
-    @PreAuthorize(value="@contestSecurity.authorizeGroupContest(principal.username , #creationModel.groupId , #creationModel.type)")
+    @PreAuthorize(value="@contestSecurity.authorizeCreateContest(principal.username , #creationModel.groupId , #creationModel.type)")
     @PostMapping
     public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
         if(result.hasErrors()){
@@ -62,7 +62,7 @@ public class ContestController {
     }
 
 
-    @PreAuthorize(value = "@contestSecurity.authorizeUpdateGroup(principal.username , #model.groupId , #model.type, #id)")
+    @PreAuthorize(value = "@contestSecurity.authorizeUpdateContest(principal.username , #model.groupId , #model.type, #id)")
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id
             , @Valid @RequestBody ContestClientRequest model, BindingResult result

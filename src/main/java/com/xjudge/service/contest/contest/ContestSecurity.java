@@ -2,8 +2,6 @@ package com.xjudge.service.contest.contest;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
-import com.xjudge.entity.User;
-import com.xjudge.entity.UserContest;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
@@ -11,12 +9,12 @@ import com.xjudge.service.contest.ContestService;
 import com.xjudge.service.group.groupSecurity.GroupSecurity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.List;
 
-@Service
+@Component
 @AllArgsConstructor
 public class ContestSecurity {
 
@@ -24,7 +22,7 @@ public class ContestSecurity {
     private final ContestService contestService;
 
 
-    public boolean authorizeGroupContest(String handle , Long groupId , ContestType type){
+    public boolean authorizeCreateContest(String handle , Long groupId , ContestType type){
         if(type == ContestType.GROUP){
             return isUserAuthorizedInGroup(handle , groupId);
         }
@@ -43,7 +41,7 @@ public class ContestSecurity {
         return true;
     }
 
-    public boolean authorizeUpdateGroup(String handle, Long groupId , ContestType type , Long contestId){
+    public boolean authorizeUpdateContest(String handle, Long groupId , ContestType type , Long contestId){
         if(type == ContestType.GROUP){
             return isUserAuthorizedInGroup(handle , groupId);
         }
