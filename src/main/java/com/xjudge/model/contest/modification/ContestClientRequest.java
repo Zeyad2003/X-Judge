@@ -4,6 +4,7 @@ import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
@@ -32,7 +33,8 @@ public class ContestClientRequest {
     @NotNull(message = "You must select the visibility of the contest.")
     private ContestVisibility visibility;
 
-    private String groupName;
+    @Min(value = 1 , message = "groupId can not be less than 1")
+    private Long groupId = 0L;
 
     private String password;
 

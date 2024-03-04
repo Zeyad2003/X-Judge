@@ -49,6 +49,7 @@ public class ContestServiceImp implements ContestService {
         return contestRepo.findAll(pageable);
     }
 
+
     @Override
     public Contest createContest(ContestClientRequest creationModel , Authentication authentication) {
         if(authentication.getName() == null) {
@@ -248,7 +249,7 @@ public class ContestServiceImp implements ContestService {
 
         Contest contest = contestMapper.toContestGroup(model);
         // handle contest relation
-        Group group = groupMapper.toEntity(groupService.getSpecificGroupByName(model.getGroupName()));
+        Group group = groupMapper.toEntity(groupService.getSpecificGroup(model.getGroupId()));
         contest.setGroup(group);
 
         return contest;
