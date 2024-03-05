@@ -48,16 +48,18 @@ public class ProblemController {
 
     @GetMapping("/{problemSource}-{problemCode}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
-    public ResponseEntity<ProblemModel> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource){
+    public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
         Problem problem = problemService.getProblemByCodeAndSource(problemCode, problemSource);
-        return new ResponseEntity<>(problemMapper.toModel(problem), HttpStatus.OK);
+        Response<ProblemModel> response = new Response<>(HttpStatus.OK.value(), true, problemMapper.toModel(problem), "Problem fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/submit")
     @Operation(summary = "Submit a problem", description = "Submit a specific problem to be judged.")
-    public ResponseEntity<Submission> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
+    public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
+        Response<Submission> response = new Response<>(HttpStatus.OK.value(), true, problemService.submit(info), "Problem submitted successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/search")
