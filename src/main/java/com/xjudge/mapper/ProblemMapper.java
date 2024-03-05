@@ -9,4 +9,7 @@ import org.mapstruct.Mapping;
 public interface ProblemMapper {
     @Mapping(target = "problemHashtag", source = "problemHashtag")
     ProblemModel toModel(Problem problem, String problemHashtag);
+
+    @Mapping(target = "problemHashtag", ignore = true)
+    ProblemModel toModel(Problem problem);
 }
