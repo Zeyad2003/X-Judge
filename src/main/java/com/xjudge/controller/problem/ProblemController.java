@@ -60,4 +60,36 @@ public class ProblemController {
         return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search problems by title", description = "Search problems by their title.")
+    public ResponseEntity<?> searchByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchByTitle(title, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/source")
+    @Operation(summary = "Search problems by source", description = "Search problems by their source.")
+    public ResponseEntity<?> searchBySource(@RequestParam String source, @RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchBySource(source, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/code")
+    @Operation(summary = "Search problems by problem code", description = "Search problems by their problem code.")
+    public ResponseEntity<?> searchByProblemCode(@RequestParam String problemCode, @RequestParam(defaultValue = "0") Integer pageNo,
+                                                @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchByProblemCode(problemCode, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
