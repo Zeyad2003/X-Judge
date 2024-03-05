@@ -48,16 +48,50 @@ public class ProblemController {
 
     @GetMapping("/{problemSource}-{problemCode}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
-    public ResponseEntity<ProblemModel> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource){
+    public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
         Problem problem = problemService.getProblemByCodeAndSource(problemCode, problemSource);
-        return new ResponseEntity<>(problemMapper.toModel(problem), HttpStatus.OK);
+        Response<ProblemModel> response = new Response<>(HttpStatus.OK.value(), true, problemMapper.toModel(problem), "Problem fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/submit")
     @Operation(summary = "Submit a problem", description = "Submit a specific problem to be judged.")
-    public ResponseEntity<Submission> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
+    public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(problemService.submit(info), HttpStatus.OK);
+        Response<Submission> response = new Response<>(HttpStatus.OK.value(), true, problemService.submit(info), "Problem submitted successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search problems by title", description = "Search problems by their title.")
+    public ResponseEntity<?> searchByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchByTitle(title, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/source")
+    @Operation(summary = "Search problems by source", description = "Search problems by their source.")
+    public ResponseEntity<?> searchBySource(@RequestParam String source, @RequestParam(defaultValue = "0") Integer pageNo,
+                                           @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchBySource(source, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/code")
+    @Operation(summary = "Search problems by problem code", description = "Search problems by their problem code.")
+    public ResponseEntity<?> searchByProblemCode(@RequestParam String problemCode, @RequestParam(defaultValue = "0") Integer pageNo,
+                                                @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> pagedResult = problemService.searchByProblemCode(problemCode, paging);
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

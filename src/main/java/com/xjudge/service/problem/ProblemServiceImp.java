@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,6 +67,39 @@ public class ProblemServiceImp implements ProblemService {
         }
 
         throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public Page<ProblemsPageModel> searchByTitle(String title, Pageable pageable) {
+        Page<Problem> problemList = problemRepo.findByTitleContaining(title, pageable);
+        return problemList.map(problem -> ProblemsPageModel.builder()
+                .oj(OnlineJudgeType.CodeForces)
+                .problemCode(problem.getProblemCode())
+                .problemTitle(problem.getTitle())
+                .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
+                .build());
+    }
+
+    @Override
+    public Page<ProblemsPageModel> searchBySource(String source, Pageable pageable) {
+        Page<Problem> problemList = problemRepo.findBySourceContaining(OnlineJudgeType.valueOf(source), pageable);
+        return problemList.map(problem -> ProblemsPageModel.builder()
+                .oj(OnlineJudgeType.CodeForces)
+                .problemCode(problem.getProblemCode())
+                .problemTitle(problem.getTitle())
+                .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
+                .build());
+    }
+
+    @Override
+    public Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable) {
+        Page<Problem> problemList = problemRepo.findByProblemCodeContaining(problemCode, pageable);
+        return problemList.map(problem -> ProblemsPageModel.builder()
+                .oj(OnlineJudgeType.CodeForces)
+                .problemCode(problem.getProblemCode())
+                .problemTitle(problem.getTitle())
+                .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
+                .build());
     }
 
     private Problem scrapProblem(String problemCode) {

@@ -14,4 +14,10 @@ public interface ProblemService {
 
     Submission submit(SubmissionInfoModel info);
 
+    Page<ProblemsPageModel> searchByTitle(String title, Pageable pageable);
+
+    Page<ProblemsPageModel> searchBySource(String source, Pageable pageable);
+
+    Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable);
+
 }
