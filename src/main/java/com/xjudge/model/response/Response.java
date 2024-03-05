@@ -1,4 +1,4 @@
-package com.xjudge.model.auth;
+package com.xjudge.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RegisterResponse {
-
-        private int statusCode;
-
-        private String message;
-
+public class Response <T> {
+    private int code;
+    private boolean success;
+    private T data;
+    private String message;
 }

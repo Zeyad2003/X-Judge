@@ -1,14 +1,18 @@
 package com.xjudge.service.user;
 
 import com.xjudge.entity.User;
+import com.xjudge.model.user.UserModel;
 
 import java.util.List;
 
 public interface UserService {
-    User getUserByHandle(String userHandle);
-    User getUserById(Long userId);
-    User saveUser(User user);
-    User updateUser(User user);
+    void save(User user);
+    UserModel findByHandle(String userHandle);
+    UserModel findByEmail(String userEmail);
+    UserModel findById(Long userId);
+    UserModel updateUser(Long id, UserModel user);
     void deleteUser(Long userId);
-    List<User> getAllUsers();
+    List<UserModel> getAllUsers();
+    boolean existsByHandle(String userHandle);
+    boolean existsByEmail(String userEmail);
 }

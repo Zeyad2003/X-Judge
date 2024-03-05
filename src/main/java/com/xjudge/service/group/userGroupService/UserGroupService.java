@@ -10,5 +10,6 @@ public interface UserGroupService {
     UserGroup findByUserAndGroup(User user, Group group);
     UserGroup findByUserHandleAndGroupId(String userHandle, Long groupId);
     void save(UserGroup userGroup);
+    void delete(UserGroup userGroup);
     void deleteById(Long id);
 }

@@ -3,22 +3,23 @@ package com.xjudge.service.auth;
 import com.xjudge.entity.Token;
 import com.xjudge.entity.User;
 
+import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.TokenType;
 import com.xjudge.model.enums.UserRole;
 import com.xjudge.exception.auth.AuthException;
 import com.xjudge.model.auth.*;
 
-import com.xjudge.repository.UserRepo;
 import com.xjudge.config.security.JwtService;
+import com.xjudge.model.user.UserModel;
 import com.xjudge.service.email.EmailService;
 import com.xjudge.service.token.TokenService;
+import com.xjudge.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,42 +38,44 @@ import java.util.UUID;
 @Service
 public class AuthServiceImp implements AuthService{
 
-
-    UserRepo userRepo; // Use service layer instead of repository layer directly
+    UserService userService;
     JwtService jwtService;
     PasswordEncoder passwordEncoder;
     AuthenticationManager authenticationManager;
     EmailService emailService;
     TokenService tokenService;
+    UserMapper userMapper;
 
     @Autowired
-    public AuthServiceImp(UserRepo userRepo,
+    public AuthServiceImp(UserService userService,
                           JwtService jwtService,
                           PasswordEncoder passwordEncoder,
                           AuthenticationManager authenticationManager,
                           EmailService emailService,
-                          TokenService tokenService) {
-        this.userRepo = userRepo;
+                          TokenService tokenService,
+                          UserMapper userMapper) {
+        this.userService = userService;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.tokenService = tokenService;
+        this.userMapper = userMapper;
     }
 
     @Override
     @Transactional
-    public RegisterResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
+    public AuthResponse register(RegisterRequest registerRequest, BindingResult bindingResult) {
 
         Map<String, String> errors = checkErrors(bindingResult);
 
         // Check if user with the same handle exists
-        if (userRepo.existsByHandle(registerRequest.getUserHandle())) {
+        if (userService.existsByHandle(registerRequest.getUserHandle())) {
             errors.put("userHandle" , "User with this handle already exists");
         }
 
         // Check if user with the same email exists
-        if (userRepo.existsByEmail(registerRequest.getUserEmail())) {
+        if (userService.existsByEmail(registerRequest.getUserEmail())) {
             errors.put("userEmail" , "User with this email already exists");
         }
 
@@ -89,11 +92,13 @@ public class AuthServiceImp implements AuthService{
                 .photoUrl(registerRequest.getUserPhotoUrl())
                 .registrationDate(LocalDate.now())
                 .school(registerRequest.getUserSchool())
+                .attemptedCount(0L)
+                .solvedCount(0L)
                 .role(UserRole.USER)
                 .isVerified(false)
                 .build();
 
-        userRepo.save(userDetails);
+        userService.save(userDetails);
 
         String verificationToken = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
@@ -120,7 +125,7 @@ public class AuthServiceImp implements AuthService{
                 .verifiedAt(null)
                 .build());
 
-        return RegisterResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("User registered successfully, please verify your email to login")
@@ -144,11 +149,12 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        User user = userRepo
-                .findByHandle(loginRequest.getUserHandle())
-                .orElseThrow(()-> new UsernameNotFoundException("USER NOT FOUND"));
+        UserModel model = userService.findByHandle(loginRequest.getUserHandle());
+        System.out.println(model);
+        User user = userMapper.toEntity(model);
+        System.out.println(user);
 
-        if (!user.isVerified()) {
+        if (!user.getIsVerified()) {
             throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
         }
         String token = jwtService.generateToken(user);
@@ -166,38 +172,38 @@ public class AuthServiceImp implements AuthService{
         Token verificationToken = tokenService.findByToken(token);
 
         if (verificationToken.getTokenType() != TokenType.EMAIL_VERIFICATION) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Invalid token");
+            redirectAttributes.addAttribute("emailVerificationError", "Invalid token");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
 
         if (verificationToken.getVerifiedAt() != null) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Token already verified");
+            redirectAttributes.addAttribute("emailVerificationError", "Token already verified");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
 
         if (verificationToken.getExpiredAt().isBefore(LocalDateTime.now())) {
-            redirectAttributes.addFlashAttribute("emailVerificationError", "Token expired");
+            redirectAttributes.addAttribute("emailVerificationError", "Token expired");
             redirectToLoginPage(response);
             return "Redirected to login page with error...";
         }
 
         User user = verificationToken.getUser();
-        user.setVerified(true);
-        userRepo.save(user);
+        user.setIsVerified(true);
+        userService.save(user);
 
         verificationToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(verificationToken);
 
-        redirectAttributes.addFlashAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
+        redirectAttributes.addAttribute("emailVerificationSuccess", "Email verification successful. You can now login.");
         redirectToLoginPage(response);
         return "Redirected to login page...";
     }
 
     @Override
-    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
-        User user = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
+    public AuthResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
+        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new AuthException("Old password is incorrect", HttpStatus.BAD_REQUEST, new HashMap<>());
@@ -212,9 +218,9 @@ public class AuthServiceImp implements AuthService{
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-        userRepo.save(user);
+        userService.save(user);
 
-        return ChangePasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password changed successfully")
@@ -223,11 +229,8 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ForgotPasswordResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userRepo.findUserByEmail(forgotPasswordRequest.getEmail()).orElseThrow(
-                () -> new AuthException("User with this email does not exist", HttpStatus.NOT_FOUND, new HashMap<>())
-        );
-
+    public AuthResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        User user = userMapper.toEntity(userService.findByEmail(forgotPasswordRequest.getEmail()));
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
                 .token(token)
@@ -253,7 +256,7 @@ public class AuthServiceImp implements AuthService{
 
         emailService.send(user.getEmail(), "Reset Password", emailContent);
 
-        return ForgotPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Reset password link has been sent to your email")
@@ -262,7 +265,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     @Transactional
-    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+    public AuthResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
         Token passwordResetToken = tokenService.findByToken(resetPasswordRequest.getToken());
 
         if (passwordResetToken.getTokenType() != TokenType.PASSWORD_RESET) {
@@ -284,12 +287,12 @@ public class AuthServiceImp implements AuthService{
         }
 
         user.setPassword(passwordEncoder.encode(resetPasswordRequest.getPassword()));
-        userRepo.save(user);
+        userService.save(user);
 
         passwordResetToken.setVerifiedAt(LocalDateTime.now());
         tokenService.save(passwordResetToken);
 
-        return ResetPasswordResponse
+        return AuthResponse
                 .builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Password reset successfully")

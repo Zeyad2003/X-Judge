@@ -3,7 +3,10 @@ package com.xjudge.service.group;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
+import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.security.Principal;
 import java.util.List;
@@ -11,11 +14,11 @@ import java.util.List;
 public interface GroupService {
 
     // CRUD operations
-    List<Group> publicGroups();
-    Group getSpecificGroup(Long id);
-    Group create(GroupRequest groupRequest, Principal connectedUser);
+    Page<GroupModel> getAllGroups(Pageable pageable);
+    GroupModel getSpecificGroup(Long id);
+    GroupModel create(GroupRequest groupRequest, Principal connectedUser);
 
-    Group update(Long groupId, GroupRequest groupRequest);
+    GroupModel update(Long groupId, GroupRequest groupRequest);
     void delete(Long groupId);
 
     // Contest and invitation
@@ -24,7 +27,10 @@ public interface GroupService {
 
     // Join and leave group
     void join(Long groupId, Principal connectedUser);
-    void join(Group group, User user);
+    void join(GroupModel group, User user);
+    void requestJoin(Long groupId, Principal connectedUser);
+    void acceptRequest(Long requestId);
+    void declineRequest(Long requestId);
     void leave(Long groupId, Principal connectedUser);
 
     // Group information
