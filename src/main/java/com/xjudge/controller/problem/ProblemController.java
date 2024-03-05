@@ -41,8 +41,8 @@ public class ProblemController {
                                             @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ProblemsPageModel> pagedResult = problemService.getAllProblems(paging);
-        PaginationResponse<Problem> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
-        Response<PaginationResponse<Problem>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
