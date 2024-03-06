@@ -1,8 +1,8 @@
 package com.xjudge.service.contest;
 
 import com.xjudge.entity.Contest;
-import com.xjudge.model.contest.modification.ContestModificationModel;
-import com.xjudge.model.contest.modification.ContestCreationModel;
+import com.xjudge.entity.User;
+import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -15,11 +15,11 @@ import java.util.List;
 public interface ContestService {
     Page<Contest> getAllContests(Pageable pageable);
 
-    Contest createContest(ContestCreationModel creationModel , Authentication authentication);
+    Contest createContest(ContestClientRequest creationModel , Authentication authentication);
 
     Contest getContest(Long id);
 
-    Contest updateContest(Long id, ContestModificationModel model , Authentication authentication);
+    Contest updateContest(Long id, ContestClientRequest model , Authentication authentication);
 
     void deleteContest(Long id);
 
@@ -30,4 +30,5 @@ public interface ContestService {
     SubmissionModel submitInContest(Long id, SubmissionInfoModel info);
 
     List<SubmissionModel> getContestSubmissions(Long id);
+    void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
 }

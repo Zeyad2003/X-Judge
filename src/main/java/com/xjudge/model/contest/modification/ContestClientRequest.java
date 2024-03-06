@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContestModificationModel {
+public class ContestClientRequest {
 
     @NotNull(message = "The contest title is required to create a contest.")
     @NotBlank(message = "Contest title can't be empty.")
@@ -32,11 +33,16 @@ public class ContestModificationModel {
     @NotNull(message = "You must select the visibility of the contest.")
     private ContestVisibility visibility;
 
-    private String groupName;
+    @Min(value = 1 , message = "groupId can not be less than 1")
+    private Long groupId = 0L;
 
     private String password;
 
     private String description;
+
+    @NotNull(message = "The contest begin time is required to create a contest.")
+    @Future(message = "The contest begin time must be in the future.")
+    private Instant beginTime;
 
     @NotNull(message = "The problem Set can't be null.")
     @Size(min = 1, message = "At least one problem is required to create a contest.")

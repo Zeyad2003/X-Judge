@@ -1,9 +1,11 @@
 package com.xjudge.service.group.groupSecurity;
 
 import com.xjudge.entity.UserGroup;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.service.group.GroupService;
 import com.xjudge.service.group.userGroupService.UserGroupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +23,10 @@ public class GroupSecurity {
 
     public boolean hasRole(String handle, Long groupId, String role) {
         UserGroup userGroup = userGroupService.findByUserHandleAndGroupId(handle, groupId);
-        return userGroup.getRole().name().equals(role);
+        if(!userGroup.getRole().name().equals(role)){
+            throw new XJudgeException("User unauthorized" , GroupSecurity.class.getName() , HttpStatus.UNAUTHORIZED);
+        }
+        return true;
     }
 
     public boolean isMember(String handle, Long groupId) {

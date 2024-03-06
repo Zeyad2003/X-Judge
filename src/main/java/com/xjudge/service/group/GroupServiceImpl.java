@@ -60,6 +60,14 @@ public class GroupServiceImpl implements GroupService {
         ));
     }
 
+    @Override
+    public GroupModel getSpecificGroupByName(String name) {
+        return  groupMapper.toModel(
+                groupRepository.findGroupByName(name).orElseThrow(
+                        () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+                ));
+    }
+
 
     @Override
     @Transactional

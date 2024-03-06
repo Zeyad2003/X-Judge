@@ -16,6 +16,7 @@ public interface GroupService {
     // CRUD operations
     Page<GroupModel> getAllGroups(Pageable pageable);
     GroupModel getSpecificGroup(Long id);
+    GroupModel getSpecificGroupByName(String name);
     GroupModel create(GroupRequest groupRequest, Principal connectedUser);
 
     GroupModel update(Long groupId, GroupRequest groupRequest);
