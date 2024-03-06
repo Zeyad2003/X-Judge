@@ -1,6 +1,7 @@
 package com.xjudge.service.contest;
 
 import com.xjudge.entity.Contest;
+import com.xjudge.entity.User;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -29,4 +30,5 @@ public interface ContestService {
     SubmissionModel submitInContest(Long id, SubmissionInfoModel info);
 
     List<SubmissionModel> getContestSubmissions(Long id);
+    void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
 }
