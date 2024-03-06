@@ -1,4 +1,4 @@
-package com.xjudge.service.contest.contest;
+package com.xjudge.service.contest.contestsecurity;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
@@ -79,7 +79,7 @@ public class ContestSecurity {
                     throw new XJudgeException("UnAuthorized owner" , ContestSecurity.class.getName() , HttpStatus.FORBIDDEN);
                 }
             }
-            return isUserAuthorizedInGroup(handle , groupId) ;
+            return isUserAuthorizedInGroup(handle , groupId) && isUserAuthorizedInGroup(handle , contest.getGroup().getId());
         }
         else if(contestType == ContestType.CLASSIC){
             if(!isContestOwner(contest, handle)){

@@ -175,6 +175,8 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
+        // handle Contest isParticipant
+
         Submission submission = problemService.submit(info);
 
         submission.setContest(contest);
