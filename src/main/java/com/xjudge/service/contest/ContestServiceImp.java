@@ -13,6 +13,7 @@ import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
+import com.xjudge.repository.UserContestRepo;
 import com.xjudge.service.group.GroupService;
 import com.xjudge.service.problem.ProblemService;
 import com.xjudge.service.submission.SubmissionService;
@@ -42,7 +43,7 @@ public class ContestServiceImp implements ContestService {
     private final UserMapper userMapper;
     private final GroupService groupService;
     private final GroupMapper groupMapper;
-
+    private final UserContestRepo userContestRepo;
 
     @Override
     public Page<Contest> getAllContests(Pageable pageable) {
@@ -67,7 +68,7 @@ public class ContestServiceImp implements ContestService {
         User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
 
         handleContestProblemSetRelation(creationModel.getProblems(), contest);
-        handleContestUserRelation(user, contest);
+        handleContestUserRelation(user, contest , true , false);
 
         contestRepo.save(contest);
 
@@ -111,7 +112,10 @@ public class ContestServiceImp implements ContestService {
 
 
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
-        handleContestUserRelation(user, contest);
+
+        if(!userContestRepo.existsById(new UserContestKey(user.getId() , contest.getId()))) {
+            handleContestUserRelation(user, contest, true, false);
+        }
 
 
         return contestRepo.save(contest);
@@ -217,21 +221,22 @@ public class ContestServiceImp implements ContestService {
         }
     }
 
-    private void handleContestUserRelation(User user, Contest contest) {
+    public void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant) {
         UserContestKey userContestKey = new UserContestKey(user.getId(), contest.getId());
         UserContest userContest = UserContest.builder()
                 .id(userContestKey)
                 .contest(contest)
                 .user(user)
-                .isOwner(true)
+                .isOwner(isPOwner)
                 .isFavorite(false)
-                .isParticipant(false)
+                .isParticipant(isParticipant)
                 .userContestRank(0)
                 .userContestScore(0)
                 .userContestPenalty(0)
                 .build();
 
         contest.getUsers().add(userContest);
+
     }
 
 
@@ -254,5 +259,6 @@ public class ContestServiceImp implements ContestService {
 
         return contest;
     }
+
 
 }
