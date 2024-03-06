@@ -49,20 +49,14 @@ public class ContestController {
         return new ResponseEntity<>(contestService.createContest(creationModel , authentication), HttpStatus.OK);
     }
 
-    @PreAuthorize(value = "@contestSecurity.authorizeGetContest(principal.username , #id , #password)")
-    @GetMapping(value = "/{id}" , params = {"password"})
-    public ResponseEntity<Contest> getContest(@PathVariable("id") Long id , @RequestParam("password") String password) {
-        return new ResponseEntity<>(contestService.getContest(id), HttpStatus.OK);
-    }
-
-    @PreAuthorize(value = "@contestSecurity.authorizeGetContest(principal.username , #id , null)")
-    @GetMapping("/{id}")
-    public ResponseEntity<Contest> getGroupPContest(@PathVariable("id") Long id ) {
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
+    @GetMapping(value = "/{id}" )
+    public ResponseEntity<Contest> getContest(@PathVariable("id") Long id , @RequestParam(defaultValue = "") String password) {
         return new ResponseEntity<>(contestService.getContest(id), HttpStatus.OK);
     }
 
 
-    @PreAuthorize(value = "@contestSecurity.authorizeUpdateContest(principal.username , #model.groupId , #model.type, #id)")
+    @PreAuthorize(value = "@contestSecurity.authorizeUpdate(principal.username , #id ,#model.type ,#model.groupId)")
     @PutMapping("/{id}")
     public ResponseEntity<Contest> updateContest(@PathVariable Long id
             , @Valid @RequestBody ContestClientRequest model, BindingResult result
@@ -73,14 +67,16 @@ public class ContestController {
         return new ResponseEntity<>(contestService.updateContest(id, model , authentication), HttpStatus.OK);
     }
 
+    @PreAuthorize(value = "@contestSecurity.authorizeDelete(principal.username , #id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteContest(@PathVariable Long id) {
         contestService.deleteContest(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @PostMapping("/{id}/submit")
-    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info , BindingResult result) {
+    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info , BindingResult result ,  @RequestParam(defaultValue = "") String password) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
         }
@@ -88,18 +84,21 @@ public class ContestController {
         return new ResponseEntity<>(submission, HttpStatus.OK);
     }
 
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping("/{id}/problems")
-    public ResponseEntity<List<ProblemModel>> getContestProblems(@PathVariable Long id){
+    public ResponseEntity<List<ProblemModel>> getContestProblems(@PathVariable Long id , @RequestParam(defaultValue = "") String password){
         return new ResponseEntity<>(contestService.getContestProblems(id), HttpStatus.OK);
     }
 
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping("/{id}/problem/{problemHashtag}")
-    public ResponseEntity<ProblemModel> getContestProblem(@PathVariable Long id, @PathVariable String problemHashtag){
+    public ResponseEntity<ProblemModel> getContestProblem(@PathVariable Long id, @PathVariable String problemHashtag ,  @RequestParam(defaultValue = "") String password){
         return new ResponseEntity<>(contestService.getContestProblem(id, problemHashtag), HttpStatus.OK);
     }
 
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #pasword)")
     @GetMapping("/{id}/submissions")
-    public ResponseEntity<List<SubmissionModel>> getContestSubmissions(@PathVariable Long id){
+    public ResponseEntity<List<SubmissionModel>> getContestSubmissions(@PathVariable Long id ,  @RequestParam(defaultValue = "") String password){
         return new ResponseEntity<>(contestService.getContestSubmissions(id), HttpStatus.OK);
     }
 
