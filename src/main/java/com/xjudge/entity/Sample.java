@@ -18,6 +18,10 @@ public class Sample {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String input;
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private String output;
 }
