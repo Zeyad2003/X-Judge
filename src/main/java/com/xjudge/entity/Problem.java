@@ -6,11 +6,9 @@ import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Getter
@@ -49,6 +47,9 @@ public class Problem extends BaseEntity<Long> {
     private String timeLimit;
 
     private String memoryLimit;
+
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<Sample> samples = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY)
     @ToString.Exclude

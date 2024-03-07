@@ -1,10 +1,12 @@
 package com.xjudge.service.scraping.codeforces;
 
-import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
+import com.xjudge.entity.Sample;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.service.sample.SampleService;
 import com.xjudge.service.scraping.GetProblemAutomation;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -17,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class CodeforcesGetProblem implements GetProblemAutomation {
+
+    private final SampleService sampleService;
 
     @Override
     public Problem GetProblem(String contestId, String problemId) {
@@ -39,11 +44,14 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
 
         // Common Info
         String title = problemHeader.text().substring(3);
-        String problemCode = contestId + problemId;
         String timeLimit = problemDocument.select(".header > .time-limit").text().substring(19);
         String memoryLimit = problemDocument.select(".header > .memory-limit").text().substring(21);
+
+        String problemCode = contestId + problemId;
+
         String inputSpecification = problemDocument.select(".input-specification > p").outerHtml();
         String outputSpecification = problemDocument.select(".output-specification > p").outerHtml();
+
         String problemStatement = problemDocument.select(".problem-statement > div").get(1).outerHtml();
 
         //Extra Info
@@ -54,8 +62,20 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         String problemTags = problemDocument.select(".tag-box").outerHtml();
         String sampleTests = problemDocument.select(".sample-tests > .sample-test").html();
 
+        List<Sample> samplesList = new ArrayList<>();
+        var samples = problemDocument.select(".sample-tests > .sample-test");
+        for (var sample : samples) {
+            var inputs = sample.select(".input > pre");
+            var outputs = sample.select(".output > pre");
+            for (int i = 0; i < inputs.size(); i++) {
+                Sample s = new Sample(0L, inputs.get(i).outerHtml(), outputs.get(i).outerHtml());
+                samplesList.add(s);
+            }
+        }
+        samplesList = sampleService.saveAll(samplesList);
+
         // TODO: implement the compiler list fetching
-        List<Compiler> compilers = new ArrayList<>();
+//        List<Compiler> compilers = new ArrayList<>();
 
         Map<String, Object> extraInfo = Map.of(
                 "tutorialHtml", tutorialHtml,
@@ -72,6 +92,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 .problemCode(problemCode)
                 .timeLimit(timeLimit)
                 .memoryLimit(memoryLimit)
+                .samples(samplesList)
                 .input(inputSpecification)
                 .output(outputSpecification)
                 .statement(problemStatement)

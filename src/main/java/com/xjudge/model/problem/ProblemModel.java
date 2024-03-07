@@ -1,6 +1,9 @@
 package com.xjudge.model.problem;
 
+import com.xjudge.entity.Sample;
 import com.xjudge.model.enums.OnlineJudgeType;
+
+import java.util.List;
 import java.util.Map;
 
 public record ProblemModel(
@@ -23,6 +26,8 @@ public record ProblemModel(
         String memoryLimit,
 
         String problemHashtag,
+
+        List<Sample> samples,
 
         Map<String, Object> extraInfo
 
