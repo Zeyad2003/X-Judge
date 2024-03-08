@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 @Getter
 @AllArgsConstructor
 public enum OnlineJudgeType {
-    CodeForces
+    CodeForces,
+
+    AtCoder
 
 }

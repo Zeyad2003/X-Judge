@@ -42,7 +42,13 @@ public class Problem extends BaseEntity<Long> {
     private String output;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
     private OnlineJudgeType source;
+
+    private String problemLink;
+
+    private String contestLink;
 
     private String timeLimit;
 

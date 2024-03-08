@@ -50,7 +50,6 @@ public class Handler {
                 exception.getErrors()
         );
         Response errorResponse = Response.builder()
-                .code(HttpStatus.BAD_REQUEST.value())
                 .success(false)
                 .error(errorDetails)
                 .build();
@@ -66,7 +65,6 @@ public class Handler {
                 webRequest.getDescription(false)
         );
         Response errorResponse = Response.builder()
-                .code(status.value())
                 .success(false)
                 .error(errorDetails)
                 .build();

@@ -41,7 +41,6 @@ public class ProblemController {
         Page<ProblemsPageModel> pagedResult = problemService.getAllProblems(paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(paginatedData)
                 .build();
@@ -53,7 +52,6 @@ public class ProblemController {
     public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
         Problem problem = problemService.getProblemByCodeAndSource(problemCode, problemSource);
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(problemMapper.toModel(problem))
                 .build();
@@ -65,7 +63,6 @@ public class ProblemController {
     public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(problemService.submit(info))
                 .build();
@@ -80,7 +77,6 @@ public class ProblemController {
         Page<ProblemsPageModel> pagedResult = problemService.searchByTitle(title, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(paginatedData)
                 .build();
@@ -95,7 +91,6 @@ public class ProblemController {
         Page<ProblemsPageModel> pagedResult = problemService.searchBySource(source, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(paginatedData)
                 .build();
@@ -110,7 +105,6 @@ public class ProblemController {
         Page<ProblemsPageModel> pagedResult = problemService.searchByProblemCode(problemCode, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
         Response response = Response.builder()
-                .code(HttpStatus.OK.value())
                 .success(true)
                 .data(paginatedData)
                 .build();

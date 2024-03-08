@@ -13,6 +13,10 @@ public record ProblemModel(
 
         String title,
 
+        String problemLink,
+
+        String contestLink,
+
         String statement,
 
         String input,

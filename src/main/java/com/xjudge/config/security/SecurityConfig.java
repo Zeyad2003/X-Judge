@@ -31,11 +31,11 @@ public class SecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(configure -> configure
-//                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
-                        .requestMatchers("/auth/change-password").authenticated()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/group/public", "/group/{id}").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
+//                        .requestMatchers("/auth/change-password").authenticated()
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/group/public", "/group/{id}").permitAll()
+//                        .requestMatchers("/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // create session for each request

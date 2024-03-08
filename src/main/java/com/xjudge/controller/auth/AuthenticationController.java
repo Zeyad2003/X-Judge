@@ -25,7 +25,6 @@ public class AuthenticationController {
     @PostMapping("/register")
     ResponseEntity<Response> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
         Response response = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.register(registerRequest, result))
                 .build();
@@ -35,7 +34,6 @@ public class AuthenticationController {
     @PostMapping("/login")
     ResponseEntity<Response> loginAuth(@Valid @RequestBody LoginRequest loginRequest, BindingResult result){
         Response response = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.authenticate(loginRequest, result))
                 .build();
@@ -45,7 +43,6 @@ public class AuthenticationController {
     @GetMapping("/verify-email")
     ResponseEntity<Response> verify(@RequestParam String token, HttpServletResponse response, RedirectAttributes redirectAttributes){
         Response res = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.verifyRegistrationToken(token, response, redirectAttributes))
                 .build();
@@ -55,7 +52,6 @@ public class AuthenticationController {
     @PostMapping("/change-password")
     ResponseEntity<Response> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
         Response response = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.changePassword(changePasswordRequest, connectedUser))
                 .build();
@@ -65,7 +61,6 @@ public class AuthenticationController {
     @PostMapping("/forget-password")
     ResponseEntity<Response> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
         Response response = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.forgotPassword(forgotPasswordRequest))
                 .build();
@@ -75,7 +70,6 @@ public class AuthenticationController {
     @PostMapping("/reset-password")
     ResponseEntity<Response> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
         Response response = Response.builder()
-                .code(HttpStatus.CREATED.value())
                 .success(true)
                 .data(authService.resetPassword(resetPasswordRequest))
                 .build();
