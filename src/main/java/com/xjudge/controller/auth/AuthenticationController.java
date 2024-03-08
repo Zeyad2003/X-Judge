@@ -1,6 +1,7 @@
 package com.xjudge.controller.auth;
 
 import com.xjudge.model.auth.*;
+import com.xjudge.model.response.Response;
 import com.xjudge.service.auth.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -22,33 +23,63 @@ public class AuthenticationController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
-        return new ResponseEntity<>(authService.register(registerRequest, result) , HttpStatus.CREATED);
+    ResponseEntity<Response> register(@Valid @RequestBody RegisterRequest registerRequest , BindingResult result){
+        Response response = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.register(registerRequest, result))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    ResponseEntity<LoginResponse> loginAuth(@Valid @RequestBody LoginRequest loginRequest, BindingResult result){
-        return new ResponseEntity<>(authService.authenticate(loginRequest, result) , HttpStatus.OK);
+    ResponseEntity<Response> loginAuth(@Valid @RequestBody LoginRequest loginRequest, BindingResult result){
+        Response response = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.authenticate(loginRequest, result))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @GetMapping("/verify-email")
-    ResponseEntity<String> verify(@RequestParam String token, HttpServletResponse response, RedirectAttributes redirectAttributes){
-        return new ResponseEntity<>(authService.verifyRegistrationToken(token, response, redirectAttributes) , HttpStatus.OK);
+    ResponseEntity<Response> verify(@RequestParam String token, HttpServletResponse response, RedirectAttributes redirectAttributes){
+        Response res = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.verifyRegistrationToken(token, response, redirectAttributes))
+                .build();
+        return new ResponseEntity<>(res , HttpStatus.OK);
     }
 
     @PostMapping("/change-password")
-    ResponseEntity<AuthResponse> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
-        return new ResponseEntity<>(authService.changePassword(changePasswordRequest, connectedUser), HttpStatus.OK);
+    ResponseEntity<Response> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest, Principal connectedUser){
+        Response response = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.changePassword(changePasswordRequest, connectedUser))
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/forget-password")
-    ResponseEntity<AuthResponse> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
-        return new ResponseEntity<>(authService.forgotPassword(forgotPasswordRequest), HttpStatus.OK);
+    ResponseEntity<Response> forgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest){
+        Response response = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.forgotPassword(forgotPasswordRequest))
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/reset-password")
-    ResponseEntity<AuthResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
-        return new ResponseEntity<>(authService.resetPassword(resetPasswordRequest), HttpStatus.OK);
+    ResponseEntity<Response> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
+        Response response = Response.builder()
+                .code(HttpStatus.CREATED.value())
+                .success(true)
+                .data(authService.resetPassword(resetPasswordRequest))
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping
