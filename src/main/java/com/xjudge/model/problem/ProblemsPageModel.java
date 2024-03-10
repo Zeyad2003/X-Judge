@@ -17,5 +17,9 @@ public class ProblemsPageModel {
 
     String problemTitle;
 
+    String problemLink;
+
+    String contestLink;
+
     Integer solvedCount;
 }

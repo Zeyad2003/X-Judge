@@ -28,6 +28,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
     public Problem GetProblem(String contestId, String problemId) {
         String URL = "https://codeforces.com";
         String targetProblem = URL + "/problemset/problem/" + contestId + "/" + problemId;
+        String contestLink = URL + "/contest/" + contestId;
         Document problemDocument;
 
         try {
@@ -90,6 +91,8 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 .source(OnlineJudgeType.CodeForces)
                 .title(title)
                 .problemCode(problemCode)
+                .problemLink(targetProblem)
+                .contestLink(contestLink)
                 .timeLimit(timeLimit)
                 .memoryLimit(memoryLimit)
                 .samples(samplesList)

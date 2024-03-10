@@ -1,10 +1,8 @@
 package com.xjudge.controller.problem;
 
-import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeValidationException;
 
 import com.xjudge.mapper.ProblemMapper;
-import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.response.Response;
@@ -42,7 +40,10 @@ public class ProblemController {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ProblemsPageModel> pagedResult = problemService.getAllProblems(paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
-        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -50,7 +51,10 @@ public class ProblemController {
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
     public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
         Problem problem = problemService.getProblemByCodeAndSource(problemCode, problemSource);
-        Response<ProblemModel> response = new Response<>(HttpStatus.OK.value(), true, problemMapper.toModel(problem), "Problem fetched successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(problemMapper.toModel(problem))
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -58,7 +62,10 @@ public class ProblemController {
     @Operation(summary = "Submit a problem", description = "Submit a specific problem to be judged.")
     public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
-        Response<Submission> response = new Response<>(HttpStatus.OK.value(), true, problemService.submit(info), "Problem submitted successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(problemService.submit(info))
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,7 +76,10 @@ public class ProblemController {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ProblemsPageModel> pagedResult = problemService.searchByTitle(title, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
-        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -80,7 +90,10 @@ public class ProblemController {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ProblemsPageModel> pagedResult = problemService.searchBySource(source, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
-        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -91,7 +104,10 @@ public class ProblemController {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ProblemsPageModel> pagedResult = problemService.searchByProblemCode(problemCode, paging);
         PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
-        Response<PaginationResponse<ProblemsPageModel>> response = new Response<>(HttpStatus.OK.value(), true, paginatedData, "Problems fetched successfully.");
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

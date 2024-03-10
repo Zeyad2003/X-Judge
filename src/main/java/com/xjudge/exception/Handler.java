@@ -2,6 +2,7 @@ package com.xjudge.exception;
 
 import com.xjudge.exception.auth.AuthException;
 import com.xjudge.exception.auth.AuthExceptionMessage;
+import com.xjudge.model.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,7 +49,11 @@ public class Handler {
                 webRequest.getDescription(false),
                 exception.getErrors()
         );
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        Response errorResponse = Response.builder()
+                .success(false)
+                .error(errorDetails)
+                .build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<?> createResponseEntity(Exception exception, String location, HttpStatus status, WebRequest webRequest) {
@@ -59,6 +64,10 @@ public class Handler {
                 DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
                 webRequest.getDescription(false)
         );
-        return new ResponseEntity<>(errorDetails, status);
+        Response errorResponse = Response.builder()
+                .success(false)
+                .error(errorDetails)
+                .build();
+        return new ResponseEntity<>(errorResponse, status);
     }
 }

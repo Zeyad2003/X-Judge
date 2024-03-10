@@ -18,5 +18,5 @@ public class AuthExceptionMessage {
 
     private String desc;
 
-    private Map<String, String> errors;
+    private Map<String, String> validations;
 }
