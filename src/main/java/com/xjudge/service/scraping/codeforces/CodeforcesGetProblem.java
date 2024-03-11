@@ -62,6 +62,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         String noteSection = problemDocument.select(".note").outerHtml();
         String problemTags = problemDocument.select(".tag-box").outerHtml();
         String sampleTests = problemDocument.select(".sample-tests > .sample-test").html();
+        String contestName = problemDocument.select(".rtable > tbody > tr > th > a").getFirst().text();
 
         List<Sample> samplesList = new ArrayList<>();
         var samples = problemDocument.select(".sample-tests > .sample-test");
@@ -84,7 +85,8 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 "outputMethod", outputMethod,
                 "noteSection", noteSection,
                 "problemTags", problemTags,
-                "sampleTests", sampleTests
+                "sampleTests", sampleTests,
+                "contestName", contestName
         );
 
         return Problem.builder()

@@ -57,6 +57,7 @@ public class ProblemServiceImp implements ProblemService {
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
                 .problemLink(problem.getProblemLink())
+                .contestName(problem.getExtraInfo().get("contestName").toString())
                 .contestLink(problem.getContestLink())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
