@@ -24,4 +24,13 @@ public class Sample {
     @Column(columnDefinition = "LONGTEXT")
     @Lob
     private String output;
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
+    private String note;
+
+    public Sample(Long id, String input, String output) {
+        this.id = id;
+        this.input = input;
+        this.output = output;
+    }
 }

@@ -7,15 +7,15 @@ import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.service.sample.SampleService;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,38 +28,69 @@ public class AtCoderGetProblem implements GetProblemAutomation {
         String atCoderURL = "https://atcoder.jp/contests/";
         String targetProblem = atCoderURL + contestId + "/tasks/" + problemId;
         String contestLink = atCoderURL + contestId;
+        Connection connection;
         Document problemDocument;
         try {
-            problemDocument = Jsoup.connect(targetProblem).get();
+            connection = Jsoup.connect(targetProblem);
+            problemDocument = connection.get();
         }catch (Exception e){
-            throw new XJudgeException("AtCoder may be down at the current time", AtCoderGetProblem.class.getName(), HttpStatus.NOT_FOUND);
+            throw new XJudgeException("Problem not found", AtCoderGetProblem.class.getName(), HttpStatus.NOT_FOUND);
         }
-
-//        String problemHTML = problemDocument.select("#task-statement > .lang > .lang-en").outerHtml();
 
         Elements ProblemStatement = problemDocument.select("#task-statement > .lang > .lang-en > div");
 
         String title = problemDocument.select(".col-sm-12").get(1).select(".h2").text().substring(4);
-        String[] tmLimit = problemDocument.select(".col-sm-12").get(1).select("p").get(0).text().split("/");
+        String[] tmLimit = problemDocument.select(".col-sm-12").get(1).select("p").getFirst().text().split("/");
         String timeLimit = tmLimit[0].substring(11);
         String memoryLimit = tmLimit[1].substring(14);
-        String statement = ProblemStatement.select(".part").get(0).select("section").outerHtml();
-        String constrains = ProblemStatement.select(".part").get(1).select("section").outerHtml();
-        String inputSpecification = ProblemStatement.select(".part").get(2).select("section").outerHtml();
-        String outputSpecification = ProblemStatement.select(".part").get(3).select("section").outerHtml();
+        String contestName = problemDocument.select(".contest-title").text();
 
+        String statement = "", constrains = "", inputSpecification = "", outputSpecification = "";
         List<Sample> samples = new ArrayList<>();
 
-        for (int i = 4; i < ProblemStatement.size() - 1; i+=2) {
-            String input = ProblemStatement.select(".part").get(i).select("section > pre").outerHtml();
-            String output = ProblemStatement.select(".part").get(i+1).select("section > pre").outerHtml();
-            Sample sample = new Sample(0L, input, output);
-            samples.add(sample);
+        for (Element part : ProblemStatement.select(".part")) {
+            String header = part.select("h3").text();
+            if (header.startsWith("Sample Input")) {
+                String input = part.select("section > pre").outerHtml();
+                Sample sample = new Sample(0L, input, "");
+                samples.add(sample);
+            } else if (header.startsWith("Sample Output")) {
+                String output = part.select("section > pre").outerHtml();
+                samples.getLast().setOutput(output);
+
+                Elements elements = part.select("section *");
+                elements.removeIf(el -> !(el.tagName().equals("p") || el.tagName().equals("ul")));
+                Set<Element> uniqueElements = new LinkedHashSet<>(elements);
+                elements.clear();
+                elements.addAll(uniqueElements);
+                String SampleTestNote = elements.outerHtml();
+                samples.getLast().setNote(SampleTestNote);
+            } else {
+                switch (header) {
+                    case "Problem Statement":
+                        Elements elements = part.select("section :not(h3)");
+                        Set<Element> uniqueElements = new LinkedHashSet<>(elements);
+                        elements.clear();
+                        elements.addAll(uniqueElements);
+                        statement = elements.outerHtml();
+                        break;
+                    case "Constraints":
+                        constrains = part.select("section").outerHtml();
+                        break;
+                    case "Input":
+                        inputSpecification = part.select("section :not(h3)").outerHtml();
+                        break;
+                    case "Output":
+                        outputSpecification = part.select("section :not(h3)").outerHtml();
+                        break;
+                }
+            }
         }
         samples = sampleService.saveAll(samples);
 
         Map<String, Object> extraInfo = Map.of(
-                "constrains", constrains
+                "constrains", constrains,
+                "contestName", contestName
         );
 
         return Problem.builder()
