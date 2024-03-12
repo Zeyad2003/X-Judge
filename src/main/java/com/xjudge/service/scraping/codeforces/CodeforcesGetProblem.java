@@ -70,7 +70,19 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
             var inputs = sample.select(".input > pre");
             var outputs = sample.select(".output > pre");
             for (int i = 0; i < inputs.size(); i++) {
-                Sample s = new Sample(0L, inputs.get(i).outerHtml(), outputs.get(i).outerHtml());
+                StringBuilder inputText = new StringBuilder();
+                Elements divsInPre = inputs.get(i).select("div");
+                if (divsInPre.isEmpty()) {
+                    inputText.append(outputs.get(i).outerHtml());
+                } else {
+                    inputText.append("<pre>");
+                    for (var div : divsInPre) {
+                        inputText.append(div.text()).append("<br>");
+                    }
+                    inputText.append("</pre>");
+                    System.out.println("The pre element contains div elements.");
+                }
+                Sample s = new Sample(0L, inputText.toString(), outputs.get(i).outerHtml());
                 samplesList.add(s);
             }
         }

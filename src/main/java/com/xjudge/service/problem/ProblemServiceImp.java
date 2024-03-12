@@ -102,6 +102,7 @@ public class ProblemServiceImp implements ProblemService {
                 .oj(OnlineJudgeType.CodeForces)
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
+                .contestName(problem.getExtraInfo().get("contestName").toString())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
     }
@@ -113,6 +114,7 @@ public class ProblemServiceImp implements ProblemService {
                 .oj(OnlineJudgeType.CodeForces)
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
+                .contestName(problem.getExtraInfo().get("contestName").toString())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
     }
@@ -124,6 +126,7 @@ public class ProblemServiceImp implements ProblemService {
                 .oj(OnlineJudgeType.CodeForces)
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
+                .contestName(problem.getExtraInfo().get("contestName").toString())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
     }
