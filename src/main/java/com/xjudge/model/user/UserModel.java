@@ -5,6 +5,7 @@ import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.UserContest;
 import com.xjudge.entity.UserGroup;
+import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -60,6 +61,9 @@ public class UserModel {
     private Long solvedCount;
 
     private Long attemptedCount;
+
+    @JsonIgnore
+    private UserRole role;
 
     @JsonIgnore
     Set<Submission> submissions;

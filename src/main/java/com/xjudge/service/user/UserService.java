@@ -6,7 +6,7 @@ import com.xjudge.model.user.UserModel;
 import java.util.List;
 
 public interface UserService {
-    void save(User user);
+    User save(User user);
     UserModel findByHandle(String userHandle);
     UserModel findByEmail(String userEmail);
     UserModel findById(Long userId);

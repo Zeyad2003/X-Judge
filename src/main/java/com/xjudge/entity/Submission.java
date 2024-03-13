@@ -1,6 +1,7 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
@@ -29,7 +30,7 @@ public class Submission extends BaseEntity<Long> {
     private OnlineJudgeType ojType;
 
     @Column(columnDefinition = "LONGTEXT")
-    @Size(min = 20, max = 65535)
+    @Size(max = 65535)
     private String solution;
 
     private String language;
@@ -51,12 +52,14 @@ public class Submission extends BaseEntity<Long> {
     @ToString.Exclude
     private Contest contest;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "problem_id", nullable = false)
+    @JoinColumn(name = "problem_id")
     @ToString.Exclude
     private Problem problem;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.LAZY , cascade = {CascadeType.PERSIST , CascadeType.MERGE})
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private User user;

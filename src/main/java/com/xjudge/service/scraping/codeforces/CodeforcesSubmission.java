@@ -109,7 +109,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
         }
     }
 
-    @Override
+
     public void login() {
         try {
             driver.get("https://codeforces.com/enter?back=/problemset/submit");

@@ -15,4 +15,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     Page<Problem> findByTitleContaining(String title, Pageable pageable);
     Page<Problem> findBySourceContaining(OnlineJudgeType source, Pageable pageable);
     Page<Problem> findByProblemCodeContaining(String problemCode, Pageable pageable);
+
+
 }
