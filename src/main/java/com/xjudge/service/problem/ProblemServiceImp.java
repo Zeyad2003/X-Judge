@@ -79,8 +79,7 @@ public class ProblemServiceImp implements ProblemService {
             }
             user = userService.save(user);
             submission.setUser(user);
-            problemRepo.save(problem);
-            return submission;
+            return submissionService.save(submission);
 
         } else if (info.ojType() == OnlineJudgeType.AtCoder) {
             Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
