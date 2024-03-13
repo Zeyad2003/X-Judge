@@ -21,7 +21,7 @@ public class SeleniumConfig {
     public WebDriver getDriver(){
         WebDriverManager.chromedriver().browserVersion(browserVersion).setup();
         ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless"); // This line enables headless mode
+        options.addArguments("--headless"); // This line enables headless mode
         options.setBinary(browserPath);
         return new ChromeDriver(options);
     }
