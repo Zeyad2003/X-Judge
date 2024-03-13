@@ -1,6 +1,7 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
@@ -57,20 +58,23 @@ public class Problem extends BaseEntity<Long> {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Sample> samples = new ArrayList<>();
 
-    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
     @ToString.Exclude
-    Set<Submission> submissions = new HashSet<>();
+    Set<Submission> submissions;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<ContestProblem> contests = new HashSet<>();
+    private Set<ContestProblem> contests ;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<UserProblem> userProblems = new HashSet<>();
+    private Set<UserProblem> userProblems;
 
     @Convert(converter = JsonDataConverter.class)
     @Column(columnDefinition = "json")
-    private Map<String, Object> extraInfo = new HashMap<>();
+    private Map<String, Object> extraInfo;
 
 }

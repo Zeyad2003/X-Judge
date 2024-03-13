@@ -10,44 +10,32 @@ import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
-import com.xjudge.service.scraping.SubmissionAutomation;
-import com.xjudge.service.scraping.atcoder.AtCoderGetProblem;
-import com.xjudge.service.scraping.codeforces.CodeforcesGetProblem;
+import com.xjudge.service.scraping.atcoder.AtCoderSubmission;
+import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
 import com.xjudge.service.submission.SubmissionService;
 import com.xjudge.service.user.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class ProblemServiceImp implements ProblemService {
 
     private final ProblemRepository problemRepo;
     private final GetProblemAutomation codeforcesGetProblem;
     private final GetProblemAutomation atCoderGetProblem;
-    private final SubmissionAutomation submissionAutomation;
+    private final CodeforcesSubmission codeforcesSubmission;
+    private final AtCoderSubmission atCoderSubmission;
     private final SubmissionService submissionService;
     private final UserService userService;
     private final UserMapper mapper;
 
-    public ProblemServiceImp(ProblemRepository problemRepo,
-                             CodeforcesGetProblem codeforcesGetProblem,
-                             AtCoderGetProblem atCoderGetProblem,
-                             SubmissionAutomation submissionAutomation,
-                             SubmissionService submissionService,
-                             UserService userService,
-                             UserMapper mapper) {
-        this.problemRepo = problemRepo;
-        this.codeforcesGetProblem = codeforcesGetProblem;
-        this.atCoderGetProblem = atCoderGetProblem;
-        this.submissionAutomation = submissionAutomation;
-        this.submissionService = submissionService;
-        this.userService = userService;
-        this.mapper = mapper;
-    }
 
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
@@ -81,14 +69,30 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Submission submit(SubmissionInfoModel info) {
         User user = mapper.toEntity(userService.findByHandle(info.userHandle()));
-
         if (info.ojType() == OnlineJudgeType.CodeForces) {
             Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
-            Submission submission = submissionAutomation.submit(info);
-
+            Submission submission = codeforcesSubmission.submit(info);
             submission.setProblem(problem);
+            user.setAttemptedCount(user.getAttemptedCount()+1);
+            if(submission.getSubmissionStatus().equalsIgnoreCase("accepted")){
+                user.setSolvedCount(user.getSolvedCount()+1);
+            }
+            user = userService.save(user);
             submission.setUser(user);
+            problemRepo.save(problem);
+            return submission;
 
+        } else if (info.ojType() == OnlineJudgeType.AtCoder) {
+            Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
+            System.out.println(problem);
+            Submission submission = atCoderSubmission.submit(info);
+            submission.setProblem(problem);
+            user.setAttemptedCount(user.getAttemptedCount()+1);
+            if(submission.getSubmissionStatus().equalsIgnoreCase("AC")){
+                user.setSolvedCount(user.getSolvedCount()+1);
+            }
+            user =userService.save(user);
+            submission.setUser(user);
             return submissionService.save(submission);
         }
 
@@ -136,11 +140,14 @@ public class ProblemServiceImp implements ProblemService {
         String problemId = problemCode.replaceAll("\\d+(.*)", "$1");
 
         Problem problem = codeforcesGetProblem.GetProblem(contestId, problemId);
+        problem.setSubmissions(new HashSet<>());
+        problem.setUserProblems(new HashSet<>());
+        problem.setContests(new HashSet<>());
 
-        Optional<Problem> storedProblem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
-        storedProblem.ifPresent(value -> problem.setId(value.getId()));
+//        Optional<Problem> storedProblem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
+//        storedProblem.ifPresent(value -> problem.setId(value.getId()));
 
-        problemRepo.save(problem);
+        problem = problemRepo.save(problem);
 
         return problem;
     }
