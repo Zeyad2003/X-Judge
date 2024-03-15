@@ -45,7 +45,8 @@ public class AtCoderGetProblem implements GetProblemAutomation {
         String memoryLimit = tmLimit[1].substring(14);
         String contestName = problemDocument.select(".contest-title").text();
 
-        String statement = "", constrains = "", inputSpecification = "", outputSpecification = "";
+        String statement = "", constrains = "", inputSpecification = "", outputSpecification = "", story = "", scoring = "",
+        inputAndOutput = "", inputGeneration = "", tools = "";
         List<Sample> samples = new ArrayList<>();
 
         for (Element part : ProblemStatement.select(".part")) {
@@ -65,6 +66,8 @@ public class AtCoderGetProblem implements GetProblemAutomation {
                 elements.addAll(uniqueElements);
                 String SampleTestNote = elements.outerHtml();
                 samples.getLast().setNote(SampleTestNote);
+            } else if (header.startsWith("Tools")) {
+                tools = part.select("section :not(h3)").outerHtml();
             } else {
                 switch (header) {
                     case "Problem Statement":
@@ -83,12 +86,30 @@ public class AtCoderGetProblem implements GetProblemAutomation {
                     case "Output":
                         outputSpecification = part.select("section :not(h3)").outerHtml();
                         break;
+                    case "Story":
+                        story = part.select("section :not(h3)").outerHtml();
+                        break;
+                    case "Scoring":
+                        scoring = part.select("section :not(h3)").outerHtml();
+                        break;
+                    case "Input and Output":
+                        inputAndOutput = part.select("section :not(h3)").outerHtml();
+                        break;
+                    case "Input Generation":
+                        inputGeneration = part.select("section :not(h3)").outerHtml();
+                        break;
+
                 }
             }
         }
         samples = sampleService.saveAll(samples);
 
         Map<String, Object> extraInfo = Map.of(
+                "story", story,
+                "scoring", scoring,
+                "inputAndOutput", inputAndOutput,
+                "inputGeneration", inputGeneration,
+                "tools", tools,
                 "constrains", constrains,
                 "contestName", contestName
         );
