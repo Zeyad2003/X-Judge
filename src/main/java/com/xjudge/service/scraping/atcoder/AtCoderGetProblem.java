@@ -39,7 +39,7 @@ public class AtCoderGetProblem implements GetProblemAutomation {
 
         Elements ProblemStatement = problemDocument.select("#task-statement > .lang > .lang-en > div");
 
-        String title = problemDocument.select(".col-sm-12").get(1).select(".h2").text().substring(4);
+        String title = problemDocument.select(".col-sm-12 .h2").getFirst().ownText().substring(4);
         String[] tmLimit = problemDocument.select(".col-sm-12").get(1).select("p").getFirst().text().split("/");
         String timeLimit = tmLimit[0].substring(11);
         String memoryLimit = tmLimit[1].substring(14);
@@ -75,7 +75,7 @@ public class AtCoderGetProblem implements GetProblemAutomation {
                         statement = elements.outerHtml();
                         break;
                     case "Constraints":
-                        constrains = part.select("section").outerHtml();
+                        constrains = part.select("section :not(h3)").outerHtml();
                         break;
                     case "Input":
                         inputSpecification = part.select("section :not(h3)").outerHtml();
