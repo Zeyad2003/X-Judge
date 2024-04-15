@@ -33,7 +33,6 @@ public class ContestClientRequest {
     @NotNull(message = "You must select the visibility of the contest.")
     private ContestVisibility visibility;
 
-    @Min(value = 1 , message = "groupId can not be less than 1")
     private Long groupId = 0L;
 
     private String password;
