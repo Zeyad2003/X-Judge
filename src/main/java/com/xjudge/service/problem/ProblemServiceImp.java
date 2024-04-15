@@ -18,6 +18,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -67,8 +68,8 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
-    public Submission submit(SubmissionInfoModel info) {
-        User user = mapper.toEntity(userService.findByHandle(info.userHandle()));
+    public Submission submit(SubmissionInfoModel info , Authentication authentication) {
+        User user = mapper.toEntity(userService.findByHandle(authentication.getName()));
         if (info.ojType() == OnlineJudgeType.CodeForces) {
             Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
             Submission submission = codeforcesSubmission.submit(info);
