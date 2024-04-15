@@ -92,7 +92,7 @@ public class AtCoderSubmission implements SubmissionAutomation {
                 .submitTime(Instant.now())
                 .memoryUsage(memory)
                 .timeUsage(time)
-                .verdict(status)
+                .verdict((status.equals("AC")? "Accepted" : status))
                 .submissionStatus("submitted")
                 .isOpen(data.isOpen() == null || data.isOpen())
                 .build();

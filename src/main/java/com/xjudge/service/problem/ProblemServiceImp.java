@@ -75,7 +75,7 @@ public class ProblemServiceImp implements ProblemService {
             Submission submission = codeforcesSubmission.submit(info);
             submission.setProblem(problem);
             user.setAttemptedCount(user.getAttemptedCount()+1);
-            if(submission.getSubmissionStatus().equalsIgnoreCase("accepted")){
+            if(submission.getVerdict().equalsIgnoreCase("Accepted")){
                 user.setSolvedCount(user.getSolvedCount()+1);
             }
             user = userService.save(user);
@@ -88,7 +88,7 @@ public class ProblemServiceImp implements ProblemService {
             Submission submission = atCoderSubmission.submit(info);
             submission.setProblem(problem);
             user.setAttemptedCount(user.getAttemptedCount()+1);
-            if(submission.getSubmissionStatus().equalsIgnoreCase("AC")){
+            if(submission.getVerdict().equalsIgnoreCase("Accepted")){
                 user.setSolvedCount(user.getSolvedCount()+1);
             }
             user =userService.save(user);
