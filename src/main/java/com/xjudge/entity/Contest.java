@@ -33,7 +33,6 @@ public class Contest extends BaseEntity<Long> {
     @Column(nullable = false)
     private String title;
 
-    @Future(message = "The contest begin time must be in the future.")
     @Column(nullable = false, updatable = false)
     private Instant beginTime;
 

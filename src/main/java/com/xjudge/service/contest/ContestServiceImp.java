@@ -5,8 +5,10 @@ import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.*;
+import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.contest.modification.ContestProblemset;
+import com.xjudge.model.enums.ContestStatus;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -25,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,8 +50,11 @@ public class ContestServiceImp implements ContestService {
     private final UserContestRepo userContestRepo;
 
     @Override
-    public Page<Contest> getAllContests(Pageable pageable) {
-        return contestRepo.findAll(pageable);
+    public Page<ContestPageModel>  getAllContests(Pageable pageable) {
+        Page<Contest> contests = contestRepo.findAll(pageable);
+        return contests.map(
+                contestMapper::toContestPageModel
+        );
     }
 
 
@@ -168,19 +175,41 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public SubmissionModel submitInContest(Long id, SubmissionInfoModel info) {
+    public SubmissionModel submitInContest(Long id, SubmissionInfoModel info , Authentication authentication) {
         Contest contest = getContest(id);
+        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
+        ContestStatus contestStatus = checkContestStatus(contest);
+
+        if(contestStatus == ContestStatus.SCHEDULED){
+            throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+        }
+
 
         if(!contestProblemRepo.existsByProblemCodeAndContestId(info.problemCode() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-        Submission submission = problemService.submit(info);
+        UserContest userContest = getUserContest(contest , user.getHandle());
+
+        if(!userContest.getIsParticipant()){
+            handleContestUserRelation(user , contest , userContest.getIsOwner(), true);
+            contestRepo.save(contest);
+            userContest = getUserContest(contest , user.getHandle());
+        }
+
+        Submission submission = problemService.submit(info, authentication);
+
+        if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode())){
+            Duration duration = Duration.between(contest.getBeginTime() , submission.getSubmitTime());
+            userContest.setUserContestPenalty(userContest.getUserContestPenalty() + duration.getSeconds());
+            userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.problemCode()));
+        } else if (submission.getVerdict().startsWith("W")) {
+            userContest.setUserContestPenalty(userContest.getUserContestPenalty() + 20 * 60);
+        }
+
+        contest.getUsers().add(userContest);
 
         submission.setContest(contest);
-
-        //TODO: update contest rank
-
         submission = submissionService.save(submission);
 
         return submissionMapper.toModel(submission);
@@ -232,11 +261,10 @@ public class ContestServiceImp implements ContestService {
                 .isParticipant(isParticipant)
                 .userContestRank(0)
                 .userContestScore(0)
-                .userContestPenalty(0)
+                .userContestPenalty(0L)
                 .build();
 
         contest.getUsers().add(userContest);
-
     }
 
 
@@ -260,5 +288,42 @@ public class ContestServiceImp implements ContestService {
         return contest;
     }
 
+    private ContestStatus checkContestStatus(Contest contest){
+        Instant currentTime = Instant.now();
+        if(currentTime.isBefore(contest.getBeginTime())){
+            return ContestStatus.SCHEDULED;
+        } else if(currentTime.isBefore(contest.getBeginTime().plus(contest.getDuration()))){
+            return ContestStatus.RUNNING;
+        }
+        return ContestStatus.ENDED;
+    }
 
+    private UserContest getUserContest(Contest contest , String handle){
+        return contest.getUsers()
+                .stream()
+                .filter(userContest -> userContest.getUser().getHandle().equals(handle))
+                .findFirst()
+                .orElseGet(() -> UserContest.builder()
+                        .isParticipant(false)
+                        .isOwner(false)
+                        .build());
+    }
+
+    private Integer getProblemContestScore(Contest contest , String problemCode){
+        return contest.getProblemSet()
+                .stream()
+                .filter(contestProblem -> contestProblem.getProblemCode().equals(problemCode))
+                .findFirst()
+                .orElseThrow().getProblemWeight();
+    }
+
+
+
+    private boolean isProblemAcceptedByUser(long contestId , long userId , String problemCode){
+        return submissionService.getSubmissionsByContestId(contestId)
+                .stream()
+                .anyMatch(submission ->submission.getVerdict().equals("Accepted") &&
+                        submission.getProblem().getProblemCode().equals(problemCode) &&
+                        submission.getUser().getId().equals(userId));
+    }
 }

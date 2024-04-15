@@ -40,7 +40,6 @@ public class ContestClientRequest {
     private String description;
 
     @NotNull(message = "The contest begin time is required to create a contest.")
-    @Future(message = "The contest begin time must be in the future.")
     private Instant beginTime;
 
     @NotNull(message = "The problem Set can't be null.")

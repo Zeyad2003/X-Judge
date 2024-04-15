@@ -2,6 +2,8 @@ package com.xjudge.service.contest;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
+import com.xjudge.entity.UserContest;
+import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -13,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface ContestService {
-    Page<Contest> getAllContests(Pageable pageable);
+    Page<ContestPageModel>  getAllContests(Pageable pageable);
 
     Contest createContest(ContestClientRequest creationModel , Authentication authentication);
 
@@ -27,7 +29,7 @@ public interface ContestService {
 
     ProblemModel getContestProblem(Long id, String problemHashtag);
 
-    SubmissionModel submitInContest(Long id, SubmissionInfoModel info);
+    SubmissionModel submitInContest(Long id, SubmissionInfoModel info , Authentication authentication);
 
     List<SubmissionModel> getContestSubmissions(Long id);
     void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
