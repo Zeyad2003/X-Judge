@@ -30,6 +30,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
+    public List<Submission> getSubmissionsByContestIdAndUserId(Long contestId, Long userId) {
+        return submissionRepo.findSubmissionsByContestIdAndUserId(contestId , userId);
+    }
+
+    @Override
     public Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType) {
         return submissionRepo.getSolvedCount(problemCode, onlineJudgeType);
     }

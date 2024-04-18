@@ -12,5 +12,7 @@ public interface SubmissionService {
 
     List<Submission> getSubmissionsByContestId(Long contestId);
 
+    List<Submission> getSubmissionsByContestIdAndUserId(Long contestId , Long userId);
+
     Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType);
 }
