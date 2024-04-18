@@ -6,6 +6,8 @@ import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.*;
 import com.xjudge.model.contest.ContestPageModel;
+import com.xjudge.model.contest.ContestRankModel;
+import com.xjudge.model.contest.ContestRankSubmission;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.contest.modification.ContestProblemset;
 import com.xjudge.model.enums.ContestStatus;
@@ -15,12 +17,15 @@ import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.repository.ContestProblemRepo;
 import com.xjudge.repository.ContestRepo;
-import com.xjudge.repository.UserContestRepo;
+import com.xjudge.service.contest.usercontest.UserContestService;
 import com.xjudge.service.group.GroupService;
 import com.xjudge.service.problem.ProblemService;
 import com.xjudge.service.submission.SubmissionService;
 import com.xjudge.service.user.UserService;
+import com.xjudge.util.ContestantComparator;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -30,7 +35,9 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +54,9 @@ public class ContestServiceImp implements ContestService {
     private final UserMapper userMapper;
     private final GroupService groupService;
     private final GroupMapper groupMapper;
-    private final UserContestRepo userContestRepo;
+    private final UserContestService userContestService;
+    private final UserContestMapper userContestMapper;
+     private final Logger logger = LoggerFactory.getLogger(ContestServiceImp.class);
 
     @Override
     public Page<ContestPageModel>  getAllContests(Pageable pageable) {
@@ -120,7 +129,7 @@ public class ContestServiceImp implements ContestService {
 
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
 
-        if(!userContestRepo.existsById(new UserContestKey(user.getId() , contest.getId()))) {
+        if(!userContestService.existsById(new UserContestKey(user.getId() , contest.getId()))) {
             handleContestUserRelation(user, contest, true, false);
         }
 
@@ -184,7 +193,6 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-
         if(!contestProblemRepo.existsByProblemCodeAndContestId(info.problemCode() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
@@ -192,6 +200,7 @@ public class ContestServiceImp implements ContestService {
         UserContest userContest = getUserContest(contest , user.getHandle());
 
         if(!userContest.getIsParticipant()){
+            logger.info("Enter In participation part !");
             handleContestUserRelation(user , contest , userContest.getIsOwner(), true);
             contestRepo.save(contest);
             userContest = getUserContest(contest , user.getHandle());
@@ -199,16 +208,17 @@ public class ContestServiceImp implements ContestService {
 
         Submission submission = problemService.submit(info, authentication);
 
+       logger.info("isProblemAccepted : " + isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode()));
         if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode())){
             Duration duration = Duration.between(contest.getBeginTime() , submission.getSubmitTime());
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + duration.getSeconds());
             userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.problemCode()));
+            userContest.setNumOfAccepted(userContest.getNumOfAccepted() + 1);
         } else if (submission.getVerdict().startsWith("W")) {
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + 20 * 60);
         }
 
         contest.getUsers().add(userContest);
-
         submission.setContest(contest);
         submission = submissionService.save(submission);
 
@@ -222,6 +232,41 @@ public class ContestServiceImp implements ContestService {
 
         return submissionMapper.toModels(submissions);
     }
+
+    @Override
+    public List<ContestRankModel> getRank(Long contestId) {
+        Contest contest = getContest(contestId);
+
+        return contest.getUsers()
+                .stream().filter(UserContest::getIsParticipant)
+                .map(userContest ->
+                        userContestMapper.toContestRankModel(userContest , getContestRankModel(userContest , contest))
+                       )
+                .sorted(new ContestantComparator())
+                .toList();
+
+    }
+
+    private List<ContestRankSubmission> getContestRankModel (UserContest userContest , Contest contest){
+        return submissionService.getSubmissionsByContestIdAndUserId(contest.getId(), userContest.getUser().getId())
+                .stream()
+                .map(submission ->
+                        userContestMapper.toContestRankSubmissionModel(submission , getProblemIndex(contest , submission.getProblem().getProblemCode()) , contest.getBeginTime() , submission.getSubmitTime())
+                )
+                .sorted(Comparator.comparing(ContestRankSubmission::getProblemIndex))
+                .toList()
+                ;
+    };
+
+
+    private String getProblemIndex(Contest contest , String problemCode){
+        return contest.getProblemSet()
+                .stream()
+                .filter(contestProblem -> contestProblem.getProblemCode().equals(problemCode))
+                .findFirst()
+                .orElseThrow(() -> new XJudgeException("PROBLEM_NOT_Found" , ContestServiceImp.class.getName() , HttpStatus.INTERNAL_SERVER_ERROR))
+                .getProblemHashtag();
+    };
 
 
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
@@ -250,15 +295,16 @@ public class ContestServiceImp implements ContestService {
         }
     }
 
-    public void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant) {
+    public void handleContestUserRelation(User user, Contest contest , boolean isOwner , boolean isParticipant) {
         UserContestKey userContestKey = new UserContestKey(user.getId(), contest.getId());
         UserContest userContest = UserContest.builder()
                 .id(userContestKey)
                 .contest(contest)
                 .user(user)
-                .isOwner(isPOwner)
+                .isOwner(isOwner)
                 .isFavorite(false)
                 .isParticipant(isParticipant)
+                .numOfAccepted(0)
                 .userContestRank(0)
                 .userContestScore(0)
                 .userContestPenalty(0L)
@@ -266,6 +312,8 @@ public class ContestServiceImp implements ContestService {
 
         contest.getUsers().add(userContest);
     }
+
+
 
 
     private boolean checkIfProblemHashtagDuplicated(List<ContestProblemset> problemset){

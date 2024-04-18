@@ -4,6 +4,7 @@ import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
 import com.xjudge.entity.UserContest;
 import com.xjudge.model.contest.ContestPageModel;
+import com.xjudge.model.contest.ContestRankModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -33,4 +34,6 @@ public interface ContestService {
 
     List<SubmissionModel> getContestSubmissions(Long id);
     void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
+
+    List<ContestRankModel> getRank(Long contestId);
 }
