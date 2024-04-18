@@ -9,14 +9,12 @@ import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -108,6 +106,17 @@ public class ContestController {
     @GetMapping("/{id}/submissions")
     public ResponseEntity<List<SubmissionModel>> getContestSubmissions(@PathVariable Long id ,  @RequestParam(defaultValue = "") String password){
         return new ResponseEntity<>(contestService.getContestSubmissions(id), HttpStatus.OK);
+    }
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @GetMapping("/{id}/rank")
+    @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
+    public ResponseEntity<Response> getRank(@PathVariable long id , @RequestParam(defaultValue = "") String password){
+       Response response =  Response.builder()
+               .data(contestService.getRank(id))
+               .success(true)
+               .build();
+       return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
 }
