@@ -1,6 +1,5 @@
 package com.xjudge.service.problem;
 
-import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
@@ -9,7 +8,6 @@ import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.repository.CompilerRepo;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import com.xjudge.service.scraping.atcoder.AtCoderSubmission;
@@ -24,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,7 +29,6 @@ import java.util.Optional;
 public class ProblemServiceImp implements ProblemService {
 
     private final ProblemRepository problemRepo;
-    private final CompilerRepo compilerRepo;
     private final GetProblemAutomation codeforcesGetProblem;
     private final GetProblemAutomation atCoderGetProblem;
     private final CodeforcesSubmission codeforcesSubmission;
@@ -137,12 +133,6 @@ public class ProblemServiceImp implements ProblemService {
                 .contestName(problem.getExtraInfo().get("contestName").toString())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
-    }
-
-    @Override
-    public List<Compiler> getCompilersByOnlineJudgeType(OnlineJudgeType onlineJudge) {
-        if(onlineJudge == null) return compilerRepo.findAll();
-        return compilerRepo.findByOnlineJudgeType(onlineJudge);
     }
 
     private Problem scrapCodeForcesProblem(String problemCode) {

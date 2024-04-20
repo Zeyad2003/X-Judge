@@ -115,16 +115,4 @@ public class ProblemController {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-    @GetMapping("/compilers")
-    @Operation(summary = "Get all compilers", description = "Get all compilers available in the system.")
-    public ResponseEntity<?> getAllCompilers(@RequestParam(required = false) OnlineJudgeType onlineJudge) {
-        List<Compiler> compilers = problemService.getCompilersByOnlineJudgeType(onlineJudge);
-
-        Response response = Response.builder()
-                .success(true)
-                .data(compilers)
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 }

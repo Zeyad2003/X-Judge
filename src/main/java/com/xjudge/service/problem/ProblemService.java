@@ -24,6 +24,4 @@ public interface ProblemService {
     Page<ProblemsPageModel> searchBySource(String source, Pageable pageable);
 
     Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable);
-
-    List<Compiler> getCompilersByOnlineJudgeType(OnlineJudgeType onlineJudge);
 }
