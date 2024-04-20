@@ -5,6 +5,7 @@ import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.*;
+import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestRankModel;
 import com.xjudge.model.contest.ContestRankSubmission;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 
@@ -62,13 +62,15 @@ public class ContestServiceImp implements ContestService {
     public Page<ContestPageModel>  getAllContests(Pageable pageable) {
         Page<Contest> contests = contestRepo.findAll(pageable);
         return contests.map(
-                contestMapper::toContestPageModel
+               contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest))
         );
     }
 
 
+
+
     @Override
-    public Contest createContest(ContestClientRequest creationModel , Authentication authentication) {
+    public ContestModel createContest(ContestClientRequest creationModel , Authentication authentication) {
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
@@ -88,8 +90,9 @@ public class ContestServiceImp implements ContestService {
 
         contestRepo.save(contest);
 
-        return contest;
+        return contestMapper.toContestModel(contest , getContestOwner(contest) , checkContestStatus(contest));
     }
+
 
 
 
@@ -102,11 +105,18 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
+         contestOptional.get();
         return contestOptional.get();
     }
 
     @Override
-    public Contest updateContest(Long id, ContestClientRequest updatingModel , Authentication authentication) {
+    public ContestModel getContestData(Long id) {
+        Contest contest = getContest(id);
+        return contestMapper.toContestModel(contest , getContestOwner(contest) , checkContestStatus(contest));
+    }
+
+    @Override
+    public ContestModel updateContest(Long id, ContestClientRequest updatingModel , Authentication authentication) {
         Optional<Contest> contestOptional = contestRepo.findById(id);
 
         if(contestOptional.isEmpty()){
@@ -133,8 +143,9 @@ public class ContestServiceImp implements ContestService {
             handleContestUserRelation(user, contest, true, false);
         }
 
+        contestRepo.save(contest);
 
-        return contestRepo.save(contest);
+        return contestMapper.toContestModel(contest , getContestOwner(contest) , checkContestStatus(contest));
     }
 
     @Override
@@ -188,41 +199,63 @@ public class ContestServiceImp implements ContestService {
         Contest contest = getContest(id);
         User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
         ContestStatus contestStatus = checkContestStatus(contest);
+        UserContest userContest = getUserContest(contest , user.getHandle());
+        ContestProblem contestProblem = getContestProblemByCode(contest , info.problemCode());
+
 
         if(contestStatus == ContestStatus.SCHEDULED){
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
+
         if(!contestProblemRepo.existsByProblemCodeAndContestId(info.problemCode() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-        UserContest userContest = getUserContest(contest , user.getHandle());
 
         if(!userContest.getIsParticipant()){
             logger.info("Enter In participation part !");
-            handleContestUserRelation(user , contest , userContest.getIsOwner(), true);
-            contestRepo.save(contest);
-            userContest = getUserContest(contest , user.getHandle());
+            if(userContest.getIsOwner() || userContest.getIsFavorite()){
+                userContest.setIsParticipant(true);
+            }
+            else {
+                handleContestUserRelation(user , contest , false , true);
+                contestRepo.save(contest);
+                userContest = getUserContest(contest , user.getHandle());
+           }
+
         }
 
         Submission submission = problemService.submit(info, authentication);
 
        logger.info("isProblemAccepted : " + isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode()));
+
         if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode())){
             Duration duration = Duration.between(contest.getBeginTime() , submission.getSubmitTime());
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + duration.getSeconds());
             userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.problemCode()));
             userContest.setNumOfAccepted(userContest.getNumOfAccepted() + 1);
+            contestProblem.setNumberOfAccepted(contestProblem.getNumberOfAccepted() + 1);
         } else if (submission.getVerdict().startsWith("W")) {
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + 20 * 60);
         }
 
+        contestProblem.setNumberOfSubmission(contestProblem.getNumberOfSubmission() + 1);
+
+        contest.getProblemSet().add(contestProblem);
         contest.getUsers().add(userContest);
         submission.setContest(contest);
         submission = submissionService.save(submission);
 
         return submissionMapper.toModel(submission);
+    }
+
+    private ContestProblem getContestProblemByCode(Contest contest , String problemCode) {
+        return contest.getProblemSet()
+                .stream()
+                .filter(contestProblem -> contestProblem.getProblemCode().equals(problemCode))
+                .findFirst()
+                .orElseThrow(() -> new XJudgeException("There is no contest problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST));
     }
 
     @Override
@@ -295,7 +328,7 @@ public class ContestServiceImp implements ContestService {
         }
     }
 
-    public void handleContestUserRelation(User user, Contest contest , boolean isOwner , boolean isParticipant) {
+    public UserContest handleContestUserRelation(User user, Contest contest , boolean isOwner , boolean isParticipant) {
         UserContestKey userContestKey = new UserContestKey(user.getId(), contest.getId());
         UserContest userContest = UserContest.builder()
                 .id(userContestKey)
@@ -311,6 +344,7 @@ public class ContestServiceImp implements ContestService {
                 .build();
 
         contest.getUsers().add(userContest);
+        return userContest;
     }
 
 
@@ -354,6 +388,7 @@ public class ContestServiceImp implements ContestService {
                 .orElseGet(() -> UserContest.builder()
                         .isParticipant(false)
                         .isOwner(false)
+                        .isFavorite(false)
                         .build());
     }
 
@@ -373,5 +408,14 @@ public class ContestServiceImp implements ContestService {
                 .anyMatch(submission ->submission.getVerdict().equals("Accepted") &&
                         submission.getProblem().getProblemCode().equals(problemCode) &&
                         submission.getUser().getId().equals(userId));
+    }
+
+    private User getContestOwner(Contest contest){
+        return contest.getUsers()
+                .stream()
+                .filter(UserContest::getIsOwner)
+                .findFirst()
+                .orElseThrow(() -> new XJudgeException("Lol contest without owner !!" , ContestServiceImp.class.getName() , HttpStatus.EXPECTATION_FAILED))
+                .getUser();
     }
 }

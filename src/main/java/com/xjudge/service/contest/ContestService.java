@@ -3,6 +3,7 @@ package com.xjudge.service.contest;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
 import com.xjudge.entity.UserContest;
+import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestRankModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
@@ -18,11 +19,13 @@ import java.util.List;
 public interface ContestService {
     Page<ContestPageModel>  getAllContests(Pageable pageable);
 
-    Contest createContest(ContestClientRequest creationModel , Authentication authentication);
+    ContestModel createContest(ContestClientRequest creationModel , Authentication authentication);
 
     Contest getContest(Long id);
 
-    Contest updateContest(Long id, ContestClientRequest model , Authentication authentication);
+    ContestModel getContestData(Long id);
+
+    ContestModel updateContest(Long id, ContestClientRequest model , Authentication authentication);
 
     void deleteContest(Long id);
 
@@ -33,7 +36,7 @@ public interface ContestService {
     SubmissionModel submitInContest(Long id, SubmissionInfoModel info , Authentication authentication);
 
     List<SubmissionModel> getContestSubmissions(Long id);
-    void handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
+    UserContest handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
 
     List<ContestRankModel> getRank(Long contestId);
 }

@@ -3,6 +3,7 @@ package com.xjudge.controller.contest;
 import com.xjudge.entity.Contest;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.Pagination.PaginationResponse;
+import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
@@ -48,7 +49,7 @@ public class ContestController {
 
     @PreAuthorize(value="@contestSecurity.authorizeCreateContest(principal.username , #creationModel.groupId , #creationModel.type)")
     @PostMapping
-    public ResponseEntity<Contest> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
+    public ResponseEntity<ContestModel> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR, ContestController.class.getName() , HttpStatus.BAD_REQUEST);
         }
@@ -57,14 +58,14 @@ public class ContestController {
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping(value = "/{id}" )
-    public ResponseEntity<Contest> getContest(@PathVariable("id") Long id , @RequestParam(defaultValue = "") String password) {
-        return new ResponseEntity<>(contestService.getContest(id), HttpStatus.OK);
+    public ResponseEntity<ContestModel> getContest(@PathVariable("id") Long id , @RequestParam(defaultValue = "") String password) {
+        return new ResponseEntity<>(contestService.getContestData(id), HttpStatus.OK);
     }
 
 
     @PreAuthorize(value = "@contestSecurity.authorizeUpdate(principal.username , #id ,#model.type ,#model.groupId)")
     @PutMapping("/{id}")
-    public ResponseEntity<Contest> updateContest(@PathVariable Long id
+    public ResponseEntity<ContestModel> updateContest(@PathVariable Long id
             , @Valid @RequestBody ContestClientRequest model, BindingResult result
         , Authentication authentication) {
         if(result.hasErrors()){
