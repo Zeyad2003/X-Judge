@@ -20,7 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -53,6 +55,7 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
+    @Transactional
     public Problem getProblemByCodeAndSource(String problemCode, String problemSource) {
         if (problemSource.equalsIgnoreCase("codeforces")) {
             Optional<Problem> problem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.CodeForces);
@@ -144,27 +147,18 @@ public class ProblemServiceImp implements ProblemService {
         problem.setUserProblems(new HashSet<>());
         problem.setContests(new HashSet<>());
 
-        problem = problemRepo.save(problem);
-
-        return problem;
+        return problemRepo.save(problem);
     }
 
     private Problem scrapAtCoderProblem(String problemCode) {
         String[] cpCode = problemCode.split("_");
-        StringBuilder contestIdBuilder = new StringBuilder();
-        for (int i = 0; i < cpCode.length - 1; i++) {
-            if (i > 0) {
-                contestIdBuilder.append('-');
-            }
-            contestIdBuilder.append(cpCode[i]);
-        }
-        String contestId = contestIdBuilder.toString();
+        String contestId = String.join("-", Arrays.copyOf(cpCode, cpCode.length - 1));
 
         Problem problem = atCoderGetProblem.GetProblem(contestId, problemCode);
-        Optional<Problem> storedProblem = problemRepo.findByProblemCodeAndSource(problemCode, OnlineJudgeType.AtCoder);
-        storedProblem.ifPresent(value -> problem.setId(value.getId()));
+        problem.setSubmissions(new HashSet<>());
+        problem.setUserProblems(new HashSet<>());
+        problem.setContests(new HashSet<>());
 
-        problemRepo.save(problem);
-        return problem;
+        return problemRepo.save(problem);
     }
 }
