@@ -7,9 +7,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record SubmissionInfoModel(
 
-        @NotNull
-        @NotBlank
-        String userHandle,
+//        @NotNull
+//        @NotBlank
+//        String userHandle,
 
         @NotNull
         @NotBlank

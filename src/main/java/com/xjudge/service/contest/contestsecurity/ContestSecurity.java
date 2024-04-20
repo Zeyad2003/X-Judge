@@ -78,8 +78,9 @@ public class ContestSecurity {
                 if(!isContestOwner(contest, handle)){
                     throw new XJudgeException("UnAuthorized owner" , ContestSecurity.class.getName() , HttpStatus.FORBIDDEN);
                 }
+                return isUserAuthorizedInGroup(handle , groupId);
             }
-            return isUserAuthorizedInGroup(handle , groupId) && isUserAuthorizedInGroup(handle , contest.getGroup().getId());
+            return isUserAuthorizedInGroup(handle , groupId) &&  isUserAuthorizedInGroup(handle , contest.getGroup().getId());
         }
         else if(contestType == ContestType.CLASSIC){
             if(!isContestOwner(contest, handle)){

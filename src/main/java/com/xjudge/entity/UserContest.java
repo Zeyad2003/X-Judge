@@ -36,9 +36,11 @@ public class UserContest extends BaseEntity<UserContestKey> {
 
     private Boolean isOwner = false;
 
+    private Integer numOfAccepted;
+
     private Boolean isParticipant;
 
-    private Integer userContestPenalty;
+    private Long userContestPenalty;
 
     private Integer userContestRank;
 

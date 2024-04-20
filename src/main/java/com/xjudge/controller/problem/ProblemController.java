@@ -1,8 +1,10 @@
 package com.xjudge.controller.problem;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.exception.XJudgeValidationException;
 
 import com.xjudge.mapper.ProblemMapper;
+import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.response.Response;
@@ -21,8 +23,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,11 +65,11 @@ public class ProblemController {
 
     @PostMapping("/submit")
     @Operation(summary = "Submit a problem", description = "Submit a specific problem to be judged.")
-    public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result){
+    public ResponseEntity<?> submit(@Valid @RequestBody SubmissionInfoModel info , BindingResult result , Authentication authentication){
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
         Response response = Response.builder()
                 .success(true)
-                .data(problemService.submit(info))
+                .data(problemService.submit(info , authentication))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

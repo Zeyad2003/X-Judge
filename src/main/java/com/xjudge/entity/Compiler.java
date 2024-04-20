@@ -1,6 +1,7 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,9 +24,6 @@ public class Compiler extends BaseEntity<Long> {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "problem_id", nullable = false)
-    @ToString.Exclude
-    private Problem problem;
-
+    @Enumerated(EnumType.STRING)
+    private OnlineJudgeType onlineJudgeType;
 }

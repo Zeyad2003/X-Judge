@@ -42,4 +42,7 @@ public class ContestProblem extends BaseEntity<ContestProblemKey> {
 
     private String problemHashtag;
 
+    private long numberOfSubmission;
+
+    private long numberOfAccepted;
 }

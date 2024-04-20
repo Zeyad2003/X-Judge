@@ -102,9 +102,6 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         }
         samplesList = sampleService.saveAll(samplesList);
 
-        // TODO: implement the compiler list fetching
-//        List<Compiler> compilers = new ArrayList<>();
-
         Map<String, Object> extraInfo = Map.of(
                 "tutorialHtml", tutorialHtml,
                 "inputMethod", inputMethod,

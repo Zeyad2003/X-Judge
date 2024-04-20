@@ -12,6 +12,8 @@ import java.util.List;
 public interface SubmissionRepo extends JpaRepository<Submission, Long> {
     List<Submission> findAllByContestId(Long contestId);
 
+    List<Submission> findSubmissionsByContestIdAndUserId(Long contestId , Long userId);
+
     @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.problemCode = ?1 AND s.ojType = ?2 AND s.verdict = 'Accepted'")
     Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType);
 }
