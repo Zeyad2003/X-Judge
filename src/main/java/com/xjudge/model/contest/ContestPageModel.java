@@ -9,6 +9,15 @@ public record ContestPageModel(
         Long numberOfParticipants ,
         Instant beginTime ,
         Duration duration ,
-        UserContestPageModel owner
+
+        Long ownerId ,
+
+        String handle ,
+
+        String photoUrl,
+
+        Long groupId ,
+
+        String groupName
 ) {
 }
