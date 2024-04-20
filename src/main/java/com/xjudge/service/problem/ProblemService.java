@@ -1,12 +1,16 @@
 package com.xjudge.service.problem;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
+import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface ProblemService {
     Page<ProblemsPageModel> getAllProblems(Pageable pageable);
@@ -21,4 +25,5 @@ public interface ProblemService {
 
     Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable);
 
+    List<Compiler> getCompilersByOnlineJudgeType(OnlineJudgeType onlineJudge);
 }

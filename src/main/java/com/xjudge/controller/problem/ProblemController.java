@@ -1,8 +1,10 @@
 package com.xjudge.controller.problem;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.exception.XJudgeValidationException;
 
 import com.xjudge.mapper.ProblemMapper;
+import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.response.Response;
@@ -24,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -108,6 +112,18 @@ public class ProblemController {
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/compilers")
+    @Operation(summary = "Get all compilers", description = "Get all compilers available in the system.")
+    public ResponseEntity<?> getAllCompilers(@RequestParam(required = false) OnlineJudgeType onlineJudge) {
+        List<Compiler> compilers = problemService.getCompilersByOnlineJudgeType(onlineJudge);
+
+        Response response = Response.builder()
+                .success(true)
+                .data(compilers)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

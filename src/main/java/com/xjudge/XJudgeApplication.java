@@ -18,24 +18,5 @@ public class XJudgeApplication {
     public static void main(String[] args) {
         SpringApplication.run(XJudgeApplication.class, args);
     }
-//
-//    @Bean
-//    public CommandLineRunner commandLineRunner(UserRepo userRepo, ContestRepo contestRepo , PasswordEncoder encoder) {
-//        return args -> {
-//            User user = User.builder()
-//                    .id(1L)
-//                    .role(UserRole.ADMIN)
-//                    .handle("Zeyad_Nasef")
-//                    .email("zeyad@gmail.com")
-//                    .password(encoder.encode("123456"))
-//                    .firstName("Zeyad")
-//                    .lastName("Nasef")
-//                    .school("MUFCI")
-//                    .registrationDate(LocalDate.now())
-//                    .solvedCount(0L)
-//                    .attemptedCount(0L)
-//                    .build();
-//            if(userRepo.findByHandle(user.getHandle()).isEmpty()) userRepo.save(user);
-//        };
-//    }
+
 }
