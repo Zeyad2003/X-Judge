@@ -6,9 +6,11 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.service.sample.SampleService;
 import com.xjudge.service.scraping.GetProblemAutomation;
+import com.xjudge.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -63,6 +65,18 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
         String problemTags = problemDocument.select(".tag-box").outerHtml();
         String sampleTests = problemDocument.select(".sample-tests > .sample-test").html();
         String contestName = problemDocument.select(".rtable > tbody > tr > th > a").getFirst().text();
+        List<Pair<String, String>> announcements = new ArrayList<>(), tutorials = new ArrayList<>();
+
+        Elements contestMaterial = problemDocument.select(".roundbox.sidebox.sidebar-menu.borderTopRound > ul > li");
+        for (Element element : contestMaterial) {
+            String text = element.text(), link = element.select("a").attr("href");
+            String titleAnnouncement = element.select("a").attr("title");
+            if (text.contains("Announcement")) {
+                announcements.add(new Pair<>(titleAnnouncement, URL + link));
+            } else if (text.contains("Tutorial")) {
+                tutorials.add(new Pair<>(titleAnnouncement, URL + link));
+            }
+        }
 
         List<Sample> samplesList = new ArrayList<>();
         var samples = problemDocument.select(".sample-tests > .sample-test");
@@ -98,7 +112,9 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 "noteSection", noteSection,
                 "problemTags", problemTags,
                 "sampleTests", sampleTests,
-                "contestName", contestName
+                "contestName", contestName,
+                "announcements", announcements,
+                "tutorials", tutorials
         );
 
         return Problem.builder()
