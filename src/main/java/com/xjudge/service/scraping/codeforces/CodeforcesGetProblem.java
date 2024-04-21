@@ -87,7 +87,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 StringBuilder inputText = new StringBuilder();
                 Elements divsInPre = inputs.get(i).select("div");
                 if (divsInPre.isEmpty()) {
-                    inputText.append(outputs.get(i).outerHtml());
+                    inputText.append(inputs.get(i).outerHtml());
                 } else {
                     inputText.append("<pre>");
                     for (var div : divsInPre) {
