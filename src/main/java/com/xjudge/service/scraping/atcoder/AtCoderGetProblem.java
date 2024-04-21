@@ -71,11 +71,7 @@ public class AtCoderGetProblem implements GetProblemAutomation {
             } else {
                 switch (header) {
                     case "Problem Statement":
-                        Elements elements = part.select("section :not(h3)");
-                        Set<Element> uniqueElements = new LinkedHashSet<>(elements);
-                        elements.clear();
-                        elements.addAll(uniqueElements);
-                        statement = elements.outerHtml();
+                        statement = part.select("section :not(h3)").outerHtml();
                         break;
                     case "Constraints":
                         constrains = part.select("section :not(h3)").outerHtml();
