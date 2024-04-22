@@ -6,7 +6,7 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.service.sample.SampleService;
 import com.xjudge.service.scraping.GetProblemAutomation;
-import com.xjudge.util.Pair;
+import org.springframework.data.util.Pair;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -72,9 +72,9 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
             String text = element.text(), link = element.select("a").attr("href");
             String titleAnnouncement = element.select("a").attr("title");
             if (text.contains("Announcement")) {
-                announcements.add(new Pair<>(titleAnnouncement, URL + link));
+                announcements.add(Pair.of(titleAnnouncement, URL + link));
             } else if (text.contains("Tutorial")) {
-                tutorials.add(new Pair<>(titleAnnouncement, URL + link));
+                tutorials.add(Pair.of(titleAnnouncement, URL + link));
             }
         }
 
