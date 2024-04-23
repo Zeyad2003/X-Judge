@@ -2,10 +2,10 @@ package com.xjudge.controller;
 
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
+import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.GroupRepository;
 import com.xjudge.repository.InvitationRepository;
 import com.xjudge.repository.UserRepo;
-import com.xjudge.service.group.GroupService;
 import com.xjudge.service.group.GroupServiceImpl;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ public class FirstResource {
     private final UserRepo userRepo;
     private final UserService userService;
     private final GroupRepository groupRepository;
+    private final ContestRepo contestRepo;
     String hello = """
             <!DOCTYPE html>
             <html>
