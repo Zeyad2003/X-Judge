@@ -24,10 +24,13 @@ import com.xjudge.service.problem.ProblemService;
 import com.xjudge.service.submission.SubmissionService;
 import com.xjudge.service.user.UserService;
 import com.xjudge.util.ContestantComparator;
+import com.xjudge.util.Pagination;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -66,7 +69,33 @@ public class ContestServiceImp implements ContestService {
         );
     }
 
+    @Override
+    public Page<ContestPageModel> searchContestByTitleOrOwner(String title, String owner, Pageable pageable) {
+        Page<Contest> contests = contestRepo.searchByOwnerAndTitle(owner , title , pageable);
+        return contests.map(
+                contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest))
+        );
+    }
 
+    @Override
+    public Page<ContestPageModel> getContestByStatus(String status, int pageNumber, int pageSize) {
+
+        if(!ContestStatus.SCHEDULED.name().equals(status)  &&
+                !ContestStatus.ENDED.name().equals(status) &&
+                !ContestStatus.RUNNING.name().equals(status)){
+            throw new XJudgeException("Invalid Status : bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+        }
+
+        List<ContestPageModel> contests = contestRepo.findAll()
+                .stream()
+                .filter(contest -> checkContestStatus(contest) == ContestStatus.valueOf(status) )
+                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)))
+                .toList();
+        Pagination<ContestPageModel> modelPagination = new Pagination<>();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+        return new PageImpl<>(modelPagination.getPagingData(contests , pageNumber , pageSize), pageRequest , contests.size());
+    }
 
 
     @Override
@@ -74,7 +103,6 @@ public class ContestServiceImp implements ContestService {
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
-
 
         Contest contest = mappingBasedOnContestType(creationModel);
 
@@ -123,12 +151,17 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
 
+        ContestStatus contestStatus = checkContestStatus(contestOptional.get());
         Contest contest = mappingBasedOnContestType(updatingModel);
 
         contest.setId(id);
         contest.setUsers(contestOptional.get().getUsers());
         contest.setProblemSet(new HashSet<>());
-        contest.setBeginTime(contestOptional.get().getBeginTime());
+
+        if(contestStatus != ContestStatus.SCHEDULED){
+            contest.setBeginTime(contestOptional.get().getBeginTime());
+        }
+
 
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
