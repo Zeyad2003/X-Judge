@@ -1,12 +1,9 @@
 package com.xjudge.controller.problem;
 
-import com.xjudge.entity.Compiler;
 import com.xjudge.exception.XJudgeValidationException;
 
 import com.xjudge.mapper.ProblemMapper;
-import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
-import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.response.Response;
 
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -27,7 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,8 +39,8 @@ public class ProblemController {
     public ResponseEntity<?> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
                                             @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ProblemsPageModel> pagedResult = problemService.getAllProblems(paging);
-        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<ProblemsPageModel> paginatedData = problemService.getAllProblems(paging);
+
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
@@ -79,8 +75,8 @@ public class ProblemController {
     public ResponseEntity<?> searchByTitle(@RequestParam String title, @RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ProblemsPageModel> pagedResult = problemService.searchByTitle(title, paging);
-        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<ProblemsPageModel> paginatedData = problemService.searchByTitle(title, paging);
+
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
@@ -93,8 +89,8 @@ public class ProblemController {
     public ResponseEntity<?> searchBySource(@RequestParam String source, @RequestParam(defaultValue = "0") Integer pageNo,
                                            @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ProblemsPageModel> pagedResult = problemService.searchBySource(source, paging);
-        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<ProblemsPageModel> paginatedData = problemService.searchBySource(source, paging);
+
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
@@ -107,8 +103,8 @@ public class ProblemController {
     public ResponseEntity<?> searchByProblemCode(@RequestParam String problemCode, @RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ProblemsPageModel> pagedResult = problemService.searchByProblemCode(problemCode, paging);
-        PaginationResponse<ProblemsPageModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<ProblemsPageModel> paginatedData = problemService.searchByProblemCode(problemCode, paging);
+
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)

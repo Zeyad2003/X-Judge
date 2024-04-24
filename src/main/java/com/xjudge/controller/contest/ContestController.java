@@ -1,8 +1,6 @@
 package com.xjudge.controller.contest;
 
-import com.xjudge.entity.Contest;
 import com.xjudge.exception.XJudgeValidationException;
-import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
@@ -38,11 +36,11 @@ public class ContestController {
     public  ResponseEntity<?> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
                                                                   @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ContestPageModel> contestPageModels = contestService.getAllContests(paging);
-        PaginationResponse<ContestPageModel> pageResp = new PaginationResponse<>(contestPageModels.getTotalPages() , contestPageModels.getContent());
+        Page<ContestPageModel> contestPagesData = contestService.getAllContests(paging);
+
         Response response = Response.builder()
                 .success(true)
-                .data(pageResp)
+                .data(contestPagesData)
                 .build();
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
