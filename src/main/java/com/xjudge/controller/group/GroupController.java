@@ -2,7 +2,6 @@ package com.xjudge.controller.group;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
-import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
@@ -31,8 +30,7 @@ public class GroupController {
     public ResponseEntity<?> getAllGroups(@RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<GroupModel> pagedResult = groupService.getAllGroups(paging);
-        PaginationResponse<GroupModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<GroupModel> paginatedData = groupService.getAllGroups(paging);
         Response response = new Response(true, paginatedData, "Groups fetched successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
