@@ -30,8 +30,8 @@ public class GroupController {
     public ResponseEntity<?> getAllGroups(@RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<GroupModel> pagedResult = groupService.getAllGroups(paging);
-        PaginationResponse<GroupModel> paginatedData = new PaginationResponse<>(pagedResult.getTotalPages(), pagedResult.getContent());
+        Page<GroupModel> paginatedData = groupService.getAllGroups(paging);
+
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
