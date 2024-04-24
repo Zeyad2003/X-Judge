@@ -2,7 +2,6 @@ package com.xjudge.controller.group;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.User;
-import com.xjudge.model.Pagination.PaginationResponse;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
