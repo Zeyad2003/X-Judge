@@ -36,6 +36,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
+                .message("Groups fetched successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -47,6 +48,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(group)
+                .message("Group fetched successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -57,6 +59,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(group)
+                .message("Group created successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -68,6 +71,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(group)
+                .message("Group updated successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -78,7 +82,7 @@ public class GroupController {
         groupService.delete(groupId);
         Response response = Response.builder()
                 .success(true)
-                .data("Group with Id " + groupId + " deleted successfully.")
+                .message("Group with Id " + groupId + " deleted successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -89,7 +93,7 @@ public class GroupController {
         groupService.addContest(contestId, groupId);
         Response response = Response.builder()
                 .success(true)
-                .data("Contest added successfully.")
+                .message("Contest added successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -100,7 +104,7 @@ public class GroupController {
         groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getReceiverId(), connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("Invitation sent successfully.")
+                .message("Invitation sent successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -110,7 +114,7 @@ public class GroupController {
         groupService.acceptInvitation(invitationId, connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("Invitation accepted successfully.")
+                .message("Invitation accepted successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -120,7 +124,7 @@ public class GroupController {
         groupService.declineInvitation(invitationId, connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("Invitation declined successfully.")
+                .message("Invitation declined successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -130,7 +134,7 @@ public class GroupController {
         groupService.requestJoin(groupId, connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("Request sent successfully.")
+                .message("Request sent successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -141,7 +145,7 @@ public class GroupController {
         groupService.acceptRequest(requestId);
         Response response = Response.builder()
                 .success(true)
-                .data("Request accepted successfully.")
+                .message("Request accepted successfully.")
                 .build();
         return ResponseEntity.ok(response);
     }
@@ -152,7 +156,7 @@ public class GroupController {
         groupService.declineRequest(requestId);
         Response response = Response.builder()
                 .success(true)
-                .data("Request declined successfully.")
+                .message("Request declined successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -162,7 +166,7 @@ public class GroupController {
         groupService.join(groupId, connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("User joined successfully.")
+                .message("User joined successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -172,7 +176,7 @@ public class GroupController {
         groupService.leave(groupId, connectedUser);
         Response response = Response.builder()
                 .success(true)
-                .data("User left successfully.")
+                .message("User left successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -184,6 +188,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(contests)
+                .message("Contests fetched successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -195,6 +200,7 @@ public class GroupController {
         Response response = Response.builder()
                 .success(true)
                 .data(users)
+                .message("Users fetched successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
