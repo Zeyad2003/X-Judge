@@ -128,7 +128,10 @@ public class ContestServiceImp implements ContestService {
         contest.setId(id);
         contest.setUsers(contestOptional.get().getUsers());
         contest.setProblemSet(new HashSet<>());
-        contest.setBeginTime(contestOptional.get().getBeginTime());
+
+        if (checkContestStatus(contest) == ContestStatus.SCHEDULED) {
+            contest.setBeginTime(contestOptional.get().getBeginTime());
+        }
 
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
