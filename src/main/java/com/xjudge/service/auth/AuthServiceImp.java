@@ -15,7 +15,7 @@ import com.xjudge.service.email.EmailService;
 import com.xjudge.service.token.TokenService;
 import com.xjudge.service.user.UserService;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,32 +36,16 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImp implements AuthService{
 
-    UserService userService;
-    JwtService jwtService;
-    PasswordEncoder passwordEncoder;
-    AuthenticationManager authenticationManager;
-    EmailService emailService;
-    TokenService tokenService;
-    UserMapper userMapper;
-
-    @Autowired
-    public AuthServiceImp(UserService userService,
-                          JwtService jwtService,
-                          PasswordEncoder passwordEncoder,
-                          AuthenticationManager authenticationManager,
-                          EmailService emailService,
-                          TokenService tokenService,
-                          UserMapper userMapper) {
-        this.userService = userService;
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.emailService = emailService;
-        this.tokenService = tokenService;
-        this.userMapper = userMapper;
-    }
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
+    private final TokenService tokenService;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -103,15 +87,15 @@ public class AuthServiceImp implements AuthService{
         String verificationToken = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         String emailContent = "<div style='font-family: Arial, sans-serif; width: 80%; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>"
                 + "<div style='text-align: center; padding: 10px; background-color: #f8f8f8; border-bottom: 1px solid #ddd;'>"
-                + "<h1>Welcome to xJudge</h1>"
+                + "<h1>Welcome to XJudge</h1>"
                 + "</div>"
                 + "<div style='padding: 20px;'>"
                 + "<p>Dear " + userDetails.getUsername() + ",</p>"
-                + "<p>Thank you for registering at xJudge. Please click the link below to verify your email:</p>"
+                + "<p>Thank you for registering at XJudge. Please click the link below to verify your email:</p>"
                 + "<p><a href='http://localhost:7070/auth/verify-email?token=" + verificationToken + "'>Verify Email</a></p>"
-                + "<p>If you did not register at xJudge, please ignore this email.</p>"
+                + "<p>If you did not register at XJudge, please ignore this email.</p>"
                 + "<p>Best Regards,</p>"
-                + "<p>The xJudge Team</p>"
+                + "<p>The XJudge Team</p>"
                 + "</div>"
                 + "</div>";
 
