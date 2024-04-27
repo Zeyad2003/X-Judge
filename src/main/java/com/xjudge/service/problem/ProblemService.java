@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 public interface ProblemService {
     Page<ProblemsPageModel> getAllProblems(Pageable pageable);
 
-    Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, Pageable pageable);
+    Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable);
 
     Problem getProblemByCodeAndSource(String problemCode, String problemSource);
 
