@@ -48,6 +48,21 @@ public class ProblemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(params = {"source", "problemCode", "title"})
+    public ResponseEntity<?> filterProblems(@RequestParam(defaultValue = "") String source,
+                                            @RequestParam(defaultValue = "") String problemCode,
+                                            @RequestParam(defaultValue = "") String title,
+                                            @RequestParam(defaultValue = "0") Integer pageNo,
+                                            @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ProblemsPageModel> paginatedData = problemService.filterProblems(source, problemCode, title, paging);
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/{problemSource}-{problemCode}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
     public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
