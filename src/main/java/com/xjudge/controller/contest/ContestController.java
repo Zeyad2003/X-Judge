@@ -153,10 +153,9 @@ public class ContestController {
                                              @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ContestPageModel> contestPageModels = contestService.searchContestByTitleOrOwner(title ,owner , paging);
-        PaginationResponse<ContestPageModel> pageResp = new PaginationResponse<>(contestPageModels.getTotalPages() , contestPageModels.getContent());
         Response response = Response.builder()
                 .success(true)
-                .data(pageResp)
+                .data(contestPageModels)
                 .build();
         return new ResponseEntity<>(response , HttpStatus.OK);
     }

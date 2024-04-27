@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,10 +40,24 @@ public class ProblemServiceImp implements ProblemService {
     private final UserService userService;
     private final UserMapper mapper;
 
-
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
         Page<Problem> problemList = problemRepo.findAll(pageable);
+        return problemList.map(problem -> ProblemsPageModel.builder()
+                .oj(problem.getSource())
+                .problemCode(problem.getProblemCode())
+                .problemTitle(problem.getTitle())
+                .problemLink(problem.getProblemLink())
+                .contestName(problem.getExtraInfo().get("contestName").toString())
+                .contestLink(problem.getContestLink())
+                .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
+                .build());
+    }
+
+    @GetMapping("/filter")
+    @Override
+    public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, Pageable pageable) {
+        Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, pageable);
         return problemList.map(problem -> ProblemsPageModel.builder()
                 .oj(problem.getSource())
                 .problemCode(problem.getProblemCode())
@@ -71,6 +86,7 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
+    @Transactional
     public Submission submit(SubmissionInfoModel info , Authentication authentication) {
         User user = mapper.toEntity(userService.findByHandle(authentication.getName()));
         if (info.ojType() == OnlineJudgeType.CodeForces) {
