@@ -22,7 +22,15 @@ public interface ContestService {
 
     Page<ContestPageModel>  searchContestByTitleOrOwner(String title ,String owner, Pageable pageable);
 
+    Page<ContestPageModel> searchByVisibilityOrTypeOrUserAndOwnerAndTitle(String category , String title , String owner , String status , Pageable pageable);
+
     Page<ContestPageModel> getContestByStatus(String status , int pageNumber , int pageSize);
+
+    Page<ContestPageModel> getContestsByType(String type , String contestStatus , Pageable pageable);
+
+    Page<ContestPageModel> getContestsOfLoginUser(Authentication authentication , String contestStatus , Pageable pageable);
+
+    Page<ContestPageModel> getContestsByVisibility(String visibility , String contestStatus , Pageable pageable);
 
     ContestModel createContest(ContestClientRequest creationModel , Authentication authentication);
 

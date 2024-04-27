@@ -13,6 +13,7 @@ import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.contest.modification.ContestProblemset;
 import com.xjudge.model.enums.ContestStatus;
 import com.xjudge.model.enums.ContestType;
+import com.xjudge.model.enums.ContestVisibility;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -78,23 +79,80 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public Page<ContestPageModel> getContestByStatus(String status, int pageNumber, int pageSize) {
+    public Page<ContestPageModel> searchByVisibilityOrTypeOrUserAndOwnerAndTitle(String category, String title, String owner, String status , Pageable pageable) {
+        if(!status.isEmpty()){
+            if(!ContestStatus.SCHEDULED.name().equalsIgnoreCase(status)  &&
+                    !ContestStatus.ENDED.name().equalsIgnoreCase(status) &&
+                    !ContestStatus.RUNNING.name().equalsIgnoreCase(status)){
+                throw new XJudgeException("Invalid Status :" + status + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+            }
+            return getPage(contestRepo.searchByVisibilityOrTypeOrUserAndOwnerAndTitle(category , owner , title) , status , pageable);
+        }
+        return contestRepo.searchByVisibilityOrTypeOrUserAndOwnerAndTitle(category , owner , title , pageable)
+                .map(
+                        contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest))
+                );
+    }
 
+    @Override
+    public Page<ContestPageModel> getContestByStatus(String status, int pageNumber, int pageSize) {
         if(!ContestStatus.SCHEDULED.name().equals(status)  &&
                 !ContestStatus.ENDED.name().equals(status) &&
                 !ContestStatus.RUNNING.name().equals(status)){
-            throw new XJudgeException("Invalid Status : bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+            throw new XJudgeException("Invalid Status :" + status + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
+        return getPage(contestRepo.findAll() , status , PageRequest.of(pageNumber, pageSize));
+    }
 
-        List<ContestPageModel> contests = contestRepo.findAll()
-                .stream()
-                .filter(contest -> checkContestStatus(contest) == ContestStatus.valueOf(status) )
-                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)))
-                .toList();
-        Pagination<ContestPageModel> modelPagination = new Pagination<>();
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    @Override
+    public Page<ContestPageModel> getContestsByType(String type, String contestStatus, Pageable pageable) {
+        if(!ContestType.GROUP.name().equalsIgnoreCase(type) &&
+           !ContestType.CLASSIC.name().equalsIgnoreCase(type)){
+            throw new XJudgeException("Invalid type :" + type + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+        }
+        if(!contestStatus.isEmpty()){
+            if(!ContestStatus.SCHEDULED.name().equalsIgnoreCase(contestStatus)  &&
+                    !ContestStatus.ENDED.name().equalsIgnoreCase(contestStatus) &&
+                    !ContestStatus.RUNNING.name().equalsIgnoreCase(contestStatus)){
+                throw new XJudgeException("Invalid Status :" + contestStatus + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+            }
+            return getPage(contestRepo.findContestsByType(ContestType.valueOf(type.toUpperCase())) , contestStatus , pageable);
+        }
+        return contestRepo.findContestByType(ContestType.valueOf(type) , pageable)
+                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)));
+    }
 
-        return new PageImpl<>(modelPagination.getPagingData(contests , pageNumber , pageSize), pageRequest , contests.size());
+    @Override
+    public Page<ContestPageModel> getContestsOfLoginUser(Authentication authentication ,String contestStatus ,Pageable pageable) {
+        logger.info("<=======" + authentication.getName() + "======>");
+        if(!contestStatus.isEmpty()){
+            if(!ContestStatus.SCHEDULED.name().equals(contestStatus)  &&
+                    !ContestStatus.ENDED.name().equals(contestStatus) &&
+                    !ContestStatus.RUNNING.name().equals(contestStatus)){
+                throw new XJudgeException("Invalid Status :" + contestStatus + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+            }
+           return getPage(contestRepo.findContestsByUser(authentication.getName()) , contestStatus , pageable);
+        }
+        return contestRepo.findContestsByUser(authentication.getName() , pageable)
+                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)));
+    }
+
+    @Override
+    public Page<ContestPageModel> getContestsByVisibility(String visibility, String contestStatus , Pageable pageable) {
+        if(!ContestVisibility.PUBLIC.name().equalsIgnoreCase(visibility) &&
+                !ContestVisibility.PRIVATE.name().equalsIgnoreCase(visibility)){
+            throw new XJudgeException("Invalid visibility :" + visibility + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+        }
+        if(!contestStatus.isEmpty()){
+            if(!ContestStatus.SCHEDULED.name().equalsIgnoreCase(contestStatus)  &&
+                    !ContestStatus.ENDED.name().equalsIgnoreCase(contestStatus) &&
+                    !ContestStatus.RUNNING.name().equalsIgnoreCase(contestStatus)){
+                throw new XJudgeException("Invalid Status :" + contestStatus + " bad request" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
+            }
+           return getPage(contestRepo.findContestsByVisibility(ContestVisibility.valueOf(visibility.toUpperCase())) , contestStatus , pageable);
+        }
+        return contestRepo.findContestByVisibility(ContestVisibility.valueOf(visibility.toUpperCase()) , pageable)
+                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)));
     }
 
 
@@ -105,17 +163,14 @@ public class ContestServiceImp implements ContestService {
         }
 
         Contest contest = mappingBasedOnContestType(creationModel);
-
         contest.setBeginTime(creationModel.getBeginTime()); // Set when creating only
         contest.setUsers(new HashSet<>());
         contest.setProblemSet(new HashSet<>()) ;
         contestRepo.save(contest);
 
         User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
-
         handleContestProblemSetRelation(creationModel.getProblems(), contest);
         handleContestUserRelation(user, contest , true , false);
-
         contestRepo.save(contest);
 
         return contestMapper.toContestModel(contest , getContestOwner(contest) , checkContestStatus(contest));
@@ -128,11 +183,9 @@ public class ContestServiceImp implements ContestService {
     @Override
     public Contest getContest(Long id) {
         Optional<Contest> contestOptional = contestRepo.findById(id);
-
         if (contestOptional.isEmpty()) {
             throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
         }
-
          contestOptional.get();
         return contestOptional.get();
     }
@@ -153,7 +206,6 @@ public class ContestServiceImp implements ContestService {
 
         ContestStatus contestStatus = checkContestStatus(contestOptional.get());
         Contest contest = mappingBasedOnContestType(updatingModel);
-
         contest.setId(id);
         contest.setUsers(contestOptional.get().getUsers());
         contest.setProblemSet(new HashSet<>());
@@ -162,14 +214,11 @@ public class ContestServiceImp implements ContestService {
             contest.setBeginTime(contestOptional.get().getBeginTime());
         }
 
-
         if(authentication.getName() == null) {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
         User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
-
-
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
 
         if(!userContestService.existsById(new UserContestKey(user.getId() , contest.getId()))) {
@@ -235,16 +284,13 @@ public class ContestServiceImp implements ContestService {
         UserContest userContest = getUserContest(contest , user.getHandle());
         ContestProblem contestProblem = getContestProblemByCode(contest , info.problemCode());
 
-
         if(contestStatus == ContestStatus.SCHEDULED){
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-
         if(!contestProblemRepo.existsByProblemCodeAndContestId(info.problemCode() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
-
 
         if(!userContest.getIsParticipant()){
             logger.info("Enter In participation part !");
@@ -260,7 +306,6 @@ public class ContestServiceImp implements ContestService {
         }
 
         Submission submission = problemService.submit(info, authentication);
-
        logger.info("isProblemAccepted : " + isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode()));
 
         if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode())){
@@ -274,7 +319,6 @@ public class ContestServiceImp implements ContestService {
         }
 
         contestProblem.setNumberOfSubmission(contestProblem.getNumberOfSubmission() + 1);
-
         contest.getProblemSet().add(contestProblem);
         contest.getUsers().add(userContest);
         submission.setContest(contest);
@@ -295,14 +339,12 @@ public class ContestServiceImp implements ContestService {
     public List<SubmissionModel> getContestSubmissions(Long id) {
         Contest contest = getContest(id);
         List<Submission> submissions = submissionService.getSubmissionsByContestId(contest.getId());
-
         return submissionMapper.toModels(submissions);
     }
 
     @Override
     public List<ContestRankModel> getRank(Long contestId) {
         Contest contest = getContest(contestId);
-
         return contest.getUsers()
                 .stream().filter(UserContest::getIsParticipant)
                 .map(userContest ->
@@ -310,7 +352,6 @@ public class ContestServiceImp implements ContestService {
                        )
                 .sorted(new ContestantComparator())
                 .toList();
-
     }
 
     private List<ContestRankSubmission> getContestRankModel (UserContest userContest , Contest contest){
@@ -375,7 +416,6 @@ public class ContestServiceImp implements ContestService {
                 .userContestScore(0)
                 .userContestPenalty(0L)
                 .build();
-
         contest.getUsers().add(userContest);
         return userContest;
     }
@@ -394,12 +434,10 @@ public class ContestServiceImp implements ContestService {
         if(model.getType() == ContestType.CLASSIC) {
             return contestMapper.toContestClassical(model);
         }
-
         Contest contest = contestMapper.toContestGroup(model);
         // handle contest relation
         Group group = groupMapper.toEntity(groupService.getSpecificGroup(model.getGroupId()));
         contest.setGroup(group);
-
         return contest;
     }
 
@@ -450,5 +488,15 @@ public class ContestServiceImp implements ContestService {
                 .findFirst()
                 .orElseThrow(() -> new XJudgeException("Lol contest without owner !!" , ContestServiceImp.class.getName() , HttpStatus.EXPECTATION_FAILED))
                 .getUser();
+    }
+
+    private Page <ContestPageModel> getPage(List<Contest> data  , String status , Pageable pageable){
+        List<ContestPageModel> contestPageModels = data.stream()
+                .filter(contest -> checkContestStatus(contest) == ContestStatus.valueOf(status.toUpperCase()) )
+                .map(contest ->  contestMapper.toContestPageModel(contest , getContestOwner(contest)))
+                .toList();
+        Pagination<ContestPageModel> pagination = new Pagination<>(contestPageModels);
+        return new PageImpl<>(pagination.getPagingData(pageable.getPageNumber() , pageable.getPageSize()) , pageable , contestPageModels.size());
+
     }
 }

@@ -15,9 +15,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.http.HttpStatus;
 
-import java.time.Duration;
-import java.time.Instant;
-
 @Mapper(componentModel = "spring")
 public interface ContestMapper {
 
@@ -51,7 +48,7 @@ public interface ContestMapper {
 
     Contest toContest(ContestModel contestModel);
 
-    default String passwordValidation(ContestClientRequest contestModel) {
+    default java.lang.String passwordValidation(ContestClientRequest contestModel) {
         if (contestModel.getVisibility() == ContestVisibility.PRIVATE && (contestModel.getPassword() == null || contestModel.getPassword().isEmpty())) {
             throw new XJudgeException("Password is REQUIRED when creating a private contest", ContestMapper.class.getName(), HttpStatus.BAD_REQUEST);
         } else if (contestModel.getVisibility() == ContestVisibility.PUBLIC) {
