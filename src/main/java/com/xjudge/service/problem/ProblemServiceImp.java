@@ -43,12 +43,13 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
         Page<Problem> problemList = problemRepo.findAll(pageable);
+        System.out.println(problemList.getContent().getFirst().getContestName());
         return problemList.map(problem -> ProblemsPageModel.builder()
                 .oj(problem.getSource())
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
                 .problemLink(problem.getProblemLink())
-                .contestName(problem.getExtraInfo().get("contestName").toString())
+                .contestName(problem.getContestName())
                 .contestLink(problem.getContestLink())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());
@@ -56,14 +57,14 @@ public class ProblemServiceImp implements ProblemService {
 
     @GetMapping("/filter")
     @Override
-    public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, Pageable pageable) {
-        Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, pageable);
+    public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
+        Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, contestName, pageable);
         return problemList.map(problem -> ProblemsPageModel.builder()
                 .oj(problem.getSource())
                 .problemCode(problem.getProblemCode())
                 .problemTitle(problem.getTitle())
                 .problemLink(problem.getProblemLink())
-                .contestName(problem.getExtraInfo().get("contestName").toString())
+                .contestName(problem.getContestName())
                 .contestLink(problem.getContestLink())
                 .solvedCount(submissionService.getSolvedCount(problem.getProblemCode(), OnlineJudgeType.CodeForces))
                 .build());

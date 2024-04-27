@@ -17,6 +17,8 @@ public record ProblemModel(
 
         String contestLink,
 
+        String contestName,
+
         String statement,
 
         String input,

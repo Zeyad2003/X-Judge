@@ -48,14 +48,15 @@ public class ProblemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(params = {"source", "problemCode", "title"})
+    @GetMapping(params = {"source", "problemCode", "title", "contestName"})
     public ResponseEntity<?> filterProblems(@RequestParam(defaultValue = "") String source,
                                             @RequestParam(defaultValue = "") String problemCode,
                                             @RequestParam(defaultValue = "") String title,
+                                            @RequestParam(defaultValue = "") String contestName,
                                             @RequestParam(defaultValue = "0") Integer pageNo,
                                             @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ProblemsPageModel> paginatedData = problemService.filterProblems(source, problemCode, title, paging);
+        Page<ProblemsPageModel> paginatedData = problemService.filterProblems(source, problemCode, title, contestName, paging);
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
