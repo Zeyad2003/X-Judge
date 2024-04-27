@@ -4,7 +4,6 @@ import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
-import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -20,10 +19,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import com.xjudge.service.contest.ContestService;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +30,7 @@ public class ContestController {
     private final ContestService contestService;
 
     @GetMapping
-    public  ResponseEntity<?> getAllProblems(@RequestParam(defaultValue = "0") Integer pageNo,
+    public  ResponseEntity<?> getAllContest(@RequestParam(defaultValue = "0") Integer pageNo,
                                                                   @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
         Page<ContestPageModel> contestPagesData = contestService.getAllContests(paging);
@@ -47,29 +44,42 @@ public class ContestController {
 
     @PreAuthorize(value="@contestSecurity.authorizeCreateContest(principal.username , #creationModel.groupId , #creationModel.type)")
     @PostMapping
-    public ResponseEntity<ContestModel> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
+    public ResponseEntity<Response> createContest(@Valid @RequestBody ContestClientRequest creationModel , BindingResult result , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR, ContestController.class.getName() , HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(contestService.createContest(creationModel , authentication), HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.createContest(creationModel , authentication))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping(value = "/{id}" )
-    public ResponseEntity<ContestModel> getContest(@PathVariable("id") Long id , @RequestParam(defaultValue = "") String password) {
-        return new ResponseEntity<>(contestService.getContestData(id), HttpStatus.OK);
+    public ResponseEntity<Response> getContest(@PathVariable("id") Long id , @RequestParam(defaultValue = "") String password) {
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestData(id))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
 
     @PreAuthorize(value = "@contestSecurity.authorizeUpdate(principal.username , #id ,#model.type ,#model.groupId)")
     @PutMapping("/{id}")
-    public ResponseEntity<ContestModel> updateContest(@PathVariable Long id
+    public ResponseEntity<Response> updateContest(@PathVariable Long id
             , @Valid @RequestBody ContestClientRequest model, BindingResult result
         , Authentication authentication) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(contestService.updateContest(id, model , authentication), HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.updateContest(id, model , authentication))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
+
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeDelete(principal.username , #id)")
@@ -81,30 +91,47 @@ public class ContestController {
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @PostMapping("/{id}/submit")
-    public ResponseEntity<SubmissionModel> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info , BindingResult result , Authentication authentication ,  @RequestParam(defaultValue = "") String password) {
+    public ResponseEntity<Response> submitContest(@PathVariable Long id, @Valid @RequestBody SubmissionInfoModel info , BindingResult result , Authentication authentication ,  @RequestParam(defaultValue = "") String password) {
         if(result.hasErrors()){
             throw new XJudgeValidationException(result.getFieldErrors(), XJudgeValidationException.VALIDATION_ERROR , ContestController.class.getName(), HttpStatus.BAD_REQUEST);
         }
         SubmissionModel submission = contestService.submitInContest(id, info , authentication);
-        return new ResponseEntity<>(submission, HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(submission)
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping("/{id}/problems")
-    public ResponseEntity<List<ProblemModel>> getContestProblems(@PathVariable Long id , @RequestParam(defaultValue = "") String password){
-        return new ResponseEntity<>(contestService.getContestProblems(id), HttpStatus.OK);
+    public ResponseEntity<Response> getContestProblems(@PathVariable Long id , @RequestParam(defaultValue = "") String password){
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestProblems(id))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping("/{id}/problem/{problemHashtag}")
-    public ResponseEntity<ProblemModel> getContestProblem(@PathVariable Long id, @PathVariable String problemHashtag ,  @RequestParam(defaultValue = "") String password){
-        return new ResponseEntity<>(contestService.getContestProblem(id, problemHashtag), HttpStatus.OK);
+    public ResponseEntity<Response> getContestProblem(@PathVariable Long id, @PathVariable String problemHashtag ,  @RequestParam(defaultValue = "") String password){
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestProblem(id, problemHashtag))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
     @GetMapping("/{id}/submissions")
-    public ResponseEntity<List<SubmissionModel>> getContestSubmissions(@PathVariable Long id ,  @RequestParam(defaultValue = "") String password){
-        return new ResponseEntity<>(contestService.getContestSubmissions(id), HttpStatus.OK);
+    public ResponseEntity<Response> getContestSubmissions(@PathVariable Long id ,  @RequestParam(defaultValue = "") String password){
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestSubmissions(id))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
+
     }
 
     @ResponseStatus(code = HttpStatus.OK)
@@ -118,4 +145,64 @@ public class ContestController {
        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
+
+    @GetMapping("/search")
+    public  ResponseEntity<?> searchByTitleAndOwner( @RequestParam(defaultValue = "" , required = false) String title ,
+                                             @RequestParam(defaultValue = "" , required = false) String owner ,
+                                             @RequestParam(defaultValue = "0") Integer pageNo,
+                                             @RequestParam(defaultValue = "25") Integer size) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<ContestPageModel> contestPageModels = contestService.searchContestByTitleOrOwner(title ,owner , paging);
+        PaginationResponse<ContestPageModel> pageResp = new PaginationResponse<>(contestPageModels.getTotalPages() , contestPageModels.getContent());
+        Response response = Response.builder()
+                .success(true)
+                .data(pageResp)
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"status"})
+    public  ResponseEntity<?> filterByStatus( @RequestParam(defaultValue = "RUNNING") String status ,
+                                             @RequestParam(defaultValue = "0") Integer pageNo,
+                                             @RequestParam(defaultValue = "25") Integer size) {
+
+        Page<ContestPageModel> contestPageModels = contestService.getContestByStatus(status, pageNo , size);
+        return new ResponseEntity<>(contestPageModels , HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"type" , "status"})
+    public ResponseEntity<?> getContestByType(@RequestParam(defaultValue = "CLASSIC") String type , @RequestParam(required = false , defaultValue = "") String status ,
+                                               @RequestParam(defaultValue = "0") Integer pageNo,
+                                               @RequestParam(defaultValue = "25") Integer size){
+        Pageable pageable = PageRequest.of(pageNo , size);
+        return new ResponseEntity<>(contestService.getContestsByType(type , status , pageable) , HttpStatus.OK);
+    }
+
+
+    @GetMapping(params = {"visibility" , "status"})
+    public ResponseEntity<?> getContestByVisibility(@RequestParam(defaultValue = "PUBLIC") String visibility , @RequestParam(required = false , defaultValue = "") String status ,
+                                              @RequestParam(defaultValue = "0") Integer pageNo,
+                                              @RequestParam(defaultValue = "25") Integer size){
+        Pageable pageable = PageRequest.of(pageNo , size);
+        return new ResponseEntity<>(contestService.getContestsByVisibility(visibility , status , pageable) , HttpStatus.OK);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<?> getContestOfUser(Authentication authentication , @RequestParam(required = false , defaultValue = "") String status ,
+                                                    @RequestParam(defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(defaultValue = "25") Integer size){
+        Pageable pageable = PageRequest.of(pageNo , size);
+        return new ResponseEntity<>(contestService.getContestsOfLoginUser(authentication , status , pageable) , HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"category" , "status" , "title" , "owner"})
+    public ResponseEntity<?> globalSearch(@RequestParam(defaultValue = "") String category, @RequestParam(required = false , defaultValue = "") String status ,
+                                                    @RequestParam(defaultValue = "" , required = false) String title ,
+                                                    @RequestParam(defaultValue = "" , required = false) String owner ,
+                                                    @RequestParam(defaultValue = "0") Integer pageNo,
+                                                    @RequestParam(defaultValue = "25") Integer size , Authentication authentication){
+        if(category.equals("mine")) category = authentication.getName();
+        Pageable pageable = PageRequest.of(pageNo , size);
+        return new ResponseEntity<>(contestService.searchByVisibilityOrTypeOrUserAndOwnerAndTitle(category , title , owner ,status, pageable) , HttpStatus.OK);
+    }
 }

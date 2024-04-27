@@ -7,6 +7,7 @@ import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestRankModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
+import com.xjudge.model.enums.ContestStatus;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -18,6 +19,18 @@ import java.util.List;
 
 public interface ContestService {
     Page<ContestPageModel>  getAllContests(Pageable pageable);
+
+    Page<ContestPageModel>  searchContestByTitleOrOwner(String title ,String owner, Pageable pageable);
+
+    Page<ContestPageModel> searchByVisibilityOrTypeOrUserAndOwnerAndTitle(String category , String title , String owner , String status , Pageable pageable);
+
+    Page<ContestPageModel> getContestByStatus(String status , int pageNumber , int pageSize);
+
+    Page<ContestPageModel> getContestsByType(String type , String contestStatus , Pageable pageable);
+
+    Page<ContestPageModel> getContestsOfLoginUser(Authentication authentication , String contestStatus , Pageable pageable);
+
+    Page<ContestPageModel> getContestsByVisibility(String visibility , String contestStatus , Pageable pageable);
 
     ContestModel createContest(ContestClientRequest creationModel , Authentication authentication);
 
@@ -39,4 +52,6 @@ public interface ContestService {
     UserContest handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
 
     List<ContestRankModel> getRank(Long contestId);
+
+
 }
