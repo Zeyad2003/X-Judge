@@ -210,6 +210,7 @@ public class ContestServiceImp implements ContestService {
         contest.setUsers(contestOptional.get().getUsers());
         contest.setProblemSet(new HashSet<>());
 
+
         if(contestStatus != ContestStatus.SCHEDULED){
             contest.setBeginTime(contestOptional.get().getBeginTime());
         }

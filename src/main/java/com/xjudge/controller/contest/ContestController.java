@@ -1,8 +1,7 @@
 package com.xjudge.controller.contest;
 
-
 import com.xjudge.exception.XJudgeValidationException;
-import com.xjudge.model.Pagination.PaginationResponse;
+import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.response.Response;
@@ -34,8 +33,13 @@ public class ContestController {
     public  ResponseEntity<?> getAllContest(@RequestParam(defaultValue = "0") Integer pageNo,
                                                                   @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<ContestPageModel> contestPageModels = contestService.getAllContests(paging);
-        return new ResponseEntity<>(contestPageModels , HttpStatus.OK);
+        Page<ContestPageModel> contestPagesData = contestService.getAllContests(paging);
+
+        Response response = Response.builder()
+                .success(true)
+                .data(contestPagesData)
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @PreAuthorize(value="@contestSecurity.authorizeCreateContest(principal.username , #creationModel.groupId , #creationModel.type)")
