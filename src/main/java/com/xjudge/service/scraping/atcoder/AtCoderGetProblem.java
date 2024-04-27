@@ -106,8 +106,7 @@ public class AtCoderGetProblem implements GetProblemAutomation {
                 "inputAndOutput", inputAndOutput,
                 "inputGeneration", inputGeneration,
                 "tools", tools,
-                "constrains", constrains,
-                "contestName", contestName
+                "constrains", constrains
         );
 
         return Problem.builder()
@@ -116,6 +115,7 @@ public class AtCoderGetProblem implements GetProblemAutomation {
                 .problemCode(problemId)
                 .problemLink(targetProblem)
                 .contestLink(contestLink)
+                .contestName(contestName)
                 .timeLimit(timeLimit)
                 .memoryLimit(memoryLimit)
                 .samples(samples)

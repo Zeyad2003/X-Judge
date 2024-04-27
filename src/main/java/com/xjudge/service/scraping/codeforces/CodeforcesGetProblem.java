@@ -109,7 +109,6 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 "noteSection", noteSection,
                 "problemTags", problemTags,
                 "sampleTests", sampleTests,
-                "contestName", contestName,
                 "announcements", announcements,
                 "tutorials", tutorials
         );
@@ -120,6 +119,7 @@ public class CodeforcesGetProblem implements GetProblemAutomation {
                 .problemCode(problemCode)
                 .problemLink(targetProblem)
                 .contestLink(contestLink)
+                .contestName(contestName)
                 .timeLimit(timeLimit)
                 .memoryLimit(memoryLimit)
                 .samples(samplesList)

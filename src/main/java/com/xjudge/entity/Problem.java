@@ -51,6 +51,8 @@ public class Problem extends BaseEntity<Long> {
 
     private String contestLink;
 
+    private String contestName;
+
     private String timeLimit;
 
     private String memoryLimit;
