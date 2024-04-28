@@ -219,7 +219,7 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userService.findUserModelByHandle(authentication.getName());
+        User user = userService.findUserByHandle(authentication.getName());
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
 
         if(!userContestService.existsById(new UserContestKey(user.getId() , contest.getId()))) {
