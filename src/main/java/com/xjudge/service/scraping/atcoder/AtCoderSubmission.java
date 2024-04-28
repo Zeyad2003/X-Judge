@@ -101,7 +101,6 @@ public class AtCoderSubmission implements SubmissionAutomation {
     private void submitHelper(SubmissionInfoModel data){
         try {
             Select taskNameSelect = new Select(driver.findElement(By.name("data.TaskScreenName")));
-            Select languageIdSelect = new Select(driver.findElement(By.name("data.LanguageId")));
             WebElement toggleButton = driver.findElement(By.cssSelector("button.btn-toggle-editor"));
             WebElement sourceCodeArea = driver.findElement(By.name("sourceCode"));
             WebElement submitButton = driver.findElement(By.id("submit"));
@@ -111,6 +110,8 @@ public class AtCoderSubmission implements SubmissionAutomation {
             }
 
             taskNameSelect.selectByValue(data.problemCode());
+            WebElement languageIdElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
+            Select languageIdSelect = new Select(languageIdElement);
             languageIdSelect.selectByValue(data.compiler().getIdValue());
             sourceCodeArea.sendKeys(data.solutionCode());
             submitButton.submit();
