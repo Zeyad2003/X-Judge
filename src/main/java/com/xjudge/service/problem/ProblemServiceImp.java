@@ -103,7 +103,7 @@ public class ProblemServiceImp implements ProblemService {
 
         } else if (info.ojType() == OnlineJudgeType.AtCoder) {
             Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
-            System.out.println(problem);
+
             Submission submission = atCoderSubmission.submit(info);
             submission.setProblem(problem);
             user.setAttemptedCount(user.getAttemptedCount()+1);
