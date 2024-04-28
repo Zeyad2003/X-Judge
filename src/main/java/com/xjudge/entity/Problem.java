@@ -7,7 +7,6 @@ import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.*;
 
@@ -57,6 +56,7 @@ public class Problem extends BaseEntity<Long> {
 
     private String memoryLimit;
 
+    @Builder.Default
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Sample> samples = new ArrayList<>();
 

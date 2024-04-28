@@ -64,6 +64,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
     Set<Submission> submissions;
 
     @ToString.Exclude
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private Set<UserContest> contests = new HashSet<>();
 
@@ -73,6 +74,7 @@ public class User extends BaseEntity<Long> implements UserDetails {
     private List<UserGroup> groups;
 
     @JsonIgnore
+    @Builder.Default
     @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserProblem> userProblems = new LinkedHashSet<>();

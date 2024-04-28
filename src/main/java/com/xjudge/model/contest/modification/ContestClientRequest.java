@@ -4,7 +4,6 @@ import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Data;
 

@@ -34,6 +34,7 @@ public class UserContest extends BaseEntity<UserContestKey> {
 
     private Boolean isFavorite;
 
+    @Builder.Default
     private Boolean isOwner = false;
 
     private Integer numOfAccepted;

@@ -8,7 +8,6 @@ import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import com.xjudge.repository.ContestRepo;
-import com.xjudge.repository.UserContestRepo;
 import com.xjudge.service.contest.ContestService;
 import com.xjudge.service.group.groupSecurity.GroupSecurity;
 import com.xjudge.service.user.UserService;
@@ -27,7 +26,6 @@ public class ContestSecurity {
     private final UserService userService;
     private final UserMapper userMapper;
     private final ContestRepo contestRepo;
-    private final UserContestRepo userContestRepo;
 
 
     public boolean authorizeCreateContest(String handle , Long groupId , ContestType type){

@@ -12,7 +12,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ public class AtCoderSubmission implements SubmissionAutomation {
     private static final String LOGIN_URL = "https://atcoder.jp/login?continue=https://atcoder.jp/contests/%s/submit";
     private static final String SUBMIT_URL="https://atcoder.jp/contests/%s/submit";
 
-    @Autowired
     public AtCoderSubmission(WebDriver webDriver){
         this.driver = webDriver;
         this.wait = new WebDriverWait(webDriver , Duration.ofSeconds(15));

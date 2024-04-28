@@ -1,7 +1,6 @@
 package com.xjudge.controller.contest;
 
 import com.xjudge.exception.XJudgeValidationException;
-import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.response.Response;

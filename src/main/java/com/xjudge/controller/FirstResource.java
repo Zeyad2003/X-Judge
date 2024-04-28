@@ -2,10 +2,7 @@ package com.xjudge.controller;
 
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
-import com.xjudge.repository.ContestRepo;
-import com.xjudge.repository.GroupRepository;
-import com.xjudge.repository.InvitationRepository;
-import com.xjudge.repository.UserRepo;
+import com.xjudge.repository.*;
 import com.xjudge.service.group.GroupServiceImpl;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,7 @@ public class FirstResource {
     private final UserRepo userRepo;
     private final UserService userService;
     private final GroupRepository groupRepository;
-    private final ContestRepo contestRepo;
+
     String hello = """
             <!DOCTYPE html>
             <html>
@@ -54,6 +51,8 @@ public class FirstResource {
         return hello;
     }
 
+
+
     @GetMapping("/invitations/{id}")
     public ResponseEntity<?> testToGetUserInvitation(@PathVariable Long id) {
         User user = userRepo.findById(id).orElseThrow(
@@ -61,7 +60,6 @@ public class FirstResource {
         );
         return ResponseEntity.ok(invitationRepository.getInvitationsByReceiver(user));
     }
-
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
@@ -72,5 +70,4 @@ public class FirstResource {
     public ResponseEntity<?> getGroupContest(@PathVariable("id") Long id) {
         return new ResponseEntity<>(groupRepository.findById(id).get().getGroupContests() , HttpStatus.OK);
     }
-
 }

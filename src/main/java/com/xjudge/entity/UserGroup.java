@@ -1,10 +1,8 @@
 package com.xjudge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.model.enums.UserGroupRole;
-import com.xjudge.model.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 

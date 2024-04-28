@@ -1,12 +1,10 @@
 package com.xjudge.repository;
 
 import com.xjudge.entity.Contest;
-import com.xjudge.model.enums.ContestStatus;
 import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

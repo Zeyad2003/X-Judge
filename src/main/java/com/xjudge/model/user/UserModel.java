@@ -6,7 +6,6 @@ import com.xjudge.entity.Submission;
 import com.xjudge.entity.UserContest;
 import com.xjudge.entity.UserGroup;
 import com.xjudge.model.enums.UserRole;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,7 +13,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
