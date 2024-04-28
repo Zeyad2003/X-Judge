@@ -23,21 +23,42 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserModel findByHandle(String userHandle) {
+    public User findUserByHandle(String userHandle) {
+        return userRepo.findByHandle(userHandle).orElseThrow(
+                () -> new XJudgeException("There's no handle {" + userHandle + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+    }
+
+    @Override
+    public UserModel findUserModelByHandle(String userHandle) {
         return userMapper.toModel(userRepo.findByHandle(userHandle).orElseThrow(
                 () -> new XJudgeException("There's no handle {" + userHandle + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         ));
     }
 
     @Override
-    public UserModel findByEmail(String userEmail) {
+    public User findUserByEmail(String userEmail) {
+        return userRepo.findUserByEmail(userEmail).orElseThrow(
+                () -> new XJudgeException("There's no email {" + userEmail + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+    }
+
+    @Override
+    public UserModel findUserModelByEmail(String userEmail) {
         return userMapper.toModel(userRepo.findUserByEmail(userEmail).orElseThrow(
                 () -> new XJudgeException("There's no email {" + userEmail + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         ));
     }
 
     @Override
-    public UserModel findById(Long userId) {
+    public User findUserById(Long userId) {
+        return userRepo.findById(userId).orElseThrow(
+                () -> new XJudgeException("There's no user with id {" + userId + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+    }
+
+    @Override
+    public UserModel findUserModelById(Long userId) {
         return userMapper.toModel(userRepo.findById(userId).orElseThrow(
                 () -> new XJudgeException("There's no user with id {" + userId + "}", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         ));

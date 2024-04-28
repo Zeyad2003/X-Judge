@@ -168,7 +168,7 @@ public class ContestServiceImp implements ContestService {
         contest.setProblemSet(new HashSet<>()) ;
         contestRepo.save(contest);
 
-        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
+        User user = userService.findUserByHandle(authentication.getName());
         handleContestProblemSetRelation(creationModel.getProblems(), contest);
         handleContestUserRelation(user, contest , true , false);
         contestRepo.save(contest);
@@ -219,7 +219,7 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("un authenticated user" , ContestServiceImp.class.getName() , HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
+        User user = userService.findUserByHandle(authentication.getName());
         handleContestProblemSetRelation(updatingModel.getProblems(), contest);
 
         if(!userContestService.existsById(new UserContestKey(user.getId() , contest.getId()))) {
@@ -280,7 +280,7 @@ public class ContestServiceImp implements ContestService {
     @Override
     public SubmissionModel submitInContest(Long id, SubmissionInfoModel info , Authentication authentication) {
         Contest contest = getContest(id);
-        User user = userMapper.toEntity(userService.findByHandle(authentication.getName()));
+        User user = userService.findUserByHandle(authentication.getName());
         ContestStatus contestStatus = checkContestStatus(contest);
         UserContest userContest = getUserContest(contest , user.getHandle());
         ContestProblem contestProblem = getContestProblemByCode(contest , info.problemCode());

@@ -133,7 +133,7 @@ public class AuthServiceImp implements AuthService{
             throw new AuthException("Username or password is incorrect" , HttpStatus.UNAUTHORIZED, errors);
         }
 
-        UserModel model = userService.findByHandle(loginRequest.getUserHandle());
+        UserModel model = userService.findUserModelByHandle(loginRequest.getUserHandle());
         System.out.println(model);
         User user = userMapper.toEntity(model);
         System.out.println(user);
@@ -187,7 +187,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     public AuthResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser) {
-        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User user = userMapper.toEntity(userService.findUserModelByHandle(connectedUser.getName()));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             throw new AuthException("Old password is incorrect", HttpStatus.BAD_REQUEST, new HashMap<>());
@@ -214,7 +214,7 @@ public class AuthServiceImp implements AuthService{
     @Override
     @Transactional
     public AuthResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        User user = userMapper.toEntity(userService.findByEmail(forgotPasswordRequest.getEmail()));
+        User user = userMapper.toEntity(userService.findUserModelByEmail(forgotPasswordRequest.getEmail()));
         String token = UUID.randomUUID().toString() + '-' + UUID.randomUUID();
         tokenService.save(Token.builder()
                 .token(token)

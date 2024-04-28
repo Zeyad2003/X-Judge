@@ -86,17 +86,6 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/{groupId}/contest/{contestId}")
-    @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #groupId, {'LEADER','MANAGER'})")
-    public ResponseEntity<?> addContest(@PathVariable Long groupId, @PathVariable Long contestId) {
-        groupService.addContest(contestId, groupId);
-        Response response = Response.builder()
-                .success(true)
-                .message("Contest added successfully.")
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @PostMapping("/invite")
     @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #invitationRequest.groupId, {'LEADER','MANAGER'})")
     public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest, Principal connectedUser) {
