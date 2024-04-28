@@ -4,7 +4,6 @@ import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
-import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -38,7 +37,6 @@ public class ProblemServiceImp implements ProblemService {
     private final AtCoderSubmission atCoderSubmission;
     private final SubmissionService submissionService;
     private final UserService userService;
-    private final UserMapper mapper;
 
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
@@ -89,7 +87,7 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     @Transactional
     public Submission submit(SubmissionInfoModel info , Authentication authentication) {
-        User user = mapper.toEntity(userService.findByHandle(authentication.getName()));
+        User user = userService.findUserByHandle(authentication.getName());
         if (info.ojType() == OnlineJudgeType.CodeForces) {
             Problem problem = getProblemByCodeAndSource(info.problemCode(), info.ojType().name());
             Submission submission = codeforcesSubmission.submit(info);

@@ -45,7 +45,7 @@ public class ContestSecurity {
                 && contest.getVisibility() == ContestVisibility.PRIVATE){
 
             if(isPasswordCorrect(contest.getPassword() , password)) {
-                User user = userMapper.toEntity(userService.findByHandle(handle));
+                User user = userMapper.toEntity(userService.findUserModelByHandle(handle));
                 contestService.handleContestUserRelation(user, contest, false, true);
                 contestRepo.save(contest);
             }

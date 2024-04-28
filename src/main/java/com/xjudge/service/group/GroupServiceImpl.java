@@ -73,7 +73,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupModel create(GroupRequest groupRequest, Principal connectedUser) {
 
-        User leader = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User leader = userService.findUserByHandle(connectedUser.getName());
         Group group = groupRepository.save(Group.builder()
                 .name(groupRequest.getName())
                 .description(groupRequest.getDescription())
@@ -116,29 +116,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void addContest(Long contestId, Long groupId) {
-        // TODO
-//        Optional<Contest> optionalContest = contestRepository.findById(contestId);
-//
-//        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-//
-//        if (optionalContest.isPresent() && optionalGroup.isPresent()) {
-//            Contest contest = optionalContest.get();
-//            Group group = optionalGroup.get();
-//            group.addContest(contest);
-//            groupRepository.save(group);
-//        } else {
-//            throw new EntityNotFoundException("Contest or Group not found");
-//        }
-    }
-
-    @Override
     public void inviteUser(Long groupId, Long receiverId, Principal connectedUser) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
 
-        User receiver = userMapper.toEntity(userService.findById(receiverId));
+        User receiver = userService.findUserById(receiverId);
         User sender = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         if (sender.getId().equals(receiver.getId())) {
@@ -159,7 +142,7 @@ public class GroupServiceImpl implements GroupService {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
-        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User user = userService.findUserByHandle(connectedUser.getName());
         if (isPrivate(group)) {
             throw new XJudgeException("Group is private", GroupServiceImpl.class.getName(), HttpStatus.FORBIDDEN);
         }
@@ -228,7 +211,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leave(Long groupId, Principal connectedUser) {
         Group group = groupMapper.toEntity(getSpecificGroup(groupId));
-        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User user = userService.findUserByHandle(connectedUser.getName());
         UserGroup userGroup = userGroupService.findByUserAndGroup(user, group);
         // updated
         userGroupService.delete(userGroup);
@@ -264,7 +247,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void acceptInvitation(Long invitationId, Principal connectedUser) {
         Invitation invitation = invitationService.findById(invitationId);
-        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User user = userService.findUserByHandle(connectedUser.getName());
         if (!invitation.getReceiver().equals(user)) {
             throw new XJudgeException("User is not the receiver of the invitation", GroupServiceImpl.class.getName(), HttpStatus.FORBIDDEN);
         }
@@ -279,7 +262,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void declineInvitation(Long invitationId, Principal connectedUser) {
         Invitation invitation = invitationService.findById(invitationId);
-        User user = userMapper.toEntity(userService.findByHandle(connectedUser.getName()));
+        User user = userService.findUserByHandle(connectedUser.getName());
         if (!invitation.getReceiver().equals(user)) {
             throw new XJudgeException("User is not the receiver of the invitation", GroupServiceImpl.class.getName(), HttpStatus.FORBIDDEN);
         }

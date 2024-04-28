@@ -65,7 +65,7 @@ public class FirstResource {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(userService.findById(id) , HttpStatus.OK);
+        return new ResponseEntity<>(userService.findUserModelById(id) , HttpStatus.OK);
     }
 
     @GetMapping("/group/{id}/contests")
