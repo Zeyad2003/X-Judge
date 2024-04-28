@@ -7,9 +7,12 @@ import java.util.List;
 
 public interface UserService {
     User save(User user);
-    UserModel findByHandle(String userHandle);
-    UserModel findByEmail(String userEmail);
-    UserModel findById(Long userId);
+    User findUserByHandle(String userHandle);
+    UserModel findUserModelByHandle(String userHandle);
+    User findUserByEmail(String userEmail);
+    UserModel findUserModelByEmail(String userEmail);
+    User findUserById(Long userId);
+    UserModel findUserModelById(Long userId);
     UserModel updateUser(Long id, UserModel user);
     void deleteUser(Long userId);
     List<UserModel> getAllUsers();

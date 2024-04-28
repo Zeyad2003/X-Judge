@@ -7,7 +7,6 @@ import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestRankModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
-import com.xjudge.model.enums.ContestStatus;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;

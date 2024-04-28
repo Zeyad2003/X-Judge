@@ -23,7 +23,6 @@ public interface GroupService {
     void delete(Long groupId);
 
     // Contest and invitation
-    void addContest(Long contestId, Long groupId);
     void inviteUser(Long groupId, Long receiverId, Principal connectedUser);
 
     // Join and leave group
