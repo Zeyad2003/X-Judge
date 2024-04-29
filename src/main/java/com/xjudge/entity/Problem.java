@@ -57,6 +57,8 @@ public class Problem extends BaseEntity<Long> {
 
     private String memoryLimit;
 
+    // TODO solved count
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Sample> samples = new ArrayList<>();
 

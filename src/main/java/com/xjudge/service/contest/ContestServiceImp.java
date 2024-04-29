@@ -55,7 +55,6 @@ public class ContestServiceImp implements ContestService {
     private final ProblemService problemService;
     private final SubmissionService submissionService;
     private final SubmissionMapper submissionMapper;
-    private final UserMapper userMapper;
     private final GroupService groupService;
     private final GroupMapper groupMapper;
     private final UserContestService userContestService;

@@ -54,7 +54,7 @@ public interface ContestRepo extends JpaRepository<Contest, Long> {
             "JOIN c.users uc " +
             "JOIN uc.user u " +
             "WHERE (c.visibility = :category or c.type = :category or u.handle = :category or :category= '')" +
-            "AND ((:title IS NULL OR :title = '' OR c.title = :title) " +
+            "AND ((:title IS NULL OR :title = '' OR c.title like %:title%) " +
             "AND  (:owner IS NULL OR :owner = '' OR (u.handle = :owner AND uc.isOwner))) " +
             "order by c.id"
 
@@ -65,7 +65,7 @@ public interface ContestRepo extends JpaRepository<Contest, Long> {
             "JOIN c.users uc " +
             "JOIN uc.user u " +
             "WHERE (c.visibility = :category or c.type = :category or u.handle = :category or :category= '')" +
-            "AND ((:title IS NULL OR :title = '' OR c.title = :title) " +
+            "AND ((:title IS NULL OR :title = '' OR c.title like %:title%) " +
             "AND  (:owner IS NULL OR :owner = '' OR (u.handle = :owner AND uc.isOwner))) " +
             "order by c.id"
 

@@ -12,4 +12,6 @@ public interface ProblemMapper {
 
     @Mapping(target = "problemHashtag", ignore = true)
     ProblemModel toModel(Problem problem);
+
+    
 }
