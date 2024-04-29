@@ -44,7 +44,7 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
         Page<Problem> problemList = problemRepo.findAll(pageable);
-        System.out.println(problemList.getContent().getFirst().getContestName());
+
         return problemList.map(problem -> ProblemsPageModel.builder()
                 .oj(problem.getSource())
                 .problemCode(problem.getProblemCode())
@@ -56,7 +56,7 @@ public class ProblemServiceImp implements ProblemService {
                 .build());
     }
 
-    @GetMapping("/filter")
+
     @Override
     public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
         Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, contestName, pageable);
