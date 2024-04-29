@@ -81,7 +81,7 @@ public class ProblemController {
         if(result.hasErrors()) throw new XJudgeValidationException(result.getFieldErrors() ,XJudgeValidationException.VALIDATION_ERROR ,ProblemController.class.getName(),HttpStatus.BAD_REQUEST);
         Response response = Response.builder()
                 .success(true)
-                .data(problemService.submit(info , authentication))
+                .data(problemService.submitClient(info , authentication))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

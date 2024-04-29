@@ -4,9 +4,11 @@ import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
+import com.xjudge.mapper.SubmissionMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
+import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.GetProblemAutomation;
 import com.xjudge.service.scraping.atcoder.AtCoderSubmission;
@@ -36,6 +38,7 @@ public class ProblemServiceImp implements ProblemService {
     private final CodeforcesSubmission codeforcesSubmission;
     private final AtCoderSubmission atCoderSubmission;
     private final SubmissionService submissionService;
+    private final SubmissionMapper submissionMapper;
     private final UserService userService;
 
     @Override
@@ -115,6 +118,11 @@ public class ProblemServiceImp implements ProblemService {
         }
 
         throw new XJudgeException("Online Judge not supported yet.", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public SubmissionModel submitClient(SubmissionInfoModel info, Authentication authentication) {
+        return submissionMapper.toModel(submit(info , authentication));
     }
 
     @Override
