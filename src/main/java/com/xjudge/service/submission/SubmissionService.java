@@ -2,11 +2,12 @@ package com.xjudge.service.submission;
 
 import com.xjudge.entity.Submission;
 import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.submission.SubmissionModel;
 
 import java.util.List;
 
 public interface SubmissionService {
-    Submission getSubmissionById(Long submissionId);
+    SubmissionModel getSubmissionById(Long submissionId);
 
     Submission save(Submission submission);
 
