@@ -52,6 +52,17 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/owned")
+    public ResponseEntity<?> getGroupsOwnedByUser(Principal connectedUser) {
+        List<GroupModel> groups = groupService.getGroupsOwnedByUser(connectedUser);
+        Response response = Response.builder()
+                .success(true)
+                .data(groups)
+                .message("Groups fetched successfully.")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest, Principal connectedUser) {
         GroupModel group = groupService.create(groupRequest, connectedUser);
