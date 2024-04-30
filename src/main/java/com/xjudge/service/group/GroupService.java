@@ -37,6 +37,8 @@ public interface GroupService {
     List<Contest> Contests(Long groupId);
     List<User> Users(Long groupId);
 
+    List<GroupModel> getGroupsOwnedByUser(Principal connectedUser);
+
     // Public or private group
     boolean isPublic(Group group);
     boolean isPrivate(Group group);

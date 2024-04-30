@@ -4,7 +4,6 @@ import com.xjudge.entity.*;
 import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.GroupMapper;
-import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.GroupVisibility;
 import com.xjudge.model.enums.InvitationStatus;
 import com.xjudge.model.enums.UserGroupRole;
@@ -37,7 +36,6 @@ public class GroupServiceImpl implements GroupService {
     private final InvitationService invitationService;
     private final UserGroupService userGroupService;
     private final GroupMapper groupMapper;
-    private final UserMapper userMapper;
     private final JoinRequestService joinRequestService;
 
     @Override
@@ -231,6 +229,14 @@ public class GroupServiceImpl implements GroupService {
                         .map(UserGroup::getUser)
                         .collect(Collectors.toList()))
                 .orElseThrow(() -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public List<GroupModel> getGroupsOwnedByUser(Principal connectedUser) {
+        User user = userService.findUserByHandle(connectedUser.getName());
+        return userGroupService.findAllByUserAndRole(user, UserGroupRole.LEADER).stream()
+                .map(userGroup -> groupMapper.toModel(userGroup.getGroup()))
+                .collect(Collectors.toList());
     }
 
     @Override
