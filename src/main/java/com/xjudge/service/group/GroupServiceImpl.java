@@ -234,7 +234,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<GroupModel> getGroupsOwnedByUser(Principal connectedUser) {
         User user = userService.findUserByHandle(connectedUser.getName());
-        return userGroupService.findAllByUserAndRole(user, UserGroupRole.LEADER).stream()
+        return userGroupService.findAllByUserAndRole(user).stream()
                 .map(userGroup -> groupMapper.toModel(userGroup.getGroup()))
                 .collect(Collectors.toList());
     }
