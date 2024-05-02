@@ -37,9 +37,15 @@ public class UserGroupServiceImpl implements UserGroupService {
         );
     }
 
+    // TODO - handle this function to get groups where user has role LEADER or ADMIN
     @Override
-    public List<UserGroup> findAllByUserAndRole(User user, UserGroupRole role) {
-        return userGroupRepository.findAllByUserAndRole(user, role);
+    public List<UserGroup> findAllByUserAndRole(User user) {
+        List<UserGroup> groups = userGroupRepository.findAllByUser(user);
+        return groups.stream()
+                .filter(group ->
+                        group.getRole() == UserGroupRole.LEADER
+                        || group.getRole() == UserGroupRole.ADMIN
+                ).toList();
     }
 
 
