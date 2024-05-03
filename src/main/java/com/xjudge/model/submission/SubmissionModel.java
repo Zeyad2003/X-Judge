@@ -1,8 +1,5 @@
 package com.xjudge.model.submission;
 
-import com.xjudge.entity.Contest;
-import com.xjudge.entity.Problem;
-import com.xjudge.entity.User;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;

@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -121,6 +120,7 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
+    @Transactional
     public SubmissionModel submitClient(SubmissionInfoModel info, Authentication authentication) {
         return submissionMapper.toModel(submit(info , authentication));
     }
