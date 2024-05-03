@@ -51,16 +51,29 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Page<GroupModel> getGroupsByUserHandle(String handle, Pageable pageable) {
+        User user = userService.findUserByHandle(handle);
+        Page<Group> groups = groupRepository.findGroupsByGroupUsersUser(user, pageable);
+        return groups.map(group -> GroupModel.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .creationDate(group.getCreationDate())
+                .visibility(group.getVisibility())
+                .build());
+    }
+
+    @Override
     public GroupModel getSpecificGroup(Long id) {
         return groupMapper.toModel(
                 groupRepository.findById(id).orElseThrow(
-                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-        ));
+                        () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+                ));
     }
 
     @Override
     public GroupModel getSpecificGroupByName(String name) {
-        return  groupMapper.toModel(
+        return groupMapper.toModel(
                 groupRepository.findGroupByName(name).orElseThrow(
                         () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
                 ));
@@ -96,21 +109,23 @@ public class GroupServiceImpl implements GroupService {
     public GroupModel update(Long groupId, GroupRequest groupRequest) {
         return groupMapper.toModel(
                 groupRepository.findById(groupId)
-                .map(group -> {
-                    group.setName(groupRequest.getName());
-                    group.setDescription(groupRequest.getDescription());
-                    group.setVisibility(groupRequest.getVisibility());
-                    return groupRepository.save(group);
-                }).orElseThrow(
-                        () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-                ));
+                        .map(group -> {
+                            group.setName(groupRequest.getName());
+                            group.setDescription(groupRequest.getDescription());
+                            group.setVisibility(groupRequest.getVisibility());
+                            return groupRepository.save(group);
+                        }).orElseThrow(
+                                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+                        ));
     }
 
     @Override
     public void delete(Long groupId) {
         groupRepository.findById(groupId)
                 .ifPresentOrElse(groupRepository::delete,
-                        () -> { throw new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND); });
+                        () -> {
+                            throw new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND);
+                        });
     }
 
     @Override
@@ -148,9 +163,12 @@ public class GroupServiceImpl implements GroupService {
         if (userGroupService.existsByUserAndGroup(user, group)) {
             throw new XJudgeException("User is already in the group", GroupServiceImpl.class.getName(), HttpStatus.ALREADY_REPORTED);
         }
+        UserGroupKey userGroupKey = new UserGroupKey(user.getId(), groupId);
+
         userGroupService.save(UserGroup.builder()
                 .user(user)
                 .group(group)
+                .id(userGroupKey)
                 .joinDate(LocalDate.now())
                 .role(UserGroupRole.MEMBER).build());
     }
@@ -158,13 +176,16 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void join(GroupModel groupModel, User user) {
         // Check if the user is not already in the group
-         Group group = groupMapper.toEntity(groupModel);
+        Group group = groupMapper.toEntity(groupModel);
         if (userGroupService.existsByUserAndGroup(user, group)) {
             throw new XJudgeException("User is already in the group", GroupServiceImpl.class.getName(), HttpStatus.ALREADY_REPORTED);
         }
+        UserGroupKey userGroupKey = new UserGroupKey(user.getId(), group.getId());
+
         userGroupService.save(UserGroup.builder()
                 .user(user)
                 .group(group)
+                .id(userGroupKey)
                 .joinDate(LocalDate.now())
                 .role(UserGroupRole.MEMBER).build());
     }
@@ -278,4 +299,6 @@ public class GroupServiceImpl implements GroupService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitationService.save(invitation);
     }
+
+
 }
