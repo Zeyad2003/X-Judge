@@ -23,7 +23,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
             "AND (:problemCode IS NULL OR :problemCode='' OR p.problemCode LIKE %:problemCode%) " +
             "AND (:title IS NULL OR :title='' OR p.title LIKE %:title%) " +
             "AND (:contestName IS NULL OR :contestName='' OR p.contestName LIKE %:contestName%) " +
-            "order by p.id")
+            "order by p.id DESC ")
     Page<Problem> filterProblems(@Param("source") String source, @Param("problemCode") String problemCode, @Param("title") String title, @Param("contestName") String contestName, Pageable pageable);
 
 
