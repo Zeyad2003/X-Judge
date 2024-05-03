@@ -22,4 +22,7 @@ public class SubmissionPageModel {
     private String timeUsage;
     private String memoryUsage;
     private Instant submitTime;
+    private Boolean isOpen;
+    private String remoteRunId;
+    private String solution;
 }
