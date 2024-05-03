@@ -40,6 +40,24 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/userHandle")
+    public ResponseEntity<?> getGroupsByUserHandle(
+            Principal connectedUser,
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "25") Integer size
+    ) {
+        Pageable paging = PageRequest.of(pageNo, size);
+        String userHandle=connectedUser.getName();
+        Page<GroupModel> paginatedData = groupService.getGroupsByUserHandle(userHandle, paging);
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .message("Groups fetched successfully for user with handle: " + userHandle)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{groupId}")
     @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
     public ResponseEntity<?> getSpecificGroup(@PathVariable  Long groupId) {
