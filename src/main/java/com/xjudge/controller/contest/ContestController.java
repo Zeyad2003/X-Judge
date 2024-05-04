@@ -164,9 +164,11 @@ public class ContestController {
     public  ResponseEntity<?> filterByStatus( @RequestParam(defaultValue = "RUNNING") String status ,
                                              @RequestParam(defaultValue = "0") Integer pageNo,
                                              @RequestParam(defaultValue = "25") Integer size) {
-
-        Page<ContestPageModel> contestPageModels = contestService.getContestByStatus(status, pageNo , size);
-        return new ResponseEntity<>(contestPageModels , HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestByStatus(status, pageNo , size))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @GetMapping(params = {"type" , "status"})
@@ -174,7 +176,11 @@ public class ContestController {
                                                @RequestParam(defaultValue = "0") Integer pageNo,
                                                @RequestParam(defaultValue = "25") Integer size){
         Pageable pageable = PageRequest.of(pageNo , size);
-        return new ResponseEntity<>(contestService.getContestsByType(type , status , pageable) , HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestsByType(type , status , pageable))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
 
@@ -183,7 +189,11 @@ public class ContestController {
                                               @RequestParam(defaultValue = "0") Integer pageNo,
                                               @RequestParam(defaultValue = "25") Integer size){
         Pageable pageable = PageRequest.of(pageNo , size);
-        return new ResponseEntity<>(contestService.getContestsByVisibility(visibility , status , pageable) , HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestsByVisibility(visibility , status , pageable))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @GetMapping("/mine")
@@ -191,7 +201,11 @@ public class ContestController {
                                                     @RequestParam(defaultValue = "0") Integer pageNo,
                                                     @RequestParam(defaultValue = "25") Integer size){
         Pageable pageable = PageRequest.of(pageNo , size);
-        return new ResponseEntity<>(contestService.getContestsOfLoginUser(authentication , status , pageable) , HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.getContestsOfLoginUser(authentication , status , pageable))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
     @GetMapping(params = {"category" , "status" , "title" , "owner"})
@@ -202,6 +216,10 @@ public class ContestController {
                                                     @RequestParam(defaultValue = "25") Integer size , Authentication authentication){
         if(category.equals("mine")) category = authentication.getName();
         Pageable pageable = PageRequest.of(pageNo , size);
-        return new ResponseEntity<>(contestService.searchByVisibilityOrTypeOrUserAndOwnerAndTitle(category , title , owner ,status, pageable) , HttpStatus.OK);
+        Response response = Response.builder()
+                .success(true)
+                .data(contestService.searchByVisibilityOrTypeOrUserAndOwnerAndTitle(category , title , owner ,status, pageable))
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
     }
 }
