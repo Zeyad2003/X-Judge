@@ -44,9 +44,9 @@ public interface ContestMapper {
     ContestModel toContestModel(Contest contest , User owner , ContestStatus contestStatus);
 
     @Mapping(target = "source" , source = "contestProblem.problem.source")
+    @Mapping(target = "problemLink" , source = "contestProblem.problem.problemLink")
     ContestProblemModel toContestProblemModel(ContestProblem contestProblem);
 
-    Contest toContest(ContestModel contestModel);
 
     default java.lang.String passwordValidation(ContestClientRequest contestModel) {
         if (contestModel.getVisibility() == ContestVisibility.PRIVATE && (contestModel.getPassword() == null || contestModel.getPassword().isEmpty())) {
