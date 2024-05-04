@@ -24,7 +24,7 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
             "JOIN s.user u " +
             "JOIN s.problem p " +
             "WHERE (:userHandle IS NULL OR :userHandle='' OR u.handle LIKE %:userHandle%) " +
-            "AND (:oj IS NULL OR :oj='' OR CAST(s.ojType AS string) LIKE %:oj%) " +
+            "AND (:oj IS NULL OR :oj='' OR CAST(p.source AS string) LIKE %:oj%) " +
             "AND (:problemCode IS NULL OR :problemCode='' OR p.problemCode LIKE %:problemCode%) " +
             "AND (:language IS NULL OR :language='' OR s.language LIKE %:language%) " +
             "order by s.submitTime DESC")
