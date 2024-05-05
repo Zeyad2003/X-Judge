@@ -109,6 +109,7 @@ public class UserServiceImpl implements UserService{
                 errors.add(error);
                 throw new XJudgeValidationException(errors, "Validation failed", UserServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
             }
+            oldUser.setIsVerified(false);
             oldUser.setEmail(user.getEmail());
             generateTokenAndSendEmail(oldUser);
         }
