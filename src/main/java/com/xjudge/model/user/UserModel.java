@@ -6,7 +6,6 @@ import com.xjudge.entity.Submission;
 import com.xjudge.entity.UserContest;
 import com.xjudge.entity.UserGroup;
 import com.xjudge.model.enums.UserRole;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,7 +13,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
@@ -29,7 +27,6 @@ public class UserModel {
 
     private Long id;
 
-    @NotBlank(message = "user handle is mandatory")
     @Size(max = 20 , message = "user handle length must be less than 20")
     private String handle;
 
@@ -47,7 +44,7 @@ public class UserModel {
     @Email(message = "please enter valid email")
     private String email;
 
-    @Size(max = 7 , message = "user school length must be less than 7")
+    @Size(max = 100, message = "user school length must be less than 7")
     private String school;
 
     private LocalDate registrationDate;
@@ -55,7 +52,6 @@ public class UserModel {
     @URL(message = "Invalid URL")
     private String photoUrl;
 
-    @JsonIgnore
     private Boolean isVerified;
 
     private Long solvedCount;

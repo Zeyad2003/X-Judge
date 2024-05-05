@@ -138,9 +138,6 @@ public class AuthServiceImp implements AuthService{
         User user = userMapper.toEntity(model);
         System.out.println(user);
 
-        if (!user.getIsVerified()) {
-            throw new AuthException("Email not verified" , HttpStatus.UNAUTHORIZED, errors);
-        }
         String token = jwtService.generateToken(user);
         return LoginResponse
                 .builder()
