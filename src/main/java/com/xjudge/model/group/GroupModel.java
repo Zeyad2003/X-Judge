@@ -31,4 +31,6 @@ public class GroupModel {
 
     @JsonIgnore
     List<UserGroup> groupUsers;
+
+    String leaderHandle;
 }
