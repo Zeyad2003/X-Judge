@@ -48,4 +48,8 @@ public class Group extends BaseEntity<Long> {
     @ToString.Exclude
     private List<UserGroup> groupUsers;
 
+
+    String leaderHandle;
+
+
 }

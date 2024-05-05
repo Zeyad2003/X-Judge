@@ -47,6 +47,7 @@ public class GroupServiceImpl implements GroupService {
                 .description(group.getDescription())
                 .creationDate(group.getCreationDate())
                 .visibility(group.getVisibility())
+                .leaderHandle(group.getLeaderHandle())
                 .build());
     }
 
@@ -60,6 +61,7 @@ public class GroupServiceImpl implements GroupService {
                 .description(group.getDescription())
                 .creationDate(group.getCreationDate())
                 .visibility(group.getVisibility())
+                .leaderHandle(group.getLeaderHandle())
                 .build());
     }
 
@@ -89,6 +91,7 @@ public class GroupServiceImpl implements GroupService {
                 .name(groupRequest.getName())
                 .description(groupRequest.getDescription())
                 .visibility(groupRequest.getVisibility())
+                .leaderHandle(connectedUser.getName())
                 .creationDate(LocalDate.now())
                 .build());
 
