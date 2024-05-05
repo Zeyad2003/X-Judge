@@ -14,6 +14,7 @@ public interface UserService {
     User findUserById(Long userId);
     UserModel findUserModelById(Long userId);
     UserModel updateUser(Long id, UserModel user);
+    UserModel updateUserByHandle(String handle, UserModel user);
     void deleteUser(Long userId);
     List<UserModel> getAllUsers();
     boolean existsByHandle(String userHandle);
