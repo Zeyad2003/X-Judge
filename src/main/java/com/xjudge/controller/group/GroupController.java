@@ -1,12 +1,15 @@
 package com.xjudge.controller.group;
 
 import com.xjudge.entity.Contest;
+import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
+import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.service.group.GroupService;
+import com.xjudge.service.group.userGroupService.UserGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,12 +28,12 @@ import java.util.List;
 public class GroupController {
 
     private final GroupService groupService;
-
+    private final UserGroupService userGroupService;
     @GetMapping("/public")
-    public ResponseEntity<?> getAllGroups(@RequestParam(defaultValue = "0") Integer pageNo,
+    public ResponseEntity<?> getAllGroups( Principal connectedUser,@RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<GroupModel> paginatedData = groupService.getAllGroups(paging);
+        Page<GroupModel> paginatedData = groupService.getAllGroups(connectedUser,paging);
 
         Response response = Response.builder()
                 .success(true)
@@ -222,4 +225,9 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/userRole")
+   public UserGroupRole getUserRole(Principal connectedUser, @PathVariable Long groupId){
+
+        return userGroupService.findRoleByUserAndGroupId(connectedUser,groupId);
+   }
 }

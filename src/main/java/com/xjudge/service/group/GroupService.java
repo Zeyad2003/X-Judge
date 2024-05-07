@@ -14,7 +14,7 @@ import java.util.List;
 public interface GroupService {
 
     // CRUD operations
-    Page<GroupModel> getAllGroups(Pageable pageable);
+    Page<GroupModel> getAllGroups(Principal connectedUser,Pageable pageable);
     GroupModel getSpecificGroup(Long id);
     GroupModel getSpecificGroupByName(String name);
     GroupModel create(GroupRequest groupRequest, Principal connectedUser);
@@ -45,4 +45,6 @@ public interface GroupService {
     void acceptInvitation(Long invitationId, Principal connectedUser);
     void declineInvitation(Long invitationId, Principal connectedUser);
     Page<GroupModel> getGroupsByUserHandle(String handle,Pageable pageable);
+
+
 }
