@@ -3,7 +3,9 @@ package com.xjudge.service.group.userGroupService;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
 import com.xjudge.entity.UserGroup;
+import com.xjudge.model.enums.UserGroupRole;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -15,4 +17,6 @@ public interface UserGroupService {
     void save(UserGroup userGroup);
     void delete(UserGroup userGroup);
     void deleteById(Long id);
+
+    UserGroupRole findRoleByUserAndGroupId(Principal connectedUser, Long groupId);
 }

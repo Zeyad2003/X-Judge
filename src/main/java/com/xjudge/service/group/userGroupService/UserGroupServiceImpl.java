@@ -6,18 +6,23 @@ import com.xjudge.entity.UserGroup;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.repository.UserGroupRepository;
+import com.xjudge.repository.UserRepo;
 import com.xjudge.service.group.GroupServiceImpl;
+import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserGroupServiceImpl implements UserGroupService {
 
     private final UserGroupRepository userGroupRepository;
+    private final UserService userService;
     @Override
     public boolean existsByUserAndGroup(User user, Group group) {
         return userGroupRepository.existsByUserAndGroup(user, group);
@@ -62,5 +67,13 @@ public class UserGroupServiceImpl implements UserGroupService {
     @Override
     public void deleteById(Long id) {
         userGroupRepository.deleteById(id);
+    }
+
+    @Override
+    public UserGroupRole findRoleByUserAndGroupId(Principal connectedUser, Long groupId)
+    {
+        User user=userService.findUserByHandle(connectedUser.getName());
+        Long id=user.getId();
+        return userGroupRepository.findByUserIdAndGroupId(id,groupId).getRole();
     }
 }

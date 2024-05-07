@@ -39,7 +39,7 @@ public class GroupServiceImpl implements GroupService {
     private final JoinRequestService joinRequestService;
 
     @Override
-    public Page<GroupModel> getAllGroups(Pageable pageable) {
+    public Page<GroupModel> getAllGroups(Principal connectedUser,Pageable pageable) {
         Page<Group> groups = groupRepository.findAll(pageable);
         return groups.map(group -> GroupModel.builder()
                 .id(group.getId())
@@ -48,6 +48,8 @@ public class GroupServiceImpl implements GroupService {
                 .creationDate(group.getCreationDate())
                 .visibility(group.getVisibility())
                 .leaderHandle(group.getLeaderHandle())
+                .userGroupRole(userGroupService.findRoleByUserAndGroupId(connectedUser,group.getId()))
+                .members(group.getGroupUsers().size())
                 .build());
     }
 
@@ -64,6 +66,7 @@ public class GroupServiceImpl implements GroupService {
                 .leaderHandle(group.getLeaderHandle())
                 .build());
     }
+
 
     @Override
     public GroupModel getSpecificGroup(Long id) {

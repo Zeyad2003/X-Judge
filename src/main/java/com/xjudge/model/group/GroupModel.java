@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.UserGroup;
 import com.xjudge.model.enums.GroupVisibility;
+import com.xjudge.model.enums.UserGroupRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,4 +34,7 @@ public class GroupModel {
     List<UserGroup> groupUsers;
 
     String leaderHandle;
+
+    UserGroupRole userGroupRole;
+    int members ;
 }
