@@ -6,7 +6,7 @@ import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.repository.PropertyRepository;
 import com.xjudge.repository.SectionRepository;
 import com.xjudge.repository.ValueRepository;
-import com.xjudge.service.scraping.ScrappingStrategy;
+import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,8 +28,10 @@ public class CodeforcesScrapping implements ScrappingStrategy {
     private final ValueRepository valueRepository;
 
     @Override
-    public Problem scrap(String contestId, String problemId) {
+    public Problem scrap(String code) {
         String URL = "https://codeforces.com";
+        String contestId = code.replaceAll("(\\d+).*", "$1");
+        String problemId = code.replaceAll("\\d+(.*)", "$1");
         String targetProblem = URL + "/problemset/problem/" + contestId + "/" + problemId;
         String contestLink = URL + "/contest/" + contestId;
         Document problemDocument;
@@ -68,8 +70,6 @@ public class CodeforcesScrapping implements ScrappingStrategy {
 
         return Problem.builder()
                 .code(contestId+problemId)
-                .contestId(contestId)
-                .problemId(problemId)
                 .onlineJudge(OnlineJudgeType.codeforces)
                 .title(problemTitle)
                 .contestName(contestName)

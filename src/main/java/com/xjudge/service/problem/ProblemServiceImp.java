@@ -12,8 +12,8 @@ import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.repository.ProblemRepository;
-import com.xjudge.service.scraping.ScrappingStrategy;
-import com.xjudge.service.scraping.SubmissionStrategy;
+import com.xjudge.service.scraping.strategy.ScrappingStrategy;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.submission.SubmissionService;
 import com.xjudge.service.user.UserService;
 import lombok.AllArgsConstructor;
@@ -58,35 +58,34 @@ public class ProblemServiceImp implements ProblemService {
 
     @Override
     @Transactional
-    public Problem getProblem(String source, String contestId, String problemId) {
-        String code = contestId + problemId;
+    public Problem getProblem(String source, String code) {
         Optional<Problem> problem = problemRepo.findByCodeAndOnlineJudge(code, OnlineJudgeType.valueOf(source.toLowerCase()));
-        return problem.orElseGet(() -> scrapProblem(source, contestId, problemId));
+        return problem.orElseGet(() -> scrapProblem(source, code));
     }
 
     @Override
     @Transactional
-    public ProblemModel getProblemModel(String source, String contestId, String problemId) {
-        return problemMapper.toModel(getProblem(source, contestId, problemId));
+    public ProblemModel getProblemModel(String source, String code) {
+        return problemMapper.toModel(getProblem(source, code));
     }
 
-    private Problem scrapProblem(String source, String contestId, String problemId) {
+    private Problem scrapProblem(String source, String code) {
         ScrappingStrategy strategy = scrappingStrategies.get(OnlineJudgeType.valueOf(source.toLowerCase()));
-        Problem problem = strategy.scrap(contestId, problemId);
+        Problem problem = strategy.scrap(code);
         return problemRepo.save(problem);
     }
 
     @Override
     @Transactional
-    public ProblemDescription getProblemDescription(String source, String contestId, String problemId) {
-        return problemMapper.toDescription(getProblem(source, contestId, problemId));
+    public ProblemDescription getProblemDescription(String source, String code) {
+        return problemMapper.toDescription(getProblem(source, code));
     }
 
     @Override
     @Transactional
     public Submission submit(SubmissionInfoModel info , Authentication authentication) {
         User user = userService.findUserByHandle(authentication.getName());
-        Problem problem = getProblem(info.ojType().name(), info.contestId(), info.problemId());
+        Problem problem = getProblem(info.ojType().name(), info.code());
         SubmissionStrategy strategy = submissionStrategies.get(info.ojType());
         Submission submission = strategy.submit(info);
         submission.setProblem(problem);

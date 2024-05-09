@@ -1,7 +1,7 @@
 package com.xjudge.config.stragegy;
 
 import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.service.scraping.SubmissionStrategy;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.scraping.atcoder.AtCoderSubmission;
 import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
 import lombok.RequiredArgsConstructor;

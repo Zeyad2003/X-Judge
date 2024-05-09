@@ -13,12 +13,11 @@ public class ProblemDescription {
 
     private final ProblemService problemService;
 
-    @GetMapping("/description/{source}/{contestId}/{problemId}")
+    @GetMapping("/description/{source}-{code}")
     public String getProblemDescription(@PathVariable String source,
-                                        @PathVariable String contestId,
-                                        @PathVariable String problemId,
+                                        @PathVariable String code,
                                         Model model) {
-        model.addAttribute("problem", problemService.getProblemDescription(source, contestId, problemId));
+        model.addAttribute("problem", problemService.getProblemDescription(source, code));
         return "problem-description";
     }
 

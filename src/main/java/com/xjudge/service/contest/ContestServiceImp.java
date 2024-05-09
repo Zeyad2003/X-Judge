@@ -266,13 +266,13 @@ public class ContestServiceImp implements ContestService {
         User user = userService.findUserByHandle(authentication.getName());
         ContestStatus contestStatus = checkContestStatus(contest);
         UserContest userContest = getUserContest(contest , user.getHandle());
-        ContestProblem contestProblem = getContestProblemByCode(contest , info.contestId() + info.problemId());
+        ContestProblem contestProblem = getContestProblemByCode(contest , info.code());
 
         if(contestStatus == ContestStatus.SCHEDULED){
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-        if(!contestProblemRepo.existsByProblemCodeAndContestId(info.contestId() + info.problemId() , id)){
+        if(!contestProblemRepo.existsByProblemCodeAndContestId(info.code() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
@@ -290,12 +290,12 @@ public class ContestServiceImp implements ContestService {
         }
 
         Submission submission = problemService.submit(info, authentication);
-        logger.info("isProblemAccepted : {}", isProblemAcceptedByUser(contest.getId(), user.getId(), info.contestId() + info.problemId()));
+        logger.info("isProblemAccepted : {}", isProblemAcceptedByUser(contest.getId(), user.getId(), info.code()));
 
-        if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.contestId() + info.problemId())){
+        if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.code())){
             Duration duration = Duration.between(contest.getBeginTime() , submission.getSubmitTime());
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + duration.getSeconds());
-            userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.contestId() + info.problemId()));
+            userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.code()));
             userContest.setNumOfAccepted(userContest.getNumOfAccepted() + 1);
             contestProblem.setNumberOfAccepted(contestProblem.getNumberOfAccepted() + 1);
         } else if (submission.getVerdict().startsWith("W")) {
@@ -366,7 +366,7 @@ public class ContestServiceImp implements ContestService {
         contestProblemRepo.deleteAllByContestId(contest.getId());
 
         for (ContestProblemset problemaya : problemSet) {
-            Problem problem = problemService.getProblem(problemaya.ojType().name(), problemaya.contestId(), problemaya.problemId());
+            Problem problem = problemService.getProblem(problemaya.ojType().name(), problemaya.code());
 
             ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
 
@@ -376,7 +376,7 @@ public class ContestServiceImp implements ContestService {
                     .problem(problem)
                     .problemWeight(problemaya.problemWeight())
                     .problemAlias(problemaya.problemAlias())
-                    .problemCode(problemaya.contestId() + problemaya.problemId())
+                    .problemCode(problemaya.code())
                     .problemHashtag(problemaya.problemHashtag())
                     .build();
 

@@ -3,7 +3,7 @@ package com.xjudge.service.scraping.atcoder;
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.service.scraping.SubmissionStrategy;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -28,11 +28,14 @@ public class AtCoderSubmission implements SubmissionStrategy {
     WebDriverWait wait;
     private static final String LOGIN_URL = "https://atcoder.jp/login?continue=https://atcoder.jp/contests/%s/submit";
     private static final String SUBMIT_URL="https://atcoder.jp/contests/%s/submit";
+    private final AtCoderSplitting splitting;
 
     @Autowired
-    public AtCoderSubmission(WebDriver webDriver){
+    public AtCoderSubmission(WebDriver webDriver,
+                             AtCoderSplitting splitting){
         this.driver = webDriver;
         this.wait = new WebDriverWait(webDriver , Duration.ofSeconds(15));
+        this.splitting = splitting;
     }
 
     @Value("${Atcoder.username}")
@@ -43,7 +46,8 @@ public class AtCoderSubmission implements SubmissionStrategy {
 
     @Override
     public Submission submit(SubmissionInfoModel data) {
-        String contestId = data.contestId();
+        String[] splittedCode = splitting.split(data.code());
+        String contestId = splittedCode[0];
 
         if(!isLogin()){
             login(USERNAME , PASSWORD , contestId);
@@ -108,7 +112,9 @@ public class AtCoderSubmission implements SubmissionStrategy {
                 toggleButton.click();
             }
 
-            taskNameSelect.selectByValue(data.problemId());
+            String problemId = splitting.split(data.code())[1];
+
+            taskNameSelect.selectByValue(problemId);
             WebElement languageIdElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
             Select languageIdSelect = new Select(languageIdElement);
             languageIdSelect.selectByValue(data.compiler().getIdValue());

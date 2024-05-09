@@ -61,14 +61,13 @@ public class ProblemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/{source}/{contestId}/{problemId}")
+    @GetMapping("/{source}-{code}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
     public ResponseEntity<?> getProblem(@PathVariable String source,
-                                        @PathVariable String contestId,
-                                        @PathVariable String problemId) {
+                                        @PathVariable String code) {
         Response response = Response.builder()
                 .success(true)
-                .data(problemService.getProblemModel(source, contestId, problemId))
+                .data(problemService.getProblemModel(source, code))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -17,11 +17,11 @@ public interface ProblemService {
 
     Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable);
 
-    Problem getProblem(String source, String contestId, String problemId);
+    Problem getProblem(String source, String code);
 
-    ProblemDescription getProblemDescription(String source, String contestId, String problemId);
+    ProblemDescription getProblemDescription(String source, String code);
 
-    ProblemModel getProblemModel(String source, String contestId, String problemId);
+    ProblemModel getProblemModel(String source, String code);
 
     Submission submit(SubmissionInfoModel info , Authentication authentication);
 

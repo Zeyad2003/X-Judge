@@ -6,7 +6,7 @@ import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.repository.PropertyRepository;
 import com.xjudge.repository.SectionRepository;
 import com.xjudge.repository.ValueRepository;
-import com.xjudge.service.scraping.ScrappingStrategy;
+import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -27,9 +27,11 @@ public class AtCoderScrapping implements ScrappingStrategy {
     private final ValueRepository valueRepository;
 
     @Override
-    public Problem scrap(String contestId, String problemId) {
+    public Problem scrap(String code) {
         String atCoderURL = "https://atcoder.jp/contests/";
-        String targetProblem = atCoderURL + contestId + "/tasks/" + problemId;
+        String[] cpCode = code.split("_");
+        String contestId = String.join("-", Arrays.copyOf(cpCode, cpCode.length - 1));
+        String targetProblem = atCoderURL + contestId + "/tasks/" + code;
         System.out.println(targetProblem);
         String contestLink = atCoderURL + contestId;
         Connection connection;
@@ -69,9 +71,7 @@ public class AtCoderScrapping implements ScrappingStrategy {
         sectionRepository.saveAll(problemSections);
 
         return Problem.builder()
-                .code(problemId)
-                .contestId(contestId)
-                .problemId(problemId)
+                .code(code)
                 .onlineJudge(OnlineJudgeType.atcoder)
                 .title(problemTitle)
                 .problemLink(targetProblem)

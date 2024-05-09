@@ -10,10 +10,6 @@ public record ProblemModel(
 
         String code,
 
-        String contestId,
-
-        String problemId,
-
         String title,
 
         String problemLink,

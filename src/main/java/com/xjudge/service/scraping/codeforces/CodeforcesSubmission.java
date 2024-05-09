@@ -3,7 +3,7 @@ package com.xjudge.service.scraping.codeforces;
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.service.scraping.SubmissionStrategy;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -95,7 +95,7 @@ public class CodeforcesSubmission implements SubmissionStrategy {
             logger.info(info.solutionCode());
 
             // send info
-            submittedProblemCode.sendKeys(info.contestId() + info.problemId());
+            submittedProblemCode.sendKeys(info.code());
             if (!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
             sourceCodeTextarea.sendKeys(info.solutionCode());
             lang.selectByValue(info.compiler().getIdValue());

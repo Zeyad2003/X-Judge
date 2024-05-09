@@ -15,10 +15,6 @@ public class ProblemsPageModel {
 
     String code;
 
-    String contestId;
-
-    String problemId;
-
     String title;
 
     String problemLink;
