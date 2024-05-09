@@ -3,7 +3,7 @@ package com.xjudge.service.scraping.atcoder;
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.service.scraping.SubmissionAutomation;
+import com.xjudge.service.scraping.SubmissionStrategy;
 import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class AtCoderSubmission implements SubmissionAutomation {
+public class AtCoderSubmission implements SubmissionStrategy {
 
     WebDriver driver;
     WebDriverWait wait;
@@ -43,7 +43,7 @@ public class AtCoderSubmission implements SubmissionAutomation {
 
     @Override
     public Submission submit(SubmissionInfoModel data) {
-        String contestId = data.problemCode().split("_")[0];
+        String contestId = data.contestId();
 
         if(!isLogin()){
             login(USERNAME , PASSWORD , contestId);
@@ -72,16 +72,15 @@ public class AtCoderSubmission implements SubmissionAutomation {
 
         if(statusTD.getText().equals("CE")){
             status = "CE";
-            time = "0";
-            memory = "0";
-            remoteId = submissionScore.getAttribute("data-id");
+            time = "0 ms";
+            memory = "0 KB";
         }
         else{
              status = submission.get(6).getText();
              time = submission.get(7).getText();
              memory = submission.get(8).getText();
-             remoteId = submissionScore.getAttribute("data-id");
         }
+        remoteId = submissionScore.getAttribute("data-id");
 
 
         return Submission.builder()
@@ -109,7 +108,7 @@ public class AtCoderSubmission implements SubmissionAutomation {
                 toggleButton.click();
             }
 
-            taskNameSelect.selectByValue(data.problemCode());
+            taskNameSelect.selectByValue(data.problemId());
             WebElement languageIdElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
             Select languageIdSelect = new Select(languageIdElement);
             languageIdSelect.selectByValue(data.compiler().getIdValue());

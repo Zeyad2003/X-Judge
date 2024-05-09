@@ -11,7 +11,11 @@ import jakarta.validation.constraints.NotBlank;
 public record ContestProblemset(
         @NotNull
         @NotBlank
-        String problemCode,
+        String contestId,
+
+        @NotNull
+        @NotBlank
+        String problemId,
 
         @NotNull
         @Min(value = 1)

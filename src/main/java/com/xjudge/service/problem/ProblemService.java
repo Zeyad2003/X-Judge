@@ -2,6 +2,8 @@ package com.xjudge.service.problem;
 
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
+import com.xjudge.model.problem.ProblemDescription;
+import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
@@ -15,7 +17,11 @@ public interface ProblemService {
 
     Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable);
 
-    Problem getProblemByCodeAndSource(String problemCode, String problemSource);
+    Problem getProblem(String source, String contestId, String problemId);
+
+    ProblemDescription getProblemDescription(String source, String contestId, String problemId);
+
+    ProblemModel getProblemModel(String source, String contestId, String problemId);
 
     Submission submit(SubmissionInfoModel info , Authentication authentication);
 

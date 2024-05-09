@@ -11,11 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProblemsPageModel {
-    OnlineJudgeType oj;
+    OnlineJudgeType onlineJudge;
 
-    String problemCode;
+    String code;
 
-    String problemTitle;
+    String contestId;
+
+    String problemId;
+
+    String title;
 
     String problemLink;
 

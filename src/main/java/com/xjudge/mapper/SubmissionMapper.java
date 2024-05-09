@@ -12,7 +12,7 @@ import java.util.List;
 public interface SubmissionMapper {
     @Mapping(target = "contestId", source = "contest.id")
     @Mapping(target = "userHandle", source = "user.handle")
-    @Mapping(target = "problemCode", source = "problem.problemCode")
+    @Mapping(target = "problemCode", source = "problem.code")
     SubmissionModel toModel(Submission submission);
     List<SubmissionModel> toModels(List<Submission> submissions);
     @Mapping(target = "problemCode", source = "problemCode")

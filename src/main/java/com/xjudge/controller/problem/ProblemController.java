@@ -2,7 +2,6 @@ package com.xjudge.controller.problem;
 
 import com.xjudge.exception.XJudgeValidationException;
 
-import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.response.Response;
 
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import com.xjudge.entity.Problem;
 import com.xjudge.service.problem.ProblemService;
 
 import org.springframework.data.domain.Page;
@@ -32,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProblemController {
 
     private final ProblemService problemService;
-    private final ProblemMapper problemMapper;
 
     @GetMapping
     @Operation(summary = "Retrieve all problems", description = "Get all problems available in the system with pagination.")
@@ -64,13 +61,14 @@ public class ProblemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/{problemSource}-{problemCode}")
+    @GetMapping("/{source}/{contestId}/{problemId}")
     @Operation(summary = "Retrieve a specific problem", description = "Get a specific problem by its code.")
-    public ResponseEntity<?> getProblem(@PathVariable("problemCode") String problemCode , @PathVariable("problemSource") String problemSource) {
-        Problem problem = problemService.getProblemByCodeAndSource(problemCode, problemSource);
+    public ResponseEntity<?> getProblem(@PathVariable String source,
+                                        @PathVariable String contestId,
+                                        @PathVariable String problemId) {
         Response response = Response.builder()
                 .success(true)
-                .data(problemMapper.toModel(problem))
+                .data(problemService.getProblemModel(source, contestId, problemId))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

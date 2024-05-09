@@ -3,7 +3,7 @@ package com.xjudge.service.scraping.codeforces;
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.service.scraping.SubmissionAutomation;
+import com.xjudge.service.scraping.SubmissionStrategy;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Service
-public class CodeforcesSubmission implements SubmissionAutomation {
+public class CodeforcesSubmission implements SubmissionStrategy {
 
     private final WebDriver driver;
     private final WebDriverWait wait;
@@ -95,7 +95,7 @@ public class CodeforcesSubmission implements SubmissionAutomation {
             logger.info(info.solutionCode());
 
             // send info
-            submittedProblemCode.sendKeys(info.problemCode());
+            submittedProblemCode.sendKeys(info.contestId() + info.problemId());
             if (!toggleEditorCheckbox.isSelected()) toggleEditorCheckbox.click();
             sourceCodeTextarea.sendKeys(info.solutionCode());
             lang.selectByValue(info.compiler().getIdValue());

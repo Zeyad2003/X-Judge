@@ -1,0 +1,134 @@
+body {
+    /*background-color: #ebebeb !important;*/
+}
+
+#prob-left-panel,
+#prob-right-panel {
+    padding-top: 30px;
+}
+
+#prob-properties dd,
+#prob-properties dt,
+#prob-statistics dd,
+#prob-statistics dt {
+    margin-bottom: 0;
+    padding: 5px 5px 5px 15px;
+}
+
+#prob-properties dl,
+#prob-statistics dl {
+    font-size: 12px;
+    overflow: hidden;
+    padding: 5px 0;
+}
+
+.btn-secondary {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #373a3c;
+    outline: none;
+}
+
+.btn-secondary.focus,
+.btn-secondary:focus,
+.btn-secondary:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+    color: #373a3c;
+}
+
+#prob-operation a,
+#prob-operation button {
+    padding-left: 4px;
+    padding-right: 4px;
+    width: 100%;
+    margin-bottom: 10px;
+
+}
+
+.col-xs-6 {
+    float: left;
+    width: 50%;
+}
+
+.btn-secondary.submit {
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+    color: #fff;
+}
+
+.description {
+    background-color: #ddd;
+    border-radius: 10px;
+    box-shadow: 0 1px 10px 0 rgba(0, 0, 0, .08);
+    font-family: Merriweather, Full-Width-Quoration-Marks, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, FontAwesome, sans-serif;
+    font-size: 15px;
+    line-height: 24px;
+}
+
+table {
+    background-color: transparent;
+    border-collapse: collapse;
+    display: table;
+    box-sizing: border-box;
+    text-indent: initial;
+    border-spacing: 2px;
+    border-color: gray;
+}
+
+table.table thead {
+    background-color: hsla(0, 0%, 100%, .5);
+}
+
+.table thead th {
+    border-bottom: 2px solid #eceeef;
+    vertical-align: bottom;
+}
+
+.table td,
+.table th {
+    border-top: 1px solid #eceeef;
+    vertical-align: top;
+}
+
+#prob-my-sols th.result {
+    width: 60%;
+}
+
+#prob-my-sols {
+    font-size: 12px;
+}
+
+table.table th {
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.sample {
+    border: 1px solid #bbb;
+}
+
+.sample thead {
+    background-color: #ebebeb !important;
+}
+
+.sample td {
+    background: hsla(0, 0%, 100%, .5);
+}
+
+
+.sampleTests {
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+td {
+    line-height: 1.25;
+}
+
+pre {
+    margin-bottom: 0;
+}

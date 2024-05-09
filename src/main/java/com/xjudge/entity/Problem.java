@@ -3,11 +3,9 @@ package com.xjudge.entity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.xjudge.util.JsonDataConverter;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.*;
 
@@ -25,60 +23,39 @@ public class Problem extends BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String problemCode;
-
+    private String code;
+    private String contestId;
+    private String problemId;
+    private OnlineJudgeType onlineJudge;
     private String title;
-
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private String statement;
-
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private String input;
-
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private String output;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "LONGTEXT")
-    @Lob
-    private OnlineJudgeType source;
-
-    private String problemLink;
-
-    private String contestLink;
-
     private String contestName;
+    private String problemLink;
+    private String contestLink;
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
+    private String prependHtml;
 
-    private String timeLimit;
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Section> sections;
 
-    private String memoryLimit;
-
-    // TODO solved count
-
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Sample> samples = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Property> properties;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "problem",fetch = FetchType.LAZY , cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @ToString.Exclude
     Set<Submission> submissions;
 
     @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<ContestProblem> contests ;
+    private Set<ContestProblem> contests;
 
     @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<UserProblem> userProblems;
-
-    @Convert(converter = JsonDataConverter.class)
-    @Column(columnDefinition = "json")
-    private Map<String, Object> extraInfo;
 
 }
