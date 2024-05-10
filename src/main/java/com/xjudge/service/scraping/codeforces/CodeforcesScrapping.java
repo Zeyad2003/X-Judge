@@ -26,12 +26,14 @@ public class CodeforcesScrapping implements ScrappingStrategy {
     private final PropertyRepository propertyRepository;
     private final SectionRepository sectionRepository;
     private final ValueRepository valueRepository;
+    private final CodeForcesSplitting codeForcesSplitting;
 
     @Override
     public Problem scrap(String code) {
         String URL = "https://codeforces.com";
-        String contestId = code.replaceAll("(\\d+).*", "$1");
-        String problemId = code.replaceAll("\\d+(.*)", "$1");
+        String[] splittedCode = codeForcesSplitting.split(code);
+        String contestId = splittedCode[0];
+        String problemId = splittedCode[1];
         String targetProblem = URL + "/problemset/problem/" + contestId + "/" + problemId;
         String contestLink = URL + "/contest/" + contestId;
         Document problemDocument;

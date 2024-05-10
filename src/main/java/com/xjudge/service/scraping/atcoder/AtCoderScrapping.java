@@ -25,12 +25,12 @@ public class AtCoderScrapping implements ScrappingStrategy {
     private final PropertyRepository propertyRepository;
     private final SectionRepository sectionRepository;
     private final ValueRepository valueRepository;
+    private final AtCoderSplitting atCoderSplitting;
 
     @Override
     public Problem scrap(String code) {
         String atCoderURL = "https://atcoder.jp/contests/";
-        String[] cpCode = code.split("_");
-        String contestId = String.join("-", Arrays.copyOf(cpCode, cpCode.length - 1));
+        String contestId = atCoderSplitting.split(code)[0];
         String targetProblem = atCoderURL + contestId + "/tasks/" + code;
         System.out.println(targetProblem);
         String contestLink = atCoderURL + contestId;
