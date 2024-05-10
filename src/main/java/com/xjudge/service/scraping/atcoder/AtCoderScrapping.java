@@ -127,6 +127,21 @@ public class AtCoderScrapping implements ScrappingStrategy {
                     };
                     document.addEventListener("DOMContentLoaded", function () { renderMathInElement(document.body, katexOptions); });
                 </script>
+                <style type="text/css">
+                        section pre {
+                            display: block;
+                            padding: 9.5px;
+                            margin: 0 0 10px;
+                            font-size: 13px;
+                            line-height: 1.42857143;
+                            word-break: break-all;
+                            word-wrap: break-word;
+                            color: #333;
+                            background: rgba(255, 255, 255, 0.5);
+                            border: 1px solid #ccc;
+                            border-radius: 6px;
+                        }
+                    </style>
                 <!-- End -->
                 """;
     }
