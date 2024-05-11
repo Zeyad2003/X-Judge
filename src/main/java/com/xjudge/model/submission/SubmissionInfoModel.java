@@ -9,7 +9,7 @@ public record SubmissionInfoModel(
 
         @NotNull
         @NotBlank
-        String problemCode,
+        String code,
 
         @NotNull
         OnlineJudgeType ojType,

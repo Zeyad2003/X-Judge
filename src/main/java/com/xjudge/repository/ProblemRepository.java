@@ -13,14 +13,14 @@ import java.util.Optional;
 
 @Repository
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
-    Optional<Problem> findByProblemCodeAndSource(String problemCode, OnlineJudgeType problemSource);
+    Optional<Problem> findByCodeAndOnlineJudge(String code, OnlineJudgeType onlineJudge);
     Page<Problem> findByTitleContaining(String title, Pageable pageable);
-    Page<Problem> findBySourceContaining(OnlineJudgeType source, Pageable pageable);
-    Page<Problem> findByProblemCodeContaining(String problemCode, Pageable pageable);
+    Page<Problem> findByOnlineJudgeContaining(OnlineJudgeType source, Pageable pageable);
+    Page<Problem> findByCodeContaining(String problemCode, Pageable pageable);
 
     @Query(value = "SELECT p FROM Problem p " +
-            "WHERE (:source IS NULL OR :source='' OR CAST(p.source AS string) LIKE %:source%) " +
-            "AND (:problemCode IS NULL OR :problemCode='' OR p.problemCode LIKE %:problemCode%) " +
+            "WHERE (:source IS NULL OR :source='' OR CAST(p.onlineJudge AS string) = :source) " +
+            "AND (:problemCode IS NULL OR :problemCode='' OR p.code LIKE %:problemCode%) " +
             "AND (:title IS NULL OR :title='' OR p.title LIKE %:title%) " +
             "AND (:contestName IS NULL OR :contestName='' OR p.contestName LIKE %:contestName%) " +
             "order by p.id DESC ")

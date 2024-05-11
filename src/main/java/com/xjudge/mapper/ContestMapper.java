@@ -43,7 +43,7 @@ public interface ContestMapper {
     @Mapping(target = "id" , source = "contest.id")
     ContestModel toContestModel(Contest contest , User owner , ContestStatus contestStatus);
 
-    @Mapping(target = "source" , source = "contestProblem.problem.source")
+    @Mapping(target = "source" , source = "contestProblem.problem.onlineJudge")
     @Mapping(target = "problemLink" , source = "contestProblem.problem.problemLink")
     ContestProblemModel toContestProblemModel(ContestProblem contestProblem);
 

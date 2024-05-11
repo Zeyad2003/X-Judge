@@ -1,41 +1,28 @@
 package com.xjudge.model.problem;
 
-import com.xjudge.entity.Sample;
+import com.xjudge.entity.Property;
 import com.xjudge.model.enums.OnlineJudgeType;
 
 import java.util.List;
-import java.util.Map;
 
 public record ProblemModel(
         Long id,
 
-        String problemCode,
+        String code,
 
         String title,
 
         String problemLink,
 
-        String contestLink,
-
         String contestName,
 
-        String statement,
+        String contestLink,
 
-        String input,
-
-        String output,
-
-        OnlineJudgeType source,
-
-        String timeLimit,
-
-        String memoryLimit,
+        OnlineJudgeType onlineJudge,
 
         String problemHashtag,
 
-        List<Sample> samples,
-
-        Map<String, Object> extraInfo
+        List<Property> properties
 
 ) {
 }

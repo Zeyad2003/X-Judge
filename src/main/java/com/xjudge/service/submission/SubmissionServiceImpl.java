@@ -32,7 +32,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         return submissions.map(submission ->
                 submissionMapper
                         .toPageModel(
-                                submission,submission.getProblem().getProblemCode(),
+                                submission,submission.getProblem().getCode(),
                                 submission.getUser().getHandle()
                         )
         );
@@ -65,7 +65,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 submissionMapper
                         .toPageModel(
                                 submission,
-                                submission.getProblem().getProblemCode(),
+                                submission.getProblem().getCode(),
                                 submission.getUser().getHandle()
                         )
         );

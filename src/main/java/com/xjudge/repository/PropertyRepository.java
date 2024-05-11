@@ -1,9 +1,9 @@
 package com.xjudge.repository;
 
-import com.xjudge.entity.Sample;
+import com.xjudge.entity.Property;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SampleRepository extends JpaRepository<Sample, Long> {
+public interface PropertyRepository extends JpaRepository<Property, Long> {
 }
