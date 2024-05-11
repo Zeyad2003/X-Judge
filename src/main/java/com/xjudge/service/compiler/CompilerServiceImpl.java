@@ -20,7 +20,7 @@ public class CompilerServiceImpl implements CompilerService{
         OnlineJudgeType ojType;
 
         try {
-            ojType = OnlineJudgeType.valueOf(onlineJudge);
+            ojType = OnlineJudgeType.valueOf(onlineJudge.toLowerCase());
         } catch (Exception e) {
             throw new XJudgeException("Invalid Online Judge Type", CompilerServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
         }

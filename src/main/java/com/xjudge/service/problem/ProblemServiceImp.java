@@ -52,7 +52,7 @@ public class ProblemServiceImp implements ProblemService {
     public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
         Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, contestName, pageable);
         return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
+                problem, submissionService.getSolvedCount(problem.getCode(), problem.getOnlineJudge()))
         );
     }
 

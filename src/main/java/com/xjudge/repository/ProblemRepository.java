@@ -19,7 +19,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     Page<Problem> findByCodeContaining(String problemCode, Pageable pageable);
 
     @Query(value = "SELECT p FROM Problem p " +
-            "WHERE (:source IS NULL OR :source='' OR CAST(p.onlineJudge AS string) LIKE %:source%) " +
+            "WHERE (:source IS NULL OR :source='' OR CAST(p.onlineJudge AS string) = :source) " +
             "AND (:problemCode IS NULL OR :problemCode='' OR p.code LIKE %:problemCode%) " +
             "AND (:title IS NULL OR :title='' OR p.title LIKE %:title%) " +
             "AND (:contestName IS NULL OR :contestName='' OR p.contestName LIKE %:contestName%) " +

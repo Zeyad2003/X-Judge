@@ -1,7 +1,6 @@
 package com.xjudge.controller.compiler;
 
 import com.xjudge.entity.Compiler;
-import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.response.Response;
 import com.xjudge.service.compiler.CompilerService;
 import io.swagger.v3.oas.annotations.Operation;
