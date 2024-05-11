@@ -123,7 +123,7 @@ public class ContestServiceImp implements ContestService {
 
     @Override
     public Page<ContestPageModel> getContestsOfLoginUser(Authentication authentication ,String contestStatus ,Pageable pageable) {
-        logger.info("<=======" + authentication.getName() + "======>");
+        logger.info("<======={}======>", authentication.getName());
         if(!contestStatus.isEmpty()){
             if(!ContestStatus.SCHEDULED.name().equals(contestStatus)  &&
                     !ContestStatus.ENDED.name().equals(contestStatus) &&
@@ -175,18 +175,11 @@ public class ContestServiceImp implements ContestService {
         return contestMapper.toContestModel(contest , getContestOwner(contest) , checkContestStatus(contest));
     }
 
-
-
-
-    // TODO: use model after implementing it
     @Override
     public Contest getContest(Long id) {
-        Optional<Contest> contestOptional = contestRepo.findById(id);
-        if (contestOptional.isEmpty()) {
-            throw new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND);
-        }
-         contestOptional.get();
-        return contestOptional.get();
+        return contestRepo.findById(id).orElseThrow(
+                () -> new XJudgeException("There's no contest with this id = " + id, ContestServiceImp.class.getName(), HttpStatus.NOT_FOUND)
+        );
     }
 
     @Override
@@ -261,19 +254,10 @@ public class ContestServiceImp implements ContestService {
 
         ContestProblem contestProblem =  contestProblemRepo.findContestProblemByProblemHashtagAndContestId(problemHashtag , id);
 
-        ProblemModel problemModel = problemMapper.toModel(
+        return problemMapper.toModel(
                contestProblem.getProblem(),
                 problemHashtag
         );
-
-        handleSpoilerData(problemModel, contestProblem.getContest());
-
-        return problemModel;
-    }
-
-    //TODO: implement this method
-    private void handleSpoilerData(ProblemModel problemModel, Contest contest) {
-        // if contest still running, remove
     }
 
     @Override
@@ -282,13 +266,13 @@ public class ContestServiceImp implements ContestService {
         User user = userService.findUserByHandle(authentication.getName());
         ContestStatus contestStatus = checkContestStatus(contest);
         UserContest userContest = getUserContest(contest , user.getHandle());
-        ContestProblem contestProblem = getContestProblemByCode(contest , info.problemCode());
+        ContestProblem contestProblem = getContestProblemByCode(contest , info.code());
 
         if(contestStatus == ContestStatus.SCHEDULED){
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
-        if(!contestProblemRepo.existsByProblemCodeAndContestId(info.problemCode() , id)){
+        if(!contestProblemRepo.existsByProblemCodeAndContestId(info.code() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
@@ -306,12 +290,12 @@ public class ContestServiceImp implements ContestService {
         }
 
         Submission submission = problemService.submit(info, authentication);
-       logger.info("isProblemAccepted : " + isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode()));
+        logger.info("isProblemAccepted : {}", isProblemAcceptedByUser(contest.getId(), user.getId(), info.code()));
 
-        if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.problemCode())){
+        if(submission.getVerdict().equals("Accepted") && !isProblemAcceptedByUser(contest.getId() , user.getId() , info.code())){
             Duration duration = Duration.between(contest.getBeginTime() , submission.getSubmitTime());
             userContest.setUserContestPenalty(userContest.getUserContestPenalty() + duration.getSeconds());
-            userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.problemCode()));
+            userContest.setUserContestScore(userContest.getUserContestScore() + getProblemContestScore(contest , info.code()));
             userContest.setNumOfAccepted(userContest.getNumOfAccepted() + 1);
             contestProblem.setNumberOfAccepted(contestProblem.getNumberOfAccepted() + 1);
         } else if (submission.getVerdict().startsWith("W")) {
@@ -358,13 +342,12 @@ public class ContestServiceImp implements ContestService {
         return submissionService.getSubmissionsByContestIdAndUserId(contest.getId(), userContest.getUser().getId())
                 .stream()
                 .map(submission ->
-                        userContestMapper.toContestRankSubmissionModel(submission , getProblemIndex(contest , submission.getProblem().getProblemCode()) , contest.getBeginTime() , submission.getSubmitTime())
+                        userContestMapper.toContestRankSubmissionModel(submission , getProblemIndex(contest , submission.getProblem().getCode()) , contest.getBeginTime() , submission.getSubmitTime())
                 )
                 .sorted(Comparator.comparing(ContestRankSubmission::getProblemIndex))
                 .toList()
                 ;
-    };
-
+    }
 
     private String getProblemIndex(Contest contest , String problemCode){
         return contest.getProblemSet()
@@ -373,8 +356,7 @@ public class ContestServiceImp implements ContestService {
                 .findFirst()
                 .orElseThrow(() -> new XJudgeException("PROBLEM_NOT_Found" , ContestServiceImp.class.getName() , HttpStatus.INTERNAL_SERVER_ERROR))
                 .getProblemHashtag();
-    };
-
+    }
 
     private void handleContestProblemSetRelation(List<ContestProblemset> problemSet, Contest contest) {
         if(!checkIfProblemHashtagDuplicated(problemSet)){
@@ -384,7 +366,7 @@ public class ContestServiceImp implements ContestService {
         contestProblemRepo.deleteAllByContestId(contest.getId());
 
         for (ContestProblemset problemaya : problemSet) {
-            Problem problem = problemService.getProblemByCodeAndSource(problemaya.problemCode(), problemaya.ojType().name());
+            Problem problem = problemService.getProblem(problemaya.ojType().name(), problemaya.code());
 
             ContestProblemKey contestProblemKey = new ContestProblemKey(contest.getId(), problem.getId());
 
@@ -394,7 +376,7 @@ public class ContestServiceImp implements ContestService {
                     .problem(problem)
                     .problemWeight(problemaya.problemWeight())
                     .problemAlias(problemaya.problemAlias())
-                    .problemCode(problemaya.problemCode())
+                    .problemCode(problemaya.code())
                     .problemHashtag(problemaya.problemHashtag())
                     .build();
 
@@ -419,9 +401,6 @@ public class ContestServiceImp implements ContestService {
         contest.getUsers().add(userContest);
         return userContest;
     }
-
-
-
 
     private boolean checkIfProblemHashtagDuplicated(List<ContestProblemset> problemset){
         return problemset.stream()
@@ -471,13 +450,11 @@ public class ContestServiceImp implements ContestService {
                 .orElseThrow().getProblemWeight();
     }
 
-
-
     private boolean isProblemAcceptedByUser(long contestId , long userId , String problemCode){
         return submissionService.getSubmissionsByContestId(contestId)
                 .stream()
                 .anyMatch(submission ->submission.getVerdict().equals("Accepted") &&
-                        submission.getProblem().getProblemCode().equals(problemCode) &&
+                        submission.getProblem().getCode().equals(problemCode) &&
                         submission.getUser().getId().equals(userId));
     }
 
@@ -497,6 +474,5 @@ public class ContestServiceImp implements ContestService {
                 .toList();
         Pagination<ContestPageModel> pagination = new Pagination<>(contestPageModels);
         return new PageImpl<>(pagination.getPagingData(pageable.getPageNumber() , pageable.getPageSize()) , pageable , contestPageModels.size());
-
     }
 }

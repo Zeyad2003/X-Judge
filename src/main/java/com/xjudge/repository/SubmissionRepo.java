@@ -17,15 +17,15 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
 
     List<Submission> findSubmissionsByContestIdAndUserId(Long contestId , Long userId);
 
-    @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.problemCode = ?1 AND s.ojType = ?2 AND s.verdict = 'Accepted'")
+    @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.code = ?1 AND s.ojType = ?2 AND s.verdict = 'Accepted'")
     Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType);
 
     @Query(value = "SELECT s FROM Submission s " +
             "JOIN s.user u " +
             "JOIN s.problem p " +
             "WHERE (:userHandle IS NULL OR :userHandle='' OR u.handle LIKE %:userHandle%) " +
-            "AND (:oj IS NULL OR :oj='' OR CAST(p.source AS string) LIKE %:oj%) " +
-            "AND (:problemCode IS NULL OR :problemCode='' OR p.problemCode LIKE %:problemCode%) " +
+            "AND (:oj IS NULL OR :oj='' OR CAST(p.onlineJudge AS string) LIKE %:oj%) " +
+            "AND (:problemCode IS NULL OR :problemCode='' OR p.code LIKE %:problemCode%) " +
             "AND (:language IS NULL OR :language='' OR s.language LIKE %:language%) " +
             "order by s.submitTime DESC")
     Page<Submission> filterSubmissions(@Param("userHandle") String userHandle, @Param("oj") String oj, @Param("problemCode") String problemCode, @Param("language") String language, Pageable pageable);

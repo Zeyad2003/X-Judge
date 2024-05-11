@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/problem-description.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <script th:href="@{/js/bootstrap.min.js}"></script>
+    <div th:utext="${problem.prependHtml}"></div>
+    <title>Problem Description</title>
+</head>
+<body>
+<div class="description p-5">
+    <div th:each="section : ${problem.sections}">
+        <h4 class="fw-bolder" th:text="${section.title}"></h4>
+        <p th:utext="${section.value.content}" style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333;"></p>
+    </div>
+</div>
+</body>
+</html>

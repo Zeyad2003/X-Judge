@@ -3,7 +3,7 @@ package com.xjudge.service.scraping.atcoder;
 import com.xjudge.entity.Submission;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.submission.SubmissionInfoModel;
-import com.xjudge.service.scraping.SubmissionAutomation;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -22,17 +22,20 @@ import java.time.Instant;
 import java.util.List;
 
 @Service
-public class AtCoderSubmission implements SubmissionAutomation {
+public class AtCoderSubmission implements SubmissionStrategy {
 
     WebDriver driver;
     WebDriverWait wait;
     private static final String LOGIN_URL = "https://atcoder.jp/login?continue=https://atcoder.jp/contests/%s/submit";
     private static final String SUBMIT_URL="https://atcoder.jp/contests/%s/submit";
+    private final AtCoderSplitting splitting;
 
     @Autowired
-    public AtCoderSubmission(WebDriver webDriver){
+    public AtCoderSubmission(WebDriver webDriver,
+                             AtCoderSplitting splitting){
         this.driver = webDriver;
         this.wait = new WebDriverWait(webDriver , Duration.ofSeconds(15));
+        this.splitting = splitting;
     }
 
     @Value("${Atcoder.username}")
@@ -43,7 +46,8 @@ public class AtCoderSubmission implements SubmissionAutomation {
 
     @Override
     public Submission submit(SubmissionInfoModel data) {
-        String contestId = data.problemCode().split("_")[0];
+        String[] splittedCode = splitting.split(data.code());
+        String contestId = splittedCode[0];
 
         if(!isLogin()){
             login(USERNAME , PASSWORD , contestId);
@@ -72,16 +76,15 @@ public class AtCoderSubmission implements SubmissionAutomation {
 
         if(statusTD.getText().equals("CE")){
             status = "CE";
-            time = "0";
-            memory = "0";
-            remoteId = submissionScore.getAttribute("data-id");
+            time = "0 ms";
+            memory = "0 KB";
         }
         else{
              status = submission.get(6).getText();
              time = submission.get(7).getText();
              memory = submission.get(8).getText();
-             remoteId = submissionScore.getAttribute("data-id");
         }
+        remoteId = submissionScore.getAttribute("data-id");
 
 
         return Submission.builder()
@@ -109,7 +112,9 @@ public class AtCoderSubmission implements SubmissionAutomation {
                 toggleButton.click();
             }
 
-            taskNameSelect.selectByValue(data.problemCode());
+            String problemId = splitting.split(data.code())[1];
+
+            taskNameSelect.selectByValue(problemId);
             WebElement languageIdElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
             Select languageIdSelect = new Select(languageIdElement);
             languageIdSelect.selectByValue(data.compiler().getIdValue());

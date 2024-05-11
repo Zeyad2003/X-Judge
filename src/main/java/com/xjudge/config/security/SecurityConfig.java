@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity()
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -30,13 +30,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(configure -> configure
-                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
-//                        .requestMatchers("/auth/change-password").authenticated()
-//                        .requestMatchers("/auth/**").permitAll()
-//                        .requestMatchers("/group/public", "/group/{id}").permitAll()
-//                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(configure -> {
+                            try {
+                                configure
+                //                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
+                                        .requestMatchers("/description/**").permitAll()
+                                        .requestMatchers("/css/**").permitAll()
+                                        .requestMatchers("/js/**").permitAll()
+                                        .requestMatchers("/auth/change-password").authenticated()
+                                        .requestMatchers("/auth/**").permitAll()
+                                        .requestMatchers("/group/public", "/group/{id}").permitAll()
+                                        .requestMatchers("/swagger-ui/**").permitAll()
+                                        .anyRequest().authenticated()
+                                        .and().headers().frameOptions().disable();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                 )
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // create session for each request
                 .authenticationProvider(authenticationProvider)
