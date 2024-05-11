@@ -125,15 +125,4 @@ public class ProblemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(params = {"oJ" , "pCode" , "cName" , "title"})
-    public ResponseEntity<?> filter(@RequestParam(defaultValue = "" ,required = false) String oJ ,
-                                    @RequestParam(defaultValue = "" , required = false) String pCode ,
-                                    @RequestParam(defaultValue = "" , required = false) String cName ,
-                                    @RequestParam(defaultValue = "" , required = false) String title ,
-                                    @RequestParam(defaultValue = "0") Integer pageNo,
-                                    @RequestParam(defaultValue = "25") Integer size){
-        Pageable pageable = PageRequest.of(pageNo , size);
-        return new ResponseEntity<>(problemService.filterProblems(oJ , pCode , title , cName , pageable) , HttpStatus.OK);
-    }
-
 }

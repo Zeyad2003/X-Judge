@@ -7,5 +7,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum OnlineJudgeType {
     codeforces,
-    atcoder
+    atcoder,
+    spoj
 }
