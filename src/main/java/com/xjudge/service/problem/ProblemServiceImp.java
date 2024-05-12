@@ -3,6 +3,7 @@ package com.xjudge.service.problem;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
+import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.mapper.SubmissionMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
@@ -19,6 +20,7 @@ import com.xjudge.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +80,11 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     @Transactional
     public ProblemDescription getProblemDescription(String source, String code) {
-        return problemMapper.toDescription(getProblem(source, code));
+        Problem problem = problemRepo.findByCodeAndOnlineJudge(code, OnlineJudgeType.valueOf(source.toLowerCase()))
+                .orElseThrow(
+                        () -> new XJudgeException("Problem not found", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND)
+                );
+        return problemMapper.toDescription(problem);
     }
 
     @Override
