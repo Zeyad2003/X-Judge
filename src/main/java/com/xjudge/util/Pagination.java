@@ -1,4 +1,4 @@
-package com.xjudge.util;
+package com.xjudge.service.email.util;
 
 import java.util.List;
 

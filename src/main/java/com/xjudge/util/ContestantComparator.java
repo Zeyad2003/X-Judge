@@ -1,4 +1,4 @@
-package com.xjudge.util;
+package com.xjudge.service.email.util;
 
 import com.xjudge.entity.UserContest;
 import com.xjudge.model.contest.ContestRankModel;

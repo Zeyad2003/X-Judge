@@ -1,4 +1,4 @@
-package com.xjudge.util;
+package com.xjudge.service.email.util;
 
 import com.xjudge.entity.Compiler;
 import com.xjudge.entity.User;
