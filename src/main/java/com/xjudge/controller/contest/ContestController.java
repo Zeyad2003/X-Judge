@@ -3,6 +3,7 @@ package com.xjudge.controller.contest;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
+import com.xjudge.model.contest.ContestStatusPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -124,14 +125,17 @@ public class ContestController {
     }
 
     @PreAuthorize(value = "@contestSecurity.authorizeContestantsRoles(principal.username , #id , #password)")
-    @GetMapping("/{id}/submissions")
-    public ResponseEntity<Response> getContestSubmissions(@PathVariable Long id ,  @RequestParam(defaultValue = "") String password){
-        Response response = Response.builder()
-                .success(true)
-                .data(contestService.getContestSubmissions(id))
-                .build();
-        return new ResponseEntity<>(response , HttpStatus.OK);
-
+    @GetMapping(path = "/{id}/submissions" , params = {"userHandle" ,  "problemCode" , "result" , "language"})
+    public ResponseEntity<Page<ContestStatusPageModel>> getContestSubmissions(@PathVariable Long id ,
+                                                                              @RequestParam(required = false ,defaultValue = "") String userHandle,
+                                                                              @RequestParam(required = false ,defaultValue = "") String problemCode,
+                                                                              @RequestParam(required = false ,defaultValue = "") String result,
+                                                                              @RequestParam(required = false ,defaultValue = "") String language,
+                                                                              @RequestParam(defaultValue = "0") Integer pageNo,
+                                                                              @RequestParam(defaultValue = "25") Integer size ,
+                                                                              @RequestParam(defaultValue = "") String password){
+        Pageable pageable = PageRequest.of(pageNo, size);
+        return new ResponseEntity<>(contestService.getContestSubmissions(id,userHandle , problemCode,result , language , pageable) , HttpStatus.OK);
     }
 
     @ResponseStatus(code = HttpStatus.OK)

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,11 +45,21 @@ public class SubmissionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Response> getSubmissionById(@PathVariable long id){
+    public ResponseEntity<Response> getSubmissionById(@PathVariable long id , Authentication authentication){
         Response response = Response.builder()
                 .success(true)
-                .data(submissionService.getSubmissionById(id))
-                .message("Get dat of Submission " + id + "successfully")
+                .data(submissionService.getSubmissionById(id , authentication))
+                .message("Get data of Submission " + id + "successfully")
+                .build();
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/open")
+    public ResponseEntity<Response> openSubmission(@PathVariable long id , Authentication authentication){
+        Response response = Response.builder()
+                .success(true)
+                .data(submissionService.updateSubmissionOpen(id , authentication))
+                .message("Update Submission " + id + "successfully")
                 .build();
         return new ResponseEntity<>(response , HttpStatus.OK);
     }

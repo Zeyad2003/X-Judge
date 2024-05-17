@@ -29,4 +29,17 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
             "AND (:language IS NULL OR :language='' OR s.language LIKE %:language%) " +
             "order by s.submitTime DESC")
     Page<Submission> filterSubmissions(@Param("userHandle") String userHandle, @Param("oj") String oj, @Param("problemCode") String problemCode, @Param("language") String language, Pageable pageable);
+
+    @Query(value = "SELECT s FROM Submission s "+
+            "JOIN s.contest c "+
+            "JOIN s.user u " +
+            "JOIN s.problem p " +
+            "WHERE (:userHandle IS NULL OR :userHandle='' OR u.handle LIKE %:userHandle%) " +
+            "AND (:problemCode IS NULL OR :problemCode='' OR p.code LIKE %:problemCode%) " +
+            "AND (:language IS NULL OR :language='' OR s.language LIKE %:language%) " +
+            "AND (:result IS NULL OR :result='' OR s.verdict LIKE %:result%) "+
+            "AND c.id = :contestId " +
+            "order by s.submitTime DESC")
+    Page<Submission> filterContestSubmissions(@Param("contestId") long contestId,@Param("userHandle") String userHandle, @Param("problemCode") String problemCode,@Param("result") String result , @Param("language") String language, Pageable pageable);
+
 }
