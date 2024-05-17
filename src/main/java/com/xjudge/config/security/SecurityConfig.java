@@ -41,6 +41,7 @@ public class SecurityConfig {
                                         .requestMatchers("/auth/**").permitAll()
                                         .requestMatchers("/group/public", "/group/{id}").permitAll()
                                         .requestMatchers("/swagger-ui/**").permitAll()
+                                        .requestMatchers("/submission/**").permitAll()
                                         .anyRequest().authenticated()
                                         .and().headers().frameOptions().disable();
                             } catch (Exception e) {

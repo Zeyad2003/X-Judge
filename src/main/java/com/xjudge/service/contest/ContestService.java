@@ -6,6 +6,7 @@ import com.xjudge.entity.UserContest;
 import com.xjudge.model.contest.ContestModel;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestRankModel;
+import com.xjudge.model.contest.ContestStatusPageModel;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
@@ -47,7 +48,8 @@ public interface ContestService {
 
     SubmissionModel submitInContest(Long id, SubmissionInfoModel info , Authentication authentication);
 
-    List<SubmissionModel> getContestSubmissions(Long id);
+    Page<ContestStatusPageModel> getContestSubmissions(Long contestId , String userHandle , String problemCode,String result ,String language, Pageable pageable);
+
     UserContest handleContestUserRelation(User user, Contest contest , boolean isPOwner , boolean isParticipant);
 
     List<ContestRankModel> getRank(Long contestId);

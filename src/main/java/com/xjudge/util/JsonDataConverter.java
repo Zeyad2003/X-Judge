@@ -1,4 +1,4 @@
-package com.xjudge.service.email.util;
+package com.xjudge.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
