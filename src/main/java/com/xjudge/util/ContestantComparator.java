@@ -1,6 +1,5 @@
 package com.xjudge.util;
 
-import com.xjudge.entity.UserContest;
 import com.xjudge.model.contest.ContestRankModel;
 
 import java.util.Comparator;

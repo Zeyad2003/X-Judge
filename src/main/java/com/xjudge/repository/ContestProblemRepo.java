@@ -7,12 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ContestProblemRepo extends JpaRepository<ContestProblem , ContestProblemKey> {
+public interface ContestProblemRepo extends JpaRepository<ContestProblem , Long> {
     @Transactional
     void deleteAllByContestId(Long contestId);
-
     ContestProblem findContestProblemByProblemHashtagAndContestId(String problemHashtag , Long contestId);
-
     Boolean existsByProblemHashtagAndContestId(String problemHashtag , Long contestId);
     Boolean existsByProblemCodeAndContestId(String problemCode , Long contestId);
+    ContestProblem findContestProblemByContestIdAndProblemId(Long contestId , Long problemId);
 }

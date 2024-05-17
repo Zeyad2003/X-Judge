@@ -5,10 +5,7 @@ import com.xjudge.entity.key.ContestProblemKey;
 import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.*;
-import com.xjudge.model.contest.ContestModel;
-import com.xjudge.model.contest.ContestPageModel;
-import com.xjudge.model.contest.ContestRankModel;
-import com.xjudge.model.contest.ContestRankSubmission;
+import com.xjudge.model.contest.*;
 import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.contest.modification.ContestProblemset;
 import com.xjudge.model.enums.ContestStatus;
@@ -320,10 +317,8 @@ public class ContestServiceImp implements ContestService {
     }
 
     @Override
-    public List<SubmissionModel> getContestSubmissions(Long id) {
-        Contest contest = getContest(id);
-        List<Submission> submissions = submissionService.getSubmissionsByContestId(contest.getId());
-        return submissionMapper.toModels(submissions);
+    public Page<ContestStatusPageModel> getContestSubmissions(Long contestId , String userHandle , String problemCode,String result ,String language, Pageable pageable) {
+        return submissionService.filterSubmissionsInContest(contestId , userHandle  , problemCode ,result ,language , pageable);
     }
 
     @Override

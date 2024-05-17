@@ -8,7 +8,6 @@ import lombok.*;
 import java.time.Instant;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubmissionModel {
@@ -18,10 +17,6 @@ public class SubmissionModel {
     private String remoteRunId;
 
     private OnlineJudgeType ojType;
-
-    @Column(columnDefinition = "LONGTEXT")
-    @Size(min = 20, max = 65535)
-    private String solution;
 
     private String language;
 
@@ -35,12 +30,13 @@ public class SubmissionModel {
 
     private Boolean isOpen;
 
-    private String submissionStatus; // kept updated (submitted, in queue, running test 14, Accepted)
+    private String submissionStatus;
 
     private String problemCode;
 
     private String userHandle;
 
     private Long contestId;
+
 
 }
