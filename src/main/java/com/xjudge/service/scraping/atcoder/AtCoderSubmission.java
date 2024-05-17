@@ -112,9 +112,9 @@ public class AtCoderSubmission implements SubmissionStrategy {
                 toggleButton.click();
             }
 
-            String problemId = splitting.split(data.code())[1];
+//            String problemId = splitting.split(data.code())[1];
 
-            taskNameSelect.selectByValue(problemId);
+            taskNameSelect.selectByValue(data.code());
             WebElement languageIdElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
             Select languageIdSelect = new Select(languageIdElement);
             languageIdSelect.selectByValue(data.compiler().getIdValue());
