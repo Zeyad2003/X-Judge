@@ -5,9 +5,13 @@ import java.time.Instant;
 
 public record ContestPageModel(
         Long id ,
+
         String title ,
+
         Long numberOfParticipants ,
+
         Instant beginTime ,
+
         Duration duration ,
 
         Long ownerId ,
