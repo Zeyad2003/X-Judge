@@ -4,12 +4,15 @@ import com.xjudge.entity.*;
 import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.GroupMapper;
+import com.xjudge.mapper.UserGroupMapper;
 import com.xjudge.model.enums.GroupVisibility;
 import com.xjudge.model.enums.InvitationStatus;
 import com.xjudge.model.enums.UserGroupRole;
+import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.repository.GroupRepository;
+import com.xjudge.repository.UserGroupRepository;
 import com.xjudge.service.group.joinRequest.JoinRequestService;
 import com.xjudge.service.group.userGroupService.UserGroupService;
 import com.xjudge.service.invitiation.InvitationService;
@@ -37,6 +40,8 @@ public class GroupServiceImpl implements GroupService {
     private final UserGroupService userGroupService;
     private final GroupMapper groupMapper;
     private final JoinRequestService joinRequestService;
+    private final UserGroupMapper userGroupMapper;
+    private final UserGroupRepository userGroupRepository;
 
     @Override
     public Page<GroupModel> getAllGroups(Principal connectedUser,Pageable pageable) {
@@ -250,12 +255,9 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<User> Users(Long groupId) {
-        return groupRepository.findById(groupId)
-                .map(group -> group.getGroupUsers().stream()
-                        .map(UserGroup::getUser)
-                        .collect(Collectors.toList()))
-                .orElseThrow(() -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND));
+    public Page<GroupMemberModel> getGroupMembers(Long groupId, Pageable pageable) {
+        return userGroupRepository.findByGroupId(groupId, pageable)
+                .map(userGroupMapper::toGroupMemberModel);
     }
 
     @Override

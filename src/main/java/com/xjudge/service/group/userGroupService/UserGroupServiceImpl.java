@@ -65,11 +65,6 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        userGroupRepository.deleteById(id);
-    }
-
-    @Override
     public UserGroupRole findRoleByUserAndGroupId(Principal connectedUser, Long groupId)
     {
         User user=userService.findUserByHandle(connectedUser.getName());
