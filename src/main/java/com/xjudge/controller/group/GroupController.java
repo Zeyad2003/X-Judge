@@ -1,9 +1,8 @@
 package com.xjudge.controller.group;
 
 import com.xjudge.entity.Contest;
-import com.xjudge.entity.Group;
-import com.xjudge.entity.User;
 import com.xjudge.model.enums.UserGroupRole;
+import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import com.xjudge.model.invitation.InvitationRequest;
@@ -213,15 +212,22 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/{groupId}/users")
+    @GetMapping("/{groupId}/members")
     @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
-    public ResponseEntity<?> getGroupUsers(@PathVariable Long groupId) {
-        List<User> users = groupService.Users(groupId);
+    public ResponseEntity<?> getGroupMembers(
+            @PathVariable Long groupId,
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "15") Integer size) {
+
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<GroupMemberModel> groupMembers = groupService.getGroupMembers(groupId, paging);
+
         Response response = Response.builder()
                 .success(true)
-                .data(users)
-                .message("Users fetched successfully.")
+                .data(groupMembers)
+                .message("Group members fetched successfully.")
                 .build();
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

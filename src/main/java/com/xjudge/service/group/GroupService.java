@@ -3,6 +3,7 @@ package com.xjudge.service.group;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
+import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,8 @@ public interface GroupService {
 
     // Group information
     List<Contest> Contests(Long groupId);
-    List<User> Users(Long groupId);
+
+    Page<GroupMemberModel> getGroupMembers(Long groupId, Pageable pageable);
 
     List<GroupModel> getGroupsOwnedByUser(Principal connectedUser);
 
