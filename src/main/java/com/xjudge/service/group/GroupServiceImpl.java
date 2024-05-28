@@ -8,6 +8,7 @@ import com.xjudge.mapper.UserGroupMapper;
 import com.xjudge.model.enums.GroupVisibility;
 import com.xjudge.model.enums.InvitationStatus;
 import com.xjudge.model.enums.UserGroupRole;
+import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
@@ -248,10 +249,13 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Contest> Contests(Long groupId) {
+    public List<GroupContestModel> getGroupContests(Long groupId) {
         return groupRepository.findById(groupId).orElseThrow(
-                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-        ).getGroupContests();
+                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND))
+                .getGroupContests()
+                .stream()
+                .map(groupMapper::toGroupContestModel)
+                .toList();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.xjudge.service.group;
 import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
+import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
@@ -35,7 +36,7 @@ public interface GroupService {
     void leave(Long groupId, Principal connectedUser);
 
     // Group information
-    List<Contest> Contests(Long groupId);
+    List<GroupContestModel> getGroupContests(Long groupId);
 
     Page<GroupMemberModel> getGroupMembers(Long groupId, Pageable pageable);
 
@@ -47,6 +48,4 @@ public interface GroupService {
     void acceptInvitation(Long invitationId, Principal connectedUser);
     void declineInvitation(Long invitationId, Principal connectedUser);
     Page<GroupModel> getGroupsByUserHandle(String handle,Pageable pageable);
-
-
 }

@@ -2,6 +2,7 @@ package com.xjudge.controller.group;
 
 import com.xjudge.entity.Contest;
 import com.xjudge.model.enums.UserGroupRole;
+import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
@@ -203,11 +204,13 @@ public class GroupController {
     @GetMapping("/{groupId}/contests")
     @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
     public ResponseEntity<?> getGroupContests(@PathVariable Long groupId) {
-        List<Contest> contests = groupService.Contests(groupId);
+
+        List<GroupContestModel> groupContests = groupService.getGroupContests(groupId);
+
         Response response = Response.builder()
                 .success(true)
-                .data(contests)
-                .message("Contests fetched successfully.")
+                .data(groupContests)
+                .message("Group contests fetched successfully.")
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
