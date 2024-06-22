@@ -24,6 +24,7 @@ public class Problem extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
+    @Enumerated(EnumType.STRING)
     private OnlineJudgeType onlineJudge;
     private String title;
     private String contestName;
