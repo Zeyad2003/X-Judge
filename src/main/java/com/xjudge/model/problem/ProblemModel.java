@@ -18,6 +18,8 @@ public record ProblemModel(
 
         String contestLink,
 
+        String discriptionRoute,
+
         OnlineJudgeType onlineJudge,
 
         String problemHashtag,
