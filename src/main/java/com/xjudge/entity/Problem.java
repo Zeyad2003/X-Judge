@@ -30,6 +30,7 @@ public class Problem extends BaseEntity<Long> {
     private String contestName;
     private String problemLink;
     private String contestLink;
+    private String discriptionRoute;
     @Column(columnDefinition = "LONGTEXT")
     @Lob
     private String prependHtml;

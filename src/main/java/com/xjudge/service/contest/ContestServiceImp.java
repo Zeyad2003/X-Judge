@@ -253,7 +253,8 @@ public class ContestServiceImp implements ContestService {
 
         return problemMapper.toModel(
                contestProblem.getProblem(),
-                problemHashtag
+                problemHashtag,
+                contestProblem.getProblemAlias()
         );
     }
 

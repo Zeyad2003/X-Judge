@@ -77,6 +77,7 @@ public class CodeforcesScrapping implements ScrappingStrategy {
                 .contestName(contestName)
                 .problemLink(targetProblem)
                 .contestLink(contestLink)
+                .discriptionRoute("/description/" + OnlineJudgeType.codeforces + "-" + contestId+problemId)
                 .prependHtml(getPrependHtml())
                 .sections(problemSections)
                 .properties(properties)

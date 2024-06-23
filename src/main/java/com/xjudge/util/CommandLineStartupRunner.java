@@ -1,10 +1,12 @@
 package com.xjudge.util;
 
 import com.xjudge.entity.Compiler;
+import com.xjudge.entity.Problem;
 import com.xjudge.entity.User;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.enums.UserRole;
 import com.xjudge.repository.CompilerRepo;
+import com.xjudge.repository.ProblemRepository;
 import com.xjudge.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -20,9 +22,12 @@ public class CommandLineStartupRunner implements CommandLineRunner {
     private final UserRepo userRepo;
     private final CompilerRepo compilerRepo;
     private final PasswordEncoder encoder;
+    private final ProblemRepository problemRepository;
 
     @Override
     public void run(String... args) {
+//        updateProblemDescriptionRoutes();
+
         addUser();
 
         if(compilerRepo.count() == 0) {
@@ -47,6 +52,17 @@ public class CommandLineStartupRunner implements CommandLineRunner {
                 .isVerified(true)
                 .build();
         if(userRepo.findByHandle(user.getHandle()).isEmpty()) userRepo.save(user);
+    }
+
+    public void updateProblemDescriptionRoutes() {
+        List<Problem> problems = problemRepository.findAll();
+
+        for (Problem problem : problems) {
+            String descriptionRoute = "/description/" + problem.getOnlineJudge() + "-" + problem.getCode();
+            problem.setDiscriptionRoute(descriptionRoute);
+        }
+
+        problemRepository.saveAll(problems);
     }
 
     private void addCodeForcesCompilerList() {
