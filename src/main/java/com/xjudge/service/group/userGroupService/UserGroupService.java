@@ -16,5 +16,5 @@ public interface UserGroupService {
     List<UserGroup> findAllByUserAndRole(User user);
     void save(UserGroup userGroup);
     void delete(UserGroup userGroup);
-    UserGroupRole findRoleByUserAndGroupId(Principal connectedUser, Long groupId);
+    String findRoleByUserAndGroupId(Principal connectedUser, Long groupId);
 }
