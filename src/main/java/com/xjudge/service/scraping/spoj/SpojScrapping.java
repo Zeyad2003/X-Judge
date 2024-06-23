@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -86,8 +87,9 @@ public class SpojScrapping implements ScrappingStrategy {
                 .onlineJudge(OnlineJudgeType.spoj)
                 .title(title)
                 .problemLink(targetProblem)
-                .contestName(contestName)
                 .contestLink(null)
+                .discriptionRoute("/description/" + OnlineJudgeType.spoj + "-" + problemId)
+                .contestName(contestName)
                 .prependHtml(getPrependHtml())
                 .sections(problemSections)
                 .properties(properties)
@@ -97,7 +99,7 @@ public class SpojScrapping implements ScrappingStrategy {
     private List<Pair<String, Element>> getSections(Elements elements) {
         List<Pair<String, Element>> sections = new ArrayList<>();
         Elements h3Elements = elements.select("h3");
-        Element firstChild = elements.first().child(0);
+        Element firstChild = Objects.requireNonNull(elements.first()).child(0);
 
         if (!firstChild.tagName().equals("h3")) {
             Element section = new Element("section");
@@ -124,20 +126,21 @@ public class SpojScrapping implements ScrappingStrategy {
     }
 
     private String getPrependHtml() {
-        return "<style type=\"text/css\">\n" +
-                "    #problem-body > pre {\n" +
-                "        display: block;\n" +
-                "        padding: 9.5px;\n" +
-                "        margin: 0 0 10px;\n" +
-                "        font-size: 13px;\n" +
-                "        line-height: 1.42857143;\n" +
-                "        word-break: break-all;\n" +
-                "        word-wrap: break-word;\n" +
-                "        color: #333;\n" +
-                "        background: rgba(255, 255, 255, 0.5);\n" +
-                "        border: 1px solid #ccc;\n" +
-                "        border-radius: 6px;\n" +
-                "    }\n" +
-                "</style>";
+        return """
+                <style type="text/css">
+                    #problem-body > pre {
+                        display: block;
+                        padding: 9.5px;
+                        margin: 0 0 10px;
+                        font-size: 13px;
+                        line-height: 1.42857143;
+                        word-break: break-all;
+                        word-wrap: break-word;
+                        color: #333;
+                        background: rgba(255, 255, 255, 0.5);
+                        border: 1px solid #ccc;
+                        border-radius: 6px;
+                    }
+                </style>""";
     }
 }

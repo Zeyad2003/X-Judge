@@ -32,7 +32,6 @@ public class AtCoderScrapping implements ScrappingStrategy {
         String atCoderURL = "https://atcoder.jp/contests/";
         String contestId = atCoderSplitting.split(code)[0];
         String targetProblem = atCoderURL + contestId + "/tasks/" + code;
-        System.out.println(targetProblem);
         String contestLink = atCoderURL + contestId;
         Connection connection;
         Document problemDocument;
@@ -77,6 +76,7 @@ public class AtCoderScrapping implements ScrappingStrategy {
                 .problemLink(targetProblem)
                 .contestName(contestName)
                 .contestLink(contestLink)
+                .discriptionRoute("/description/" + OnlineJudgeType.atcoder + "-" + code)
                 .prependHtml(getPrependHtml())
                 .sections(problemSections)
                 .properties(properties)

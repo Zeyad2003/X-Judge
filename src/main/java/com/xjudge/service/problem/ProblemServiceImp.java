@@ -43,12 +43,10 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
         Page<Problem> problemList = problemRepo.findAll(pageable);
-
         return problemList.map(problem -> problemMapper.toPageModel(
                 problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
         );
     }
-
 
     @Override
     public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
