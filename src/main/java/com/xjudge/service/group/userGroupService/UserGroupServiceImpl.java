@@ -6,7 +6,6 @@ import com.xjudge.entity.UserGroup;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.repository.UserGroupRepository;
-import com.xjudge.repository.UserRepo;
 import com.xjudge.service.group.GroupServiceImpl;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,10 +63,14 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public UserGroupRole findRoleByUserAndGroupId(Principal connectedUser, Long groupId)
+    public String findRoleByUserAndGroupId(Principal connectedUser, Long groupId)
     {
         User user=userService.findUserByHandle(connectedUser.getName());
         Long id=user.getId();
-        return userGroupRepository.findByUserIdAndGroupId(id,groupId).getRole();
+        UserGroup userGroup=userGroupRepository.findByUserIdAndGroupId(id,groupId);
+        if (userGroup==null) {
+            return "";
+        }
+        return userGroup.getRole().name();
     }
 }

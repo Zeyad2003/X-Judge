@@ -235,7 +235,7 @@ public class GroupController {
     }
 
     @GetMapping("/userRole")
-   public UserGroupRole getUserRole(Principal connectedUser, @PathVariable Long groupId){
+   public String getUserRole(Principal connectedUser, @PathVariable Long groupId){
 
         return userGroupService.findRoleByUserAndGroupId(connectedUser,groupId);
    }
