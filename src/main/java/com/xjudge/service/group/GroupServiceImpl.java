@@ -70,6 +70,7 @@ public class GroupServiceImpl implements GroupService {
                 .creationDate(group.getCreationDate())
                 .visibility(group.getVisibility())
                 .leaderHandle(group.getLeaderHandle())
+                .members(group.getGroupUsers().size())
                 .build());
     }
 
