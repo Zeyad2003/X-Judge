@@ -38,6 +38,7 @@ public class AtCoderSubmission implements SubmissionStrategy {
     private String USERNAME;
     @Value("${Atcoder.password}")
     private String PASSWORD;
+    private final String SUBMISSION_SCORE_XPATH="/html/body/div[3]/div/div[1]/div[3]/div/div[2]/table/tbody/tr[1]/td[5]";
 
     @Autowired
     public AtCoderSubmission(WebDriver webDriver,
@@ -58,14 +59,19 @@ public class AtCoderSubmission implements SubmissionStrategy {
         String contestId = splittedCode[0];
         verifyLogin(contestId);
         submitHelper(data);
-        WebElement submissionScore = driver.findElement(By.xpath("//tbody/tr[1]/td[5]"));
+        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(SUBMISSION_SCORE_XPATH)));
         String remoteId = submissionScore.getAttribute("data-id");
         logger.info("Remote Id : {}", remoteId);
         SubmissionScrapedData submissionScrapedData = scrapSubmissionData(remoteId);
         while(submissionScrapedData.getVerdict().equalsIgnoreCase("WJ")){
-            submissionScrapedData = scrapSubmissionData(remoteId);
-            logger.info("data {}" , submissionScrapedData);
-            logger.info("==================");
+            try {
+                submissionScrapedData = scrapSubmissionData(remoteId);
+                logger.info("data {}", submissionScrapedData);
+                logger.info("==================");
+            }
+            catch (Exception e){
+                logger.info(e.getMessage());
+            }
         }
         return Submission.builder()
                 .remoteRunId(remoteId)
