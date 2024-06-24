@@ -38,7 +38,7 @@ public class AtCoderSubmission implements SubmissionStrategy {
     private String USERNAME;
     @Value("${Atcoder.password}")
     private String PASSWORD;
-    private final String SUBMISSION_SCORE_XPATH="/table/tbody/tr[1]/td[5]";
+    private final String SUBMISSION_SCORE_XPATH="//table//tbody//tr[1]//td[5]";
 
     @Autowired
     public AtCoderSubmission(WebDriver webDriver,
