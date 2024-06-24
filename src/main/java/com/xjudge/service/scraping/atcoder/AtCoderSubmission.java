@@ -10,7 +10,6 @@ import jakarta.annotation.PreDestroy;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +59,8 @@ public class AtCoderSubmission implements SubmissionStrategy {
         verifyLogin(contestId);
         submitHelper(data);
 //        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(SUBMISSION_SCORE_XPATH)));
-        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("submission-score")));
-        String remoteId = submissionScore.getAttribute("data-id");
+//        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("submission-score")));
+        String remoteId = getSubmissionId();
         logger.info("Remote Id : {}", remoteId);
         SubmissionScrapedData submissionScrapedData = scrapSubmissionData(remoteId);
         while(submissionScrapedData.getVerdict().equalsIgnoreCase("WJ")){
@@ -86,6 +85,21 @@ public class AtCoderSubmission implements SubmissionStrategy {
                 .submissionStatus("submitted")
                 .isOpen(data.isOpen() == null || data.isOpen())
                 .build();
+    }
+
+
+    private String getSubmissionId(){
+        try {
+            WebElement firstRow = driver.findElement(By.tagName("tbody")).findElement(By.tagName("tr"));
+            WebElement submissionScore = firstRow.findElements(By.tagName("td")).get(4);
+            return submissionScore.getAttribute("data-id");
+        }catch (Exception ex){
+            logger.info(ex.getMessage());
+            if(ex instanceof NoSuchElementException || ex instanceof TimeoutException){
+                return getSubmissionId();
+            }
+        }
+        return null;
     }
 
     private SubmissionScrapedData scrapSubmissionData(String remoteId){
