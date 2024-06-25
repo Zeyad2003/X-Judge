@@ -1,7 +1,5 @@
 package com.xjudge.controller.group;
 
-import com.xjudge.entity.Contest;
-import com.xjudge.model.enums.UserGroupRole;
 import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
@@ -62,9 +60,9 @@ public class GroupController {
 
 
     @GetMapping("/{groupId}")
-    @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
-    public ResponseEntity<?> getSpecificGroup(@PathVariable  Long groupId) {
-        GroupModel group = groupService.getSpecificGroup(groupId);
+    @PreAuthorize("@groupSecurity.isPublicOrMember(principal.username, #groupId)")
+    public ResponseEntity<?> getGroupById(Principal connectedUser, @PathVariable  Long groupId) {
+        GroupModel group = groupService.getGroupById(groupId, connectedUser);
         Response response = Response.builder()
                 .success(true)
                 .data(group)
@@ -121,7 +119,7 @@ public class GroupController {
     @PostMapping("/invite")
     @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #invitationRequest.groupId, {'LEADER','MANAGER'})")
     public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest, Principal connectedUser) {
-        groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getReceiverId(), connectedUser);
+        groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getReceiverHandle(), connectedUser);
         Response response = Response.builder()
                 .success(true)
                 .message("Invitation sent successfully.")
@@ -202,7 +200,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/contests")
-    @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
+    @PreAuthorize("@groupSecurity.isPublicOrMember(principal.username, #groupId)")
     public ResponseEntity<?> getGroupContests(@PathVariable Long groupId) {
 
         List<GroupContestModel> groupContests = groupService.getGroupContests(groupId);
@@ -216,7 +214,7 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/members")
-    @PreAuthorize("@groupSecurity.isMember(principal.username, #groupId)")
+    @PreAuthorize("@groupSecurity.isPublicOrMember(principal.username, #groupId)")
     public ResponseEntity<?> getGroupMembers(
             @PathVariable Long groupId,
             @RequestParam(defaultValue = "0") Integer pageNo,
@@ -234,9 +232,8 @@ public class GroupController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/userRole")
+    @GetMapping("/userRole/{groupId}")
    public String getUserRole(Principal connectedUser, @PathVariable Long groupId){
-
         return userGroupService.findRoleByUserAndGroupId(connectedUser,groupId);
    }
 }

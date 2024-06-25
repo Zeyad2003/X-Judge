@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class InvitationRequest {
-    Long receiverId;
+    String receiverHandle;
     Long groupId;
 }

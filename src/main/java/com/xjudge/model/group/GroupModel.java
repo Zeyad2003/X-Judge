@@ -32,6 +32,13 @@ public class GroupModel {
 
     String leaderHandle;
 
+    String memberHandle;
+
     String userGroupRole;
+
     int members ;
+
+    boolean isMember;
+
+    boolean isLeader;
 }
