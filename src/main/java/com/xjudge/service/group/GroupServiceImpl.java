@@ -247,11 +247,10 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void leave(Long groupId, Principal connectedUser) {
         UserGroup userGroup = userGroupService.findByUserHandleAndGroupId(connectedUser.getName(), groupId);
-        // updated
-        userGroupService.delete(userGroup);
         if (userGroup.getRole() == UserGroupRole.LEADER) {
-            delete(groupId);
+            throw new XJudgeException("Leader cannot leave the group", GroupServiceImpl.class.getName(), HttpStatus.FORBIDDEN);
         }
+        userGroupService.delete(userGroup);
     }
 
     @Override
