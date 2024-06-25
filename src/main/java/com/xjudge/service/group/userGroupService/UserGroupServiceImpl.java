@@ -27,17 +27,15 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public UserGroup findByUserAndGroup(User user, Group group) {
-        return userGroupRepository.findByUserAndGroup(user, group).orElseThrow(
+    public UserGroup findByUserHandleAndGroupId(String userHandle, Long groupId) {
+        return userGroupRepository.findByUserHandleAndGroupId(userHandle, groupId).orElseThrow(
                 () -> new XJudgeException("User not found in group.", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
     }
 
     @Override
-    public UserGroup findByUserHandleAndGroupId(String userHandle, Long groupId) {
-        return userGroupRepository.findByUserHandleAndGroupId(userHandle, groupId).orElseThrow(
-                () -> new XJudgeException("User not found in group.", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-        );
+    public UserGroup findByUserHandleAndGroupIdOrElseNull(String userHandle, Long groupId) {
+        return userGroupRepository.findByUserHandleAndGroupId(userHandle, groupId).orElse(null);
     }
 
     // TODO - handle this function to get groups where user has role LEADER or ADMIN

@@ -1,6 +1,5 @@
 package com.xjudge.service.group;
 
-import com.xjudge.entity.Contest;
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
 import com.xjudge.model.group.GroupContestModel;
@@ -18,14 +17,14 @@ public interface GroupService {
     // CRUD operations
     Page<GroupModel> getAllGroups(Principal connectedUser,Pageable pageable);
     GroupModel getSpecificGroup(Long id);
-    GroupModel getSpecificGroupByName(String name);
+    GroupModel getGroupById(Long id, Principal connectedUser);
     GroupModel create(GroupRequest groupRequest, Principal connectedUser);
 
     GroupModel update(Long groupId, GroupRequest groupRequest);
     void delete(Long groupId);
 
     // Contest and invitation
-    void inviteUser(Long groupId, Long receiverId, Principal connectedUser);
+    void inviteUser(Long groupId, String receiverHandle, Principal connectedUser);
 
     // Join and leave group
     void join(Long groupId, Principal connectedUser);

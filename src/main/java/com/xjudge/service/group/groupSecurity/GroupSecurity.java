@@ -34,6 +34,10 @@ public class GroupSecurity {
         return userGroup != null;
     }
 
+    public boolean isPublicOrMember(String handle, Long groupId) {
+        return isPublic(groupId) || isMember(handle, groupId);
+    }
+
     public boolean isPublic(Long groupId) {
         return groupService.getSpecificGroup(groupId).getVisibility().name().equals("PUBLIC");
     }

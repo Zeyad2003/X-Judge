@@ -77,18 +77,22 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupModel getSpecificGroup(Long id) {
-        return groupMapper.toModel(
-                groupRepository.findById(id).orElseThrow(
-                        () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-                ));
+        Group group = groupRepository.findById(id).orElseThrow(
+                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+        return groupMapper.toModel(group, group.getGroupUsers().size());
     }
 
     @Override
-    public GroupModel getSpecificGroupByName(String name) {
-        return groupMapper.toModel(
-                groupRepository.findGroupByName(name).orElseThrow(
-                        () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-                ));
+    public GroupModel getGroupById(Long id, Principal connectedUser) {
+        Group group = groupRepository.findById(id).orElseThrow(
+                () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+        UserGroup userGroup = userGroupService.findByUserHandleAndGroupIdOrElseNull(connectedUser.getName(), id);
+        boolean isMember = userGroup != null;
+        boolean isLeader = isMember && userGroup.getRole() == UserGroupRole.LEADER;
+
+        return groupMapper.toModel(group, group.getGroupUsers().size(), isMember, isLeader, connectedUser.getName());
     }
 
 
@@ -142,12 +146,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void inviteUser(Long groupId, Long receiverId, Principal connectedUser) {
+    public void inviteUser(Long groupId, String receiverHandle, Principal connectedUser) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
         );
 
-        User receiver = userService.findUserById(receiverId);
+        User receiver = userService.findUserByHandle(receiverHandle);
         User sender = (User) ((UsernamePasswordAuthenticationToken) connectedUser).getPrincipal();
 
         if (sender.getId().equals(receiver.getId())) {
@@ -242,11 +246,12 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void leave(Long groupId, Principal connectedUser) {
-        Group group = groupMapper.toEntity(getSpecificGroup(groupId));
-        User user = userService.findUserByHandle(connectedUser.getName());
-        UserGroup userGroup = userGroupService.findByUserAndGroup(user, group);
+        UserGroup userGroup = userGroupService.findByUserHandleAndGroupId(connectedUser.getName(), groupId);
         // updated
         userGroupService.delete(userGroup);
+        if (userGroup.getRole() == UserGroupRole.LEADER) {
+            delete(groupId);
+        }
     }
 
     @Override
