@@ -317,6 +317,9 @@ public class GroupServiceImpl implements GroupService {
         invitation.setStatus(InvitationStatus.DECLINED);
         invitationService.save(invitation);
     }
-
+    @Override
+    public Page<Group> searchGroupByName(String name, Pageable pageable) {
+        return groupRepository.searchGroupsByNameContainingIgnoreCase(name, pageable);
+    }
 
 }

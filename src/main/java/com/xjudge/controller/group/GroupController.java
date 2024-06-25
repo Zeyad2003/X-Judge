@@ -1,5 +1,6 @@
 package com.xjudge.controller.group;
 
+import com.xjudge.entity.Group;
 import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
@@ -236,4 +237,23 @@ public class GroupController {
    public String getUserRole(Principal connectedUser, @PathVariable Long groupId){
         return userGroupService.findRoleByUserAndGroupId(connectedUser,groupId);
    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByName(
+            @RequestParam(defaultValue = "", required = false) String name,
+            @RequestParam(defaultValue = "0") Integer pageNo,
+            @RequestParam(defaultValue = "25") Integer size) {
+
+        Pageable paging = PageRequest.of(pageNo, size);
+        Page<Group> paginatedData = groupService.searchGroupByName(name, paging);
+
+        Response response = Response.builder()
+                .success(true)
+                .data(paginatedData)
+                .message("Groups fetched successfully.")
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
