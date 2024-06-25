@@ -34,6 +34,7 @@ public interface ContestRepo extends JpaRepository<Contest, Long> {
 
     List<Contest> findContestsByVisibility(ContestVisibility visibility);
 
+
     @Query(
              value = "SELECT c FROM Contest c " +
                      "JOIN c.users u " +
