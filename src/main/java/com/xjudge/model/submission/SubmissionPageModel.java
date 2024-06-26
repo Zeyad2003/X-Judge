@@ -24,5 +24,4 @@ public class SubmissionPageModel {
     private Instant submitTime;
     private Boolean isOpen;
     private String remoteRunId;
-    private String solution;
 }

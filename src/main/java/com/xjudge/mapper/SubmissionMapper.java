@@ -8,7 +8,6 @@ import com.xjudge.model.submission.SubmissionPageModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 

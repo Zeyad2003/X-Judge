@@ -9,10 +9,8 @@ import com.xjudge.model.contest.ContestStatusPageModel;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.submission.SubmissionPageModel;
-import com.xjudge.model.user.UserModel;
 import com.xjudge.repository.SubmissionRepo;
 import com.xjudge.service.contest.contestproblem.ContestProblemService;
-import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,11 +41,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     public Page<SubmissionPageModel> getAllSubmissions(Pageable pageable) {
         Page<Submission> submissions = submissionRepo.findAll(pageable);
         return submissions.map(submission ->
-                submissionMapper
-                        .toPageModel(
-                                submission,submission.getProblem().getCode(),
-                                submission.getUser().getHandle()
-                        )
+            submissionMapper.toPageModel(submission, submission.getProblem().getCode(), submission.getUser().getHandle())
         );
     }
 
@@ -87,12 +81,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     public Page<SubmissionPageModel> filterSubmissions(String userHandle, String oj, String problemCode, String language, Pageable pageable) {
         Page<Submission> submissions = submissionRepo.filterSubmissions(userHandle, oj, problemCode, language, pageable);
         return submissions.map(submission ->
-                submissionMapper
-                        .toPageModel(
-                                submission,
-                                submission.getProblem().getCode(),
-                                submission.getUser().getHandle()
-                        )
+                submissionMapper.toPageModel(submission, submission.getProblem().getCode(), submission.getUser().getHandle())
         );
     }
 
