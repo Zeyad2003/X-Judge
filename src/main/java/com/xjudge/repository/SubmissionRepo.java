@@ -1,6 +1,8 @@
 package com.xjudge.repository;
 
+import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
+import com.xjudge.entity.User;
 import com.xjudge.model.enums.OnlineJudgeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,8 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
     List<Submission> findAllByContestId(Long contestId);
 
     List<Submission> findSubmissionsByContestIdAndUserId(Long contestId , Long userId);
+
+    List<Submission> findByUserAndProblem(User user, Problem problem);
 
     @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.code = ?1 AND s.ojType = ?2 AND s.verdict = 'Accepted'")
     Integer getSolvedCount(String problemCode, OnlineJudgeType onlineJudgeType);

@@ -35,6 +35,8 @@ public class Problem extends BaseEntity<Long> {
     @Lob
     private String prependHtml;
 
+    private int solvedCount;
+
     @OneToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Section> sections;

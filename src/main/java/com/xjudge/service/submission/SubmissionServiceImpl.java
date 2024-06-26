@@ -1,5 +1,6 @@
 package com.xjudge.service.submission;
 
+import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
 import com.xjudge.exception.XJudgeException;
@@ -104,6 +105,11 @@ public class SubmissionServiceImpl implements SubmissionService {
                                submission , getProblemIndex(submission.getContest().getId() , submission.getProblem().getId())
                                )
         );
+    }
+
+    @Override
+    public List<Submission> findByUserAndProblem(User user, Problem problem) {
+        return submissionRepo.findByUserAndProblem(user, problem);
     }
 
     private String getProblemIndex(Long contestId , Long problemId) {
