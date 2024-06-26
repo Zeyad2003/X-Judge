@@ -6,9 +6,11 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.mapper.UserMapper;
 import com.xjudge.model.enums.TokenType;
+import com.xjudge.model.invitation.InvitationModel;
 import com.xjudge.model.user.UserModel;
 import com.xjudge.repository.UserRepo;
 import com.xjudge.service.email.EmailService;
+import com.xjudge.service.invitiation.InvitationService;
 import com.xjudge.service.token.TokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService{
     private final UserMapper userMapper;
     private final EmailService emailService;
     private final TokenService tokenService;
+    private final InvitationService invitationService;
 
     @Override
     public User save(User user) {
@@ -142,6 +145,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean existsByEmail(String userEmail) {
         return userRepo.existsByEmail(userEmail);
+    }
+
+    @Override
+    public List<InvitationModel> getUserInvitations(String handle) {
+        return invitationService.getInvitationByReceiverHandle(handle);
     }
 
     @Transactional

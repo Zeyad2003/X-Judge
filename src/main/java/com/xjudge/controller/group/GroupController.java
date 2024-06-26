@@ -32,7 +32,7 @@ public class GroupController {
     public ResponseEntity<?> getAllGroups( Principal connectedUser,@RequestParam(defaultValue = "0") Integer pageNo,
                                                 @RequestParam(defaultValue = "25") Integer size) {
         Pageable paging = PageRequest.of(pageNo, size);
-        Page<GroupModel> paginatedData = groupService.getAllGroups(connectedUser,paging);
+        Page<GroupModel> paginatedData = groupService.getAllPublicGroups(connectedUser,paging);
 
         Response response = Response.builder()
                 .success(true)
@@ -61,7 +61,6 @@ public class GroupController {
 
 
     @GetMapping("/{groupId}")
-    @PreAuthorize("@groupSecurity.isPublicOrMember(principal.username, #groupId)")
     public ResponseEntity<?> getGroupById(Principal connectedUser, @PathVariable  Long groupId) {
         GroupModel group = groupService.getGroupById(groupId, connectedUser);
         Response response = Response.builder()

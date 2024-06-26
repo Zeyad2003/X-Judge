@@ -1,12 +1,6 @@
 package com.xjudge.controller;
 
-import com.xjudge.entity.User;
-import com.xjudge.exception.XJudgeException;
-import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.GroupRepository;
-import com.xjudge.repository.InvitationRepository;
-import com.xjudge.repository.UserRepo;
-import com.xjudge.service.group.GroupServiceImpl;
 import com.xjudge.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,11 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class FirstResource {
-    private final InvitationRepository invitationRepository;
-    private final UserRepo userRepo;
     private final UserService userService;
     private final GroupRepository groupRepository;
-    private final ContestRepo contestRepo;
     String hello = """
             <!DOCTYPE html>
             <html>
@@ -52,14 +43,6 @@ public class FirstResource {
     @GetMapping
     public String welcome() {
         return hello;
-    }
-
-    @GetMapping("/invitations/{id}")
-    public ResponseEntity<?> testToGetUserInvitation(@PathVariable Long id) {
-        User user = userRepo.findById(id).orElseThrow(
-                () -> new XJudgeException("Lol", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
-        );
-        return ResponseEntity.ok(invitationRepository.getInvitationsByReceiver(user));
     }
 
 

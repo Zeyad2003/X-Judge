@@ -7,11 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    List<Group> findByVisibility(GroupVisibility visibility, Pageable pageable);
+    Page<Group> findByVisibility(GroupVisibility visibility, Pageable pageable);
 
     Optional<Group> findGroupByName(String groupName);
 
@@ -20,4 +19,5 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     // Flexible search method for finding groups by a partial match on the name
     Page<Group> searchGroupsByNameContainingIgnoreCase(String name, Pageable pageable);
+    Page<Group> searchGroupsByNameContainingIgnoreCaseAndVisibility(String name, GroupVisibility groupVisibility, Pageable pageable);
 }

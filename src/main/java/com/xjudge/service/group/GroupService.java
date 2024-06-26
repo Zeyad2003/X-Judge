@@ -2,6 +2,7 @@ package com.xjudge.service.group;
 
 import com.xjudge.entity.Group;
 import com.xjudge.entity.User;
+import com.xjudge.model.enums.GroupVisibility;
 import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
@@ -16,6 +17,7 @@ public interface GroupService {
 
     // CRUD operations
     Page<GroupModel> getAllGroups(Principal connectedUser,Pageable pageable);
+    Page<GroupModel> getAllPublicGroups(Principal connectedUser,Pageable pageable);
     GroupModel getSpecificGroup(Long id);
     GroupModel getGroupById(Long id, Principal connectedUser);
     GroupModel create(GroupRequest groupRequest, Principal connectedUser);

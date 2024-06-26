@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
@@ -38,6 +40,15 @@ public class UserController {
                 .success(true)
                 .data(userService.updateUserByHandle(authentication.getName(), user))
                 .message("User updated successfully")
+                .build());
+    }
+
+    @GetMapping("/invitations")
+    public ResponseEntity<?> GetUserInvitation(Principal connectedUser) {
+        return ResponseEntity.ok(Response.builder()
+                .success(true)
+                .data(userService.getUserInvitations(connectedUser.getName()))
+                .message("Get user invitations successfully")
                 .build());
     }
 
