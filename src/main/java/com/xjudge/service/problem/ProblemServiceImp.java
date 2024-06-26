@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,17 +44,13 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
         Page<Problem> problemList = problemRepo.findAll(pageable);
-        return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
-        );
+        return problemList.map(problemMapper::toPageModel);
     }
 
     @Override
     public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
         Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, contestName, pageable);
-        return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), problem.getOnlineJudge()))
-        );
+        return problemList.map(problemMapper::toPageModel);
     }
 
     @Override
@@ -94,12 +91,23 @@ public class ProblemServiceImp implements ProblemService {
         Submission submission = strategy.submit(info);
         submission.setProblem(problem);
         user.setAttemptedCount(user.getAttemptedCount()+1);
-        if(submission.getVerdict().equalsIgnoreCase("Accepted")){
+        if(submission.getVerdict().equalsIgnoreCase("Accepted") && !hasUserSolvedProblem(user, problem)){
             user.setSolvedCount(user.getSolvedCount()+1);
+            problem.setSolvedCount(problem.getSolvedCount()+1);
         }
         user = userService.save(user);
         submission.setUser(user);
         return submissionService.save(submission);
+    }
+
+    public boolean hasUserSolvedProblem(User user, Problem problem) {
+        List<Submission> submissions = submissionService.findByUserAndProblem(user, problem);
+        for (Submission submission : submissions) {
+            if (submission.getVerdict().equalsIgnoreCase("Accepted")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

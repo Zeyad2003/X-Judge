@@ -60,6 +60,21 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Page<GroupModel> getAllPublicGroups(Principal connectedUser,Pageable pageable) {
+        Page<Group> groups = groupRepository.findByVisibility(GroupVisibility.PUBLIC ,pageable);
+        return groups.map(group -> GroupModel.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .creationDate(group.getCreationDate())
+                .visibility(group.getVisibility())
+                .leaderHandle(group.getLeaderHandle())
+                .userGroupRole(userGroupService.findRoleByUserAndGroupId(connectedUser,group.getId()))
+                .members(group.getGroupUsers().size())
+                .build());
+    }
+
+    @Override
     public Page<GroupModel> getGroupsByUserHandle(String handle, Pageable pageable) {
         User user = userService.findUserByHandle(handle);
         Page<Group> groups = groupRepository.findGroupsByGroupUsersUser(user, pageable);
@@ -318,7 +333,7 @@ public class GroupServiceImpl implements GroupService {
     }
     @Override
     public Page<Group> searchGroupByName(String name, Pageable pageable) {
-        return groupRepository.searchGroupsByNameContainingIgnoreCase(name, pageable);
+        return groupRepository.searchGroupsByNameContainingIgnoreCaseAndVisibility(name, GroupVisibility.PUBLIC, pageable);
     }
 
 }

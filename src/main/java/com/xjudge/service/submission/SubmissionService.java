@@ -1,6 +1,8 @@
 package com.xjudge.service.submission;
 
+import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
+import com.xjudge.entity.User;
 import com.xjudge.model.contest.ContestStatusPageModel;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.submission.SubmissionModel;
@@ -29,4 +31,6 @@ public interface SubmissionService {
     Page<SubmissionPageModel> filterSubmissions(String userHandle, String oj, String problemCode, String language, Pageable pageable);
 
     Page<ContestStatusPageModel> filterSubmissionsInContest(Long contestId , String userHandle, String problemCode, String result ,String language, Pageable pageable);
+
+    List<Submission> findByUserAndProblem(User user, Problem problem);
 }

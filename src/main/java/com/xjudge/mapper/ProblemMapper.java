@@ -19,6 +19,8 @@ public interface ProblemMapper {
     @Mapping(target = "problemHashtag", ignore = true)
     ProblemModel toModel(Problem problem);
 
+    ProblemsPageModel toPageModel(Problem problem);
+
     @Mapping(target = "solvedCount", source = "solvedCount")
     ProblemsPageModel toPageModel(Problem problem, Integer solvedCount);
 

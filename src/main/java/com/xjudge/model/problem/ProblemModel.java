@@ -22,6 +22,8 @@ public record ProblemModel(
 
         OnlineJudgeType onlineJudge,
 
+        Integer solvedCount,
+
         String problemHashtag,
 
         List<Property> properties
