@@ -1,8 +1,6 @@
 package com.xjudge.model.submission;
 
 import com.xjudge.model.enums.OnlineJudgeType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
@@ -37,6 +35,5 @@ public class SubmissionModel {
     private String userHandle;
 
     private Long contestId;
-
 
 }
