@@ -1,5 +1,7 @@
 package com.xjudge.model.contest;
 
+import com.xjudge.model.enums.ContestVisibility;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -21,6 +23,8 @@ public record ContestPageModel(
         String photoUrl,
 
         Long groupId ,
+
+        ContestVisibility visibility ,
 
         String groupName
 ) {
