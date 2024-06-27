@@ -270,6 +270,10 @@ public class ContestServiceImp implements ContestService {
             throw new XJudgeException("The contest has not started yet" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
 
+        if(contestStatus == ContestStatus.ENDED){
+            return submissionMapper.toModel(problemService.submit(info , authentication));
+        }
+
         if(!contestProblemRepo.existsByProblemCodeAndContestId(info.code() , id)){
             throw new XJudgeException("No such problem with this code in contest" , ContestServiceImp.class.getName() , HttpStatus.BAD_REQUEST);
         }
