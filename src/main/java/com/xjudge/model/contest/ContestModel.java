@@ -1,6 +1,7 @@
 package com.xjudge.model.contest;
 
 import com.xjudge.model.enums.ContestStatus;
+import com.xjudge.model.enums.ContestType;
 import com.xjudge.model.enums.ContestVisibility;
 import lombok.Data;
 
@@ -12,7 +13,11 @@ import java.util.List;
 public class ContestModel {
     private Long id;
 
+    private ContestType type;
+
     private String title;
+
+    private String description;
 
     private Instant beginTime;
 
