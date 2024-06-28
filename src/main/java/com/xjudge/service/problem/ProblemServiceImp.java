@@ -12,6 +12,7 @@ import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
+import com.xjudge.model.user.Statistics;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import com.xjudge.service.scraping.strategy.SubmissionStrategy;
@@ -25,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -138,6 +140,12 @@ public class ProblemServiceImp implements ProblemService {
         return problemList.map(problem -> problemMapper.toPageModel(
                 problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
         );
+    }
+
+    @Override
+    public Statistics getStatistics(Principal connectedUser) {
+        User user = userService.findUserByHandle(connectedUser.getName());
+        return new Statistics(user.getSolvedCount(), user.getAttemptedCount());
     }
 
 }

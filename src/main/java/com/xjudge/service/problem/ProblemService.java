@@ -7,9 +7,12 @@ import com.xjudge.model.problem.ProblemModel;
 import com.xjudge.model.problem.ProblemsPageModel;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
+import com.xjudge.model.user.Statistics;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+
+import java.security.Principal;
 
 
 public interface ProblemService {
@@ -32,5 +35,7 @@ public interface ProblemService {
     Page<ProblemsPageModel> searchBySource(String source, Pageable pageable);
 
     Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable);
+
+    Statistics getStatistics(Principal connectedUser);
 
 }

@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -121,6 +123,15 @@ public class ProblemController {
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/user-statistics")
+    public ResponseEntity<?> getStatistics(Principal connectedUser) {
+        Response response = Response.builder()
+                .success(true)
+                .data(problemService.getStatistics(connectedUser))
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
