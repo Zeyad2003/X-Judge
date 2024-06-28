@@ -11,6 +11,8 @@ public record ContestProblemModel(
 
         String problemHashtag ,
 
+        Integer problemWeight,
+
         String problemLink,
 
         long numberOfSubmission,
