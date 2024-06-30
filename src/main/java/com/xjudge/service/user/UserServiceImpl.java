@@ -17,7 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +93,6 @@ public class UserServiceImpl implements UserService{
         oldUser.setEmail(user.getEmail());
         oldUser.setSchool(user.getSchool());
         oldUser.setPhotoUrl(user.getPhotoUrl());
-        // api must store photo and return url
         return userMapper.toModel(oldUser);
     }
 
@@ -150,6 +152,24 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<InvitationModel> getUserInvitations(String handle) {
         return invitationService.getInvitationByReceiverHandle(handle);
+    }
+
+    @Override
+    public boolean updateProfilePicture(String handle, MultipartFile profilePicture) {
+        User user = userRepo.findByHandle(handle).orElseThrow(
+                () -> new XJudgeException("User not found", UserServiceImpl.class.getName(), HttpStatus.NOT_FOUND)
+        );
+        String uploadDirectory = "src/main/resources/static/images/profiles/";
+        String originalFileName = handle + UUID.randomUUID() + profilePicture.getOriginalFilename();
+        Path filePath = Paths.get(uploadDirectory, originalFileName);
+        try {
+            profilePicture.transferTo(filePath);
+            user.setPhotoUrl("http://localhost:7070/profile/" + originalFileName);
+            userRepo.save(user);
+            return true;
+        } catch (Exception e) {
+            throw new XJudgeException("Cannot upload profile picture", UserServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Transactional

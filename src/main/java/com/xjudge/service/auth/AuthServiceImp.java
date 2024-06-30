@@ -76,6 +76,7 @@ public class AuthServiceImp implements AuthService{
                 .photoUrl(registerRequest.getUserPhotoUrl())
                 .registrationDate(LocalDate.now())
                 .school(registerRequest.getUserSchool())
+                .photoUrl("http://localhost:7070/profile/Default_Image.jpg")
                 .attemptedCount(0L)
                 .solvedCount(0L)
                 .role(UserRole.USER)
