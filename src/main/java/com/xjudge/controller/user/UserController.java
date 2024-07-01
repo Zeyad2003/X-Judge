@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -40,6 +41,15 @@ public class UserController {
                 .success(true)
                 .data(userService.updateUserByHandle(authentication.getName(), user))
                 .message("User updated successfully")
+                .build());
+    }
+
+    @PutMapping("/profile-picture")
+    public ResponseEntity<?> updateProfilePicture(@RequestParam("file") MultipartFile profilePicture, Principal connectedUser) {
+        return ResponseEntity.ok(Response.builder()
+                .success(true)
+                .data(userService.updateProfilePicture(connectedUser.getName(), profilePicture))
+                .message("Profile picture updated successfully")
                 .build());
     }
 

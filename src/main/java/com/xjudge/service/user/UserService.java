@@ -4,6 +4,7 @@ import com.xjudge.entity.Invitation;
 import com.xjudge.entity.User;
 import com.xjudge.model.invitation.InvitationModel;
 import com.xjudge.model.user.UserModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,4 +23,5 @@ public interface UserService {
     boolean existsByHandle(String userHandle);
     boolean existsByEmail(String userEmail);
     List<InvitationModel> getUserInvitations(String handle);
+    boolean updateProfilePicture(String handle, MultipartFile profilePicture);
 }
