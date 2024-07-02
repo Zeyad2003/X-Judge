@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -270,12 +271,14 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<GroupContestModel> getGroupContests(Long groupId) {
-        return groupRepository.findById(groupId).orElseThrow(
+        List<GroupContestModel> contests = groupRepository.findById(groupId).orElseThrow(
                 () -> new XJudgeException("Group not found", GroupServiceImpl.class.getName(), HttpStatus.NOT_FOUND))
                 .getGroupContests()
                 .stream()
                 .map(groupMapper::toGroupContestModel)
-                .toList();
+                .collect(Collectors.toList());
+        Collections.reverse(contests);
+        return contests;
     }
 
     @Override
