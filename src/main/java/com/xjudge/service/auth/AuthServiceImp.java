@@ -281,8 +281,6 @@ public class AuthServiceImp implements AuthService{
                 .build();
     }
 
-
-
     private Map<String, String> checkErrors(BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
         if (bindingResult.hasErrors()) {
