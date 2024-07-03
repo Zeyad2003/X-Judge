@@ -36,10 +36,7 @@ public class ContestSecurity {
         }
         return true;
     }
-    public boolean authorizeMarkAsCheater(String username, Long contestId) {
 
-        return true;
-    }
     public boolean authorizeContestantsRoles(String handle, Long id , String password){
         Contest contest = contestService.getContest(id);
         if(!isContestOwner(contest, handle)

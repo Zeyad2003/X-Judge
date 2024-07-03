@@ -45,6 +45,5 @@ public class UserContest extends BaseEntity<UserContestKey> {
     private Integer userContestRank;
 
     private Integer userContestScore;
-    private boolean isCheater=false;
 
 }

@@ -1,8 +1,5 @@
 package com.xjudge.controller.contest;
 
-import com.xjudge.entity.User;
-import com.xjudge.entity.UserContest;
-import com.xjudge.entity.key.UserContestKey;
 import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.contest.ContestPageModel;
 import com.xjudge.model.contest.ContestStatusPageModel;
@@ -10,9 +7,6 @@ import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
-import com.xjudge.repository.UserRepo;
-import com.xjudge.service.contest.usercontest.UserContestService;
-import com.xjudge.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -27,8 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.xjudge.service.contest.ContestService;
 
-import java.security.Principal;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -36,8 +28,6 @@ import java.security.Principal;
 public class ContestController {
 
     private final ContestService contestService;
-    private final UserContestService userContestService;
-    private final UserService userService;
 
     @GetMapping
     public  ResponseEntity<?> getAllContest(@RequestParam(defaultValue = "0") Integer pageNo,
@@ -235,21 +225,4 @@ public class ContestController {
                 .build();
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
-    @PreAuthorize("@contestSecurity.authorizeMarkAsCheater(principal.username, #contestId)")
-    @PutMapping("/{contestId}/user/mark-cheater")
-    public ResponseEntity<Response> markAsCheater(@PathVariable Long contestId, Principal connectedUser) {
-        String handle=connectedUser.getName();
-        User user=userService.findUserByHandle(handle);
-
-        UserContestKey id = new UserContestKey(user.getId(), contestId);
-        UserContest updatedUserContest = userContestService.markAsCheater(id);
-        Response response = Response.builder()
-                .success(true)
-                .data(updatedUserContest)
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-
-
 }
