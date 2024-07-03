@@ -9,16 +9,26 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class UserContestServiceImp implements UserContestService{
-    private final UserContestRepo repo;
+    private final UserContestRepo userContestRepo;
 
 
     @Override
     public UserContest save(UserContest userContest) {
-        return repo.save(userContest);
+        return userContestRepo.save(userContest);
     }
 
     @Override
     public boolean existsById(UserContestKey userContestKey) {
-        return repo.existsById(userContestKey);
+        return userContestRepo.existsById(userContestKey);
     }
+
+    @Override
+    public UserContest markAsCheater(UserContestKey id) {
+        UserContest userContest = userContestRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user contest ID: " + id));
+        userContest.setCheater(true);
+        return userContestRepo.save(userContest);
+    }
+
+
 }
