@@ -26,7 +26,7 @@ public class CommandLineStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-//        updateProblemDescriptionRoutes();
+      // updateProblemDescriptionRoutes();
 
         addUser();
 
@@ -52,6 +52,21 @@ public class CommandLineStartupRunner implements CommandLineRunner {
                 .isVerified(true)
                 .build();
         if(userRepo.findByHandle(user.getHandle()).isEmpty()) userRepo.save(user);
+     /*   User user = User.builder()
+                .id(2L)
+                .role(UserRole.USER)
+                .handle("Esraa")
+                .email("esraamabrouk126@gmail.com")
+                .password(encoder.encode("Esraa"))
+                .firstName("Esraa")
+                .lastName("mabrouk")
+                .school("lol")
+                .registrationDate(LocalDate.now())
+                .solvedCount(0L)
+                .attemptedCount(0L)
+                .isVerified(true)
+                .build();
+        if(userRepo.findByHandle(user.getHandle()).isEmpty()) userRepo.save(user);*/
     }
 
     public void updateProblemDescriptionRoutes() {

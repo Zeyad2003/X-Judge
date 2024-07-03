@@ -1,5 +1,6 @@
 package com.xjudge.service.auth;
 
+import com.xjudge.entity.User;
 import com.xjudge.model.auth.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.validation.BindingResult;
@@ -15,4 +16,5 @@ public interface AuthService {
     AuthResponse changePassword(ChangePasswordRequest changePasswordRequest, Principal connectedUser);
     AuthResponse forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
     AuthResponse resetPassword(ResetPasswordRequest resetPasswordRequest);
+
 }
