@@ -3,6 +3,7 @@ package com.xjudge.service.group;
 import com.xjudge.entity.*;
 import com.xjudge.entity.key.UserGroupKey;
 import com.xjudge.exception.XJudgeException;
+import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.mapper.GroupMapper;
 import com.xjudge.mapper.UserGroupMapper;
 import com.xjudge.model.enums.GroupVisibility;
@@ -25,11 +26,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,7 +116,16 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public GroupModel create(GroupRequest groupRequest, Principal connectedUser) {
+    public GroupModel create(GroupRequest groupRequest, Principal connectedUser, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            System.out.println("A7Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            throw new XJudgeValidationException(errorMap, "Validation failed", GroupServiceImpl.class.getName(), HttpStatus.BAD_REQUEST);
+        }
 
         User leader = userService.findUserByHandle(connectedUser.getName());
         Group group = groupRepository.save(Group.builder()
