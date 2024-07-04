@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -330,13 +331,16 @@ public class ContestServiceImp implements ContestService {
     public List<ContestRankModel> getRank(Long contestId) {
         Contest contest = getContest(contestId);
         return contest.getUsers()
-                .stream().filter(UserContest::getIsParticipant)
+                .stream()
+                .filter(isRanked)
                 .map(userContest ->
                         userContestMapper.toContestRankModel(userContest , getContestRankModel(userContest , contest))
-                       )
+                )
                 .sorted(new ContestantComparator())
                 .toList();
     }
+
+    private final Predicate<UserContest> isRanked = (userContest -> userContest.getIsParticipant() && userContest.getUserContestPenalty() != 0);
 
     private List<ContestRankSubmission> getContestRankModel (UserContest userContest , Contest contest){
         return submissionService.getSubmissionsByContestIdAndUserId(contest.getId(), userContest.getUser().getId())
