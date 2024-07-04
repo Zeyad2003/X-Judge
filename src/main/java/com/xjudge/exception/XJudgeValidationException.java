@@ -18,6 +18,14 @@ public class XJudgeValidationException extends RuntimeException{
     private final String message;
     public static final String VALIDATION_ERROR = "VALIDATION_ERROR";
 
+    public XJudgeValidationException(Map<String, String> errors, String message, String location, HttpStatus status) {
+        super(message);
+        this.location = location;
+        this.httpStatus = status;
+        this.message = message;
+        this.errors = errors;
+    }
+
     public XJudgeValidationException(List<FieldError> fieldErrors ,String message ,  String location , HttpStatus status){
         super(message);
         this.location = location;

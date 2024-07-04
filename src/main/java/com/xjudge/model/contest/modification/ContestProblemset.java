@@ -17,7 +17,7 @@ public record ContestProblemset(
         @Min(value = 1)
         Integer problemWeight,
 
-        @NotNull
+        @NotNull(message = "You must select the online judge of problem.")
         OnlineJudgeType ojType,
 
         @NotNull

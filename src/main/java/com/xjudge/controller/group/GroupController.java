@@ -1,6 +1,7 @@
 package com.xjudge.controller.group;
 
 import com.xjudge.entity.Group;
+import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.group.GroupContestModel;
 import com.xjudge.model.group.GroupMemberModel;
 import com.xjudge.model.group.GroupModel;
@@ -9,6 +10,7 @@ import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.service.group.GroupService;
 import com.xjudge.service.group.userGroupService.UserGroupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/group")
@@ -83,8 +88,13 @@ public class GroupController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGroup(@RequestBody GroupRequest groupRequest, Principal connectedUser) {
-        GroupModel group = groupService.create(groupRequest, connectedUser);
+    public ResponseEntity<?> createGroup(@Valid @RequestBody GroupRequest groupRequest, Principal connectedUser, BindingResult bind) {
+        if (bind.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+            bind.getFieldErrors().forEach(error -> errorMap.put(error.getField(), error.getDefaultMessage()));
+            throw new XJudgeValidationException(errorMap, "Validation failed", this.getClass().getName(), HttpStatus.BAD_REQUEST);
+        }
+        GroupModel group = groupService.create(groupRequest, connectedUser, bind);
         Response response = Response.builder()
                 .success(true)
                 .data(group)
@@ -95,7 +105,7 @@ public class GroupController {
 
     @PutMapping("/{groupId}")
     @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #groupId, {'LEADER', 'MANAGER'})")
-    public ResponseEntity<?> updateGroup(@PathVariable Long groupId, @RequestBody GroupRequest groupRequest) {
+    public ResponseEntity<?> updateGroup(@PathVariable Long groupId, @Valid @RequestBody GroupRequest groupRequest) {
         GroupModel group = groupService.update(groupId, groupRequest);
         Response response = Response.builder()
                 .success(true)
@@ -118,7 +128,7 @@ public class GroupController {
 
     @PostMapping("/invite")
     @PreAuthorize("@groupSecurity.hasAnyRole(principal.username, #invitationRequest.groupId, {'LEADER','MANAGER'})")
-    public ResponseEntity<?> inviteUserToGroup(@RequestBody InvitationRequest invitationRequest, Principal connectedUser) {
+    public ResponseEntity<?> inviteUserToGroup(@Valid @RequestBody InvitationRequest invitationRequest, Principal connectedUser) {
         groupService.inviteUser(invitationRequest.getGroupId(), invitationRequest.getReceiverHandle(), connectedUser);
         Response response = Response.builder()
                 .success(true)
