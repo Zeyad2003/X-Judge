@@ -9,6 +9,7 @@ import com.xjudge.model.invitation.InvitationRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.service.group.GroupService;
 import com.xjudge.service.group.userGroupService.UserGroupService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/group")
 @RequiredArgsConstructor
+@Tag(name = "Group", description = "The group end-points for handling group operations.")
 public class GroupController {
 
     private final GroupService groupService;

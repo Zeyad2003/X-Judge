@@ -4,6 +4,7 @@ import com.xjudge.exception.XJudgeValidationException;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.user.UserModel;
 import com.xjudge.service.user.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.security.Principal;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
+@Tag(name = "User", description = "The end-points related to user operations.")
 public class UserController {
 
     private final UserService userService;

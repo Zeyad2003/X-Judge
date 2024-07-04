@@ -2,6 +2,7 @@ package com.xjudge.controller.submission;
 
 import com.xjudge.model.response.Response;
 import com.xjudge.service.submission.SubmissionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/submission")
+@Tag(name = "Submission", description = "The end-points related to submission operations.")
 public class SubmissionController {
     private final SubmissionService submissionService;
 

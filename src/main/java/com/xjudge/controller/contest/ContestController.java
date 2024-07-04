@@ -7,6 +7,7 @@ import com.xjudge.model.contest.modification.ContestClientRequest;
 import com.xjudge.model.response.Response;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ import com.xjudge.service.contest.ContestService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/contest")
+@Tag(name = "Contests", description = "The contest end-points for handling contest operations.")
 public class ContestController {
 
     private final ContestService contestService;
