@@ -3,6 +3,7 @@ package com.xjudge.controller.auth;
 import com.xjudge.model.auth.*;
 import com.xjudge.model.response.Response;
 import com.xjudge.service.auth.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -19,6 +20,7 @@ import java.security.Principal;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Tag(name = "Authentication", description = "The authorization end-points for handling user authentication operations.")
 public class AuthenticationController {
     private final AuthService authService;
 

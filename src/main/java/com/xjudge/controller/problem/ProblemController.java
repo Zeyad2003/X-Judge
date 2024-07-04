@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,14 @@ public class ProblemController {
                 .data(paginatedData)
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/description/{source}-{code}")
+    public String getProblemDescription(@PathVariable String source,
+                                        @PathVariable String code,
+                                        Model model) {
+        model.addAttribute("problem", problemService.getProblemDescription(source, code));
+        return "problem-description";
     }
 
     @GetMapping(params = {"source", "problemCode", "title", "contestName"})

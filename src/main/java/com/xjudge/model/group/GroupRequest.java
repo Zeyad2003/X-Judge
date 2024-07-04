@@ -15,7 +15,10 @@ import lombok.NoArgsConstructor;
 public class GroupRequest {
     @NotBlank(message = "Please enter a valid name")
     String name;
+
     String description;
+
     @NotNull(message = "Please enter a valid visibility")
+    @NotBlank(message = "Please enter a valid visibility")
     GroupVisibility visibility;
 }
