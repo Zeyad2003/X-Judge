@@ -5,13 +5,17 @@ import com.xjudge.exception.auth.AuthExceptionMessage;
 import com.xjudge.model.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class Handler {
@@ -23,8 +27,24 @@ public class Handler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> validationException(MethodArgumentNotValidException exception, WebRequest webRequest) {
-        return createResponseEntity(exception, exception.getClass().getName(), HttpStatus.BAD_REQUEST, webRequest);
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest webRequest) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        XJudgeValidationExceptionModel errorDetails = new XJudgeValidationExceptionModel(
+                HttpStatus.BAD_REQUEST.value(),
+                "Validation failed",
+                this.getClass().getName(),
+                DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).format(LocalDateTime.now()),
+                webRequest.getDescription(false),
+                errors
+        );
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(XJudgeValidationException.class)

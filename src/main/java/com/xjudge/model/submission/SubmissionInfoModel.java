@@ -7,19 +7,19 @@ import jakarta.validation.constraints.NotNull;
 
 public record SubmissionInfoModel(
 
-        @NotNull
-        @NotBlank
+        @NotNull(message = "The problem code is required to submit a solution.")
+        @NotBlank(message = "The problem code can't be empty.")
         String code,
 
-        @NotNull
+        @NotNull(message = "The online judge is required to submit a solution.")
         OnlineJudgeType ojType,
 
         Boolean isOpen,
 
-        @NotNull
-        @NotBlank
+        @NotNull(message = "The solution code is required to submit a solution.")
+        @NotBlank(message = "The solution code can't be empty.")
         String solutionCode,
 
-        @NotNull
+        @NotNull(message = "The compiler is required to submit a solution.")
         Compiler compiler
 ) {}
