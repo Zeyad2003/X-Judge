@@ -5,7 +5,8 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.scrap.SubmissionScrapedData;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.service.scraping.strategy.SubmissionStrategy;
-import com.xjudge.service.scraping.codeforces.CodeforcesSubmission;
+import com.xjudge.util.driverpool.AtCoderPool;
+import com.xjudge.util.driverpool.WebDriverWrapper;
 import jakarta.annotation.PreDestroy;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -14,58 +15,48 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AtCoderSubmission implements SubmissionStrategy {
 
-    WebDriver driver;
-    WebDriverWait wait;
-    private static final String LOGIN_URL = "https://atcoder.jp/login?continue=https://atcoder.jp/contests/%s/submit";
+    private final AtCoderPool pool;
     private static final String SUBMIT_URL="https://atcoder.jp/contests/%s/submit";
     private final AtCoderSplitting splitting;
     private static final Logger logger = LoggerFactory.getLogger(AtCoderSubmission.class);
-    @Value("${Atcoder.username}")
-    private String USERNAME;
-    @Value("${Atcoder.password}")
-    private String PASSWORD;
-    private final String SUBMISSION_SCORE_XPATH="//table//tbody//tr[1]//td[5]";
 
     @Autowired
-    public AtCoderSubmission(WebDriver webDriver,
+    public AtCoderSubmission(AtCoderPool atCoderPool,
                              AtCoderSplitting splitting){
-        this.driver = webDriver;
-        this.wait = new WebDriverWait(webDriver , Duration.ofSeconds(10));
         this.splitting = splitting;
+        this.pool = atCoderPool;
     }
 
-    @PreDestroy
-    public void destroyObject(){
-        driver.quit();
-    }
 
     @Override
     public Submission submit(SubmissionInfoModel data) {
         String[] splittedCode = splitting.split(data.code());
         String contestId = splittedCode[0];
-        verifyLogin(contestId);
-        submitHelper(data);
-//        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(SUBMISSION_SCORE_XPATH)));
-//        WebElement submissionScore = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("submission-score")));
-        String remoteId = getSubmissionId();
+        String url = String.format(SUBMIT_URL , contestId);
+        WebDriverWrapper driverWrapper = pool.getDriverData();
+        WebDriver driver = driverWrapper.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver , Duration.ofSeconds(10));
+        driver.get(url);
+
+        submitHelper(driver , wait , data , driverWrapper);
+
+        String remoteId = getSubmissionId(driver);
         logger.info("Remote Id : {}", remoteId);
-        SubmissionScrapedData submissionScrapedData = scrapSubmissionData(remoteId);
+        SubmissionScrapedData submissionScrapedData = scrapSubmissionData(driver , remoteId);
         while(submissionScrapedData.getVerdict().equalsIgnoreCase("WJ")){
             try {
-                submissionScrapedData = scrapSubmissionData(remoteId);
+                submissionScrapedData = scrapSubmissionData(driver , remoteId);
                 logger.info("data {}", submissionScrapedData);
                 logger.info("==================");
             }
@@ -73,22 +64,14 @@ public class AtCoderSubmission implements SubmissionStrategy {
                 logger.info(e.getMessage());
             }
         }
-        return Submission.builder()
-                .remoteRunId(remoteId)
-                .ojType(data.ojType())
-                .solution(data.solutionCode())
-                .language(data.compiler().getName())
-                .submitTime(Instant.now())
-                .memoryUsage(submissionScrapedData.getMemory())
-                .timeUsage(submissionScrapedData.getTime())
-                .verdict((submissionScrapedData.getVerdict().equals("AC")? "Accepted" : submissionScrapedData.getVerdict()))
-                .submissionStatus("submitted")
-                .isOpen(data.isOpen() == null || data.isOpen())
-                .build();
+
+        Submission submission = setSubmissionData(submissionScrapedData , data);
+        pool.releaseDriver(driverWrapper);
+        return submission;
     }
 
 
-    private String getSubmissionId(){
+    private String getSubmissionId(WebDriver driver){
         try {
             WebElement firstRow = driver.findElement(By.tagName("tbody")).findElement(By.tagName("tr"));
             WebElement submissionScore = firstRow.findElements(By.tagName("td")).get(4);
@@ -96,13 +79,13 @@ public class AtCoderSubmission implements SubmissionStrategy {
         }catch (Exception ex){
             logger.info(ex.getMessage());
             if(ex instanceof NoSuchElementException || ex instanceof TimeoutException){
-                return getSubmissionId();
+                return getSubmissionId(driver);
             }
         }
         return null;
     }
 
-    private SubmissionScrapedData scrapSubmissionData(String remoteId){
+    private SubmissionScrapedData scrapSubmissionData(WebDriver driver , String remoteId){
         List<WebElement> rows = driver.findElements(By.xpath("//tbody//tr"));
         logger.info("===============");
         logger.info("total rows : {}", rows.size());
@@ -141,7 +124,7 @@ public class AtCoderSubmission implements SubmissionStrategy {
                 .build();
     }
 
-    private void submitHelper(SubmissionInfoModel data){
+    private void submitHelper(WebDriver driver , WebDriverWait wait , SubmissionInfoModel data, WebDriverWrapper driverWrapper){
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("data.LanguageId")));
             Select taskNameSelect = new Select(driver.findElement(By.name("data.TaskScreenName")));
@@ -167,47 +150,28 @@ public class AtCoderSubmission implements SubmissionStrategy {
         }catch (Exception e){
             try {
                 System.out.println(e.getMessage());
-                if(e.getMessage().startsWith("Unable to locate element")) submitHelper(data);
-                TimeUnit.MILLISECONDS.sleep(4000);
-            } catch (InterruptedException ex) {
+                if(e instanceof NoSuchElementException || e instanceof TimeoutException || e instanceof StaleElementReferenceException){
+                     submitHelper(driver , wait ,data , driverWrapper);
+                }
+            } catch (Exception ex) {
+                pool.releaseDriver(driverWrapper);
                 throw new XJudgeException("FAIL_TO_SUBMIT" , AtCoderSubmission.class.getName(),HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-
     }
 
-    public void login(String userName , String password , String contestId) {
-        String url = String.format(LOGIN_URL , contestId);
-        try {
-            driver.get(url);
-            WebElement userNameField = driver.findElement(By.name("username"));
-            WebElement userPasswordField = driver.findElement(By.name("password"));
-            WebElement submitButton  = driver.findElement(By.id("submit"));
-            userNameField.sendKeys(userName);
-            userPasswordField.sendKeys(password);
-            submitButton.submit();
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("alert")));
-        }catch (Exception e){
-            throw new XJudgeException("FAIL TO LOGIN", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        WebElement alert = driver.findElement(By.className("alert"));
-        if(alert.getText().contains("Contest not found")){
-            throw new XJudgeException("Contest Not Found" , AtCoderSubmission.class.getName() , HttpStatus.BAD_REQUEST);
-        }
+    private Submission setSubmissionData(SubmissionScrapedData submissionScrapedData , SubmissionInfoModel data){
+        return Submission.builder()
+                .remoteRunId(submissionScrapedData.getRemoteId())
+                .ojType(data.ojType())
+                .solution(data.solutionCode())
+                .language(data.compiler().getName())
+                .submitTime(Instant.now())
+                .memoryUsage(submissionScrapedData.getMemory())
+                .timeUsage(submissionScrapedData.getTime())
+                .verdict((submissionScrapedData.getVerdict().equals("AC")? "Accepted" : submissionScrapedData.getVerdict()))
+                .submissionStatus("submitted")
+                .isOpen(data.isOpen() == null || data.isOpen())
+                .build();
     }
-
-    private boolean isLogin() {
-        Cookie cookie = driver.manage().getCookieNamed("REVEL_SESSION");
-        return cookie != null && cookie.getValue().contains("UserScreenName") && cookie.getValue().contains("UserName");
-    }
-
-    private void verifyLogin(String contestId){
-        if(!isLogin()){
-            login(USERNAME , PASSWORD , contestId);
-        }else{
-            String url = String.format(SUBMIT_URL , contestId);
-            driver.get(url);
-        }
-    }
-
 }
