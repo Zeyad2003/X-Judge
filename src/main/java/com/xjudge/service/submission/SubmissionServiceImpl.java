@@ -11,6 +11,7 @@ import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.submission.SubmissionPageModel;
+import com.xjudge.repository.ContestRepo;
 import com.xjudge.repository.SubmissionRepo;
 import com.xjudge.service.contest.contestproblem.ContestProblemService;
 import com.xjudge.service.problem.ProblemService;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService, Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies) {
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService, Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies, ContestRepo contestRepo) {
         this.submissionRepo = submissionRepo;
         this.submissionMapper = submissionMapper;
         this.contestProblemService = contestProblemService;
@@ -55,6 +57,15 @@ public class SubmissionServiceImpl implements SubmissionService {
         Submission updatedSubmission = strategy.submit(submissionInfoModel);
         updateSubmissionStatus(submission, updatedSubmission);
         return determineSubmissionModel(submissionRepo.save(submission) , authentication);
+    }
+
+    @Override
+    public void resubmit(Submission submission) {
+        SubmissionInfoModel submissionInfoModel = getSubmissionInfo(submission);
+        SubmissionStrategy strategy = submissionStrategies.get(submissionInfoModel.ojType());
+        Submission updatedSubmission = strategy.submit(submissionInfoModel);
+        updateSubmissionStatus(submission, updatedSubmission);
+        submissionRepo.save(submission);
     }
 
     @Override
@@ -119,6 +130,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<Submission> findByUserAndProblem(User user, Problem problem) {
         return submissionRepo.findByUserAndProblem(user, problem);
+    }
+
+    @Override
+    public List<Submission> getSubmissionByStatus(String status) {
+        return submissionRepo.findSubmissionsBySubmissionStatus(status);
     }
 
     private String getProblemIndex(Long contestId , Long problemId) {

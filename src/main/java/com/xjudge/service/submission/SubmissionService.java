@@ -16,6 +16,8 @@ import java.util.List;
 public interface SubmissionService {
     SubmissionModel getSubmissionById(Long submissionId , Authentication authentication);
 
+    void resubmit(Submission submission);
+
     Page<SubmissionPageModel> getAllSubmissions(Pageable pageable);
 
     Submission save(Submission submission);
@@ -33,4 +35,6 @@ public interface SubmissionService {
     Page<ContestStatusPageModel> filterSubmissionsInContest(Long contestId , String userHandle, String problemCode, String result ,String language, Pageable pageable);
 
     List<Submission> findByUserAndProblem(User user, Problem problem);
+
+    List<Submission> getSubmissionByStatus(String status);
 }
