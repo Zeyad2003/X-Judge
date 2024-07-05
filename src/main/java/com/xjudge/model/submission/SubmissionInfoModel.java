@@ -20,7 +20,6 @@ public record SubmissionInfoModel(
         @NotNull(message = "The solution code can't be empty.")
         String solutionCode,
 
-        @NotBlank(message = "The compiler is required to submit a solution.")
         @NotNull(message = "The compiler can't be empty.")
         Compiler compiler
 ) {}
