@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(configure -> {
                             try {
                                 configure
-                //                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
+//                                        .requestMatchers("/**").permitAll() // Uncomment this line to disable security, do your work and then comment it back
                                         .requestMatchers("/description/**").permitAll()
                                         .requestMatchers("/css/**").permitAll()
                                         .requestMatchers("/js/**").permitAll()

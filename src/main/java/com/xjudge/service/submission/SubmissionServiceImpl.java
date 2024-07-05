@@ -1,5 +1,6 @@
 package com.xjudge.service.submission;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
@@ -7,11 +8,15 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.mapper.SubmissionMapper;
 import com.xjudge.model.contest.ContestStatusPageModel;
 import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.submission.SubmissionPageModel;
 import com.xjudge.repository.SubmissionRepo;
 import com.xjudge.service.contest.contestproblem.ContestProblemService;
+import com.xjudge.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,20 +26,31 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class SubmissionServiceImpl implements SubmissionService {
 
     private final SubmissionRepo submissionRepo;
     private final SubmissionMapper submissionMapper;
     private final ContestProblemService contestProblemService;
+    private final ProblemService problemService;
+
+
+    @Autowired
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService,@Lazy ProblemService problemService) {
+        this.submissionRepo = submissionRepo;
+        this.submissionMapper = submissionMapper;
+        this.contestProblemService = contestProblemService;
+        this.problemService = problemService;
+    }
 
     @Override
     public SubmissionModel getSubmissionById(Long submissionId , Authentication authentication) {
         Submission submission = submissionRepo.findById(submissionId).orElseThrow(() -> new XJudgeException("Submission not found." , SubmissionServiceImpl.class.getName() , HttpStatus.NOT_FOUND));
-        if((authentication != null && isUserSubmission(submission.getUser() , authentication.getName()))
-                || submission.getIsOpen())
-            return submissionMapper.toOpenSubmissionModel(submission , submission.getSolution());
-        return submissionMapper.toModel(submission);
+        if(submission.getSubmissionStatus().equalsIgnoreCase("submitted")) {
+          return determineSubmissionModel(submission , authentication);
+        }
+        Submission updatedSubmission = problemService.submit(getSubmissionInfo(submission) , authentication);
+        updateSubmissionStatus(submission, updatedSubmission);
+        return determineSubmissionModel(submissionRepo.save(submission) , authentication);
     }
 
     @Override
@@ -110,5 +126,30 @@ public class SubmissionServiceImpl implements SubmissionService {
     private boolean isUserSubmission(User user , String loginUserHandle){
         return user.getHandle()
                 .equals(loginUserHandle);
+    }
+
+    private void updateSubmissionStatus(Submission storedSubmission , Submission updatedSubmission){
+        storedSubmission.setSubmissionStatus(updatedSubmission.getSubmissionStatus());
+        storedSubmission.setMemoryUsage(updatedSubmission.getMemoryUsage());
+        storedSubmission.setVerdict(updatedSubmission.getVerdict());
+        storedSubmission.setTimeUsage(updatedSubmission.getTimeUsage());
+    }
+
+    private SubmissionInfoModel getSubmissionInfo(Submission submission){
+        Problem problem = submission.getProblem();
+        return SubmissionInfoModel.builder()
+                .code(problem.getCode())
+                .ojType(problem.getOnlineJudge())
+                .solutionCode(submission.getSolution())
+                .isOpen(submission.getIsOpen())
+                .compiler(submission.getCompiler())
+                .build();
+    }
+
+    private SubmissionModel determineSubmissionModel(Submission submission , Authentication authentication){
+        if ((authentication != null && isUserSubmission(submission.getUser(), authentication.getName()))
+                || submission.getIsOpen())
+            return submissionMapper.toOpenSubmissionModel(submission, submission.getSolution());
+        return submissionMapper.toModel(submission);
     }
 }

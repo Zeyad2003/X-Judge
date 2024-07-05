@@ -41,33 +41,48 @@ public class AtCoderSubmission implements SubmissionStrategy {
 
     @Override
     public Submission submit(SubmissionInfoModel data) {
-        String[] splittedCode = splitting.split(data.code());
-        String contestId = splittedCode[0];
-        String url = String.format(SUBMIT_URL , contestId);
         WebDriverWrapper driverWrapper = pool.getDriverData();
         WebDriver driver = driverWrapper.getDriver();
-        WebDriverWait wait = new WebDriverWait(driver , Duration.ofSeconds(10));
-        driver.get(url);
-
-        submitHelper(driver , wait , data , driverWrapper);
-
-        String remoteId = getSubmissionId(driver);
-        logger.info("Remote Id : {}", remoteId);
-        SubmissionScrapedData submissionScrapedData = scrapSubmissionData(driver , remoteId);
-        while(submissionScrapedData.getVerdict().equalsIgnoreCase("WJ")){
-            try {
-                submissionScrapedData = scrapSubmissionData(driver , remoteId);
-                logger.info("data {}", submissionScrapedData);
-                logger.info("==================");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        Instant submitTime = Instant.now();
+        try {
+            String[] splittedCode = splitting.split(data.code());
+            String contestId = splittedCode[0];
+            String url = String.format(SUBMIT_URL, contestId);
+            driver.get(url);
+            submitHelper(driver, wait, data, driverWrapper);
+            String remoteId = getSubmissionId(driver);
+            logger.info("Remote Id : {}", remoteId);
+            SubmissionScrapedData submissionScrapedData = scrapSubmissionData(driver, remoteId);
+            while (submissionScrapedData.getVerdict().equalsIgnoreCase("WJ")) {
+                try {
+                    submissionScrapedData = scrapSubmissionData(driver, remoteId);
+                    logger.info("data {}", submissionScrapedData);
+                    logger.info("==================");
+                } catch (Exception e) {
+                    logger.info(e.getMessage());
+                }
             }
-            catch (Exception e){
-                logger.info(e.getMessage());
-            }
+            Submission submission = setSubmissionData(submissionScrapedData, data , submitTime);
+            pool.releaseDriver(driverWrapper);
+            return submission;
         }
-
-        Submission submission = setSubmissionData(submissionScrapedData , data);
-        pool.releaseDriver(driverWrapper);
-        return submission;
+        catch (Exception e){
+            logger.info(e.getMessage());
+            return Submission.builder()
+                    .remoteRunId("0")
+                    .ojType(data.ojType())
+                    .solution(data.solutionCode())
+                    .language(data.compiler().getName())
+                    .submitTime(submitTime)
+                    .memoryUsage("0 KB")
+                    .timeUsage("0 ms")
+                    .verdict("Waiting Judge")
+                    .submissionStatus("unsubmitted")
+                    .isOpen(data.isOpen() == null || data.isOpen())
+                    .compiler(data.compiler())
+                    .build();
+        }
     }
 
 
@@ -160,18 +175,19 @@ public class AtCoderSubmission implements SubmissionStrategy {
         }
     }
 
-    private Submission setSubmissionData(SubmissionScrapedData submissionScrapedData , SubmissionInfoModel data){
+    private Submission setSubmissionData(SubmissionScrapedData submissionScrapedData , SubmissionInfoModel data , Instant submitTime){
         return Submission.builder()
                 .remoteRunId(submissionScrapedData.getRemoteId())
                 .ojType(data.ojType())
                 .solution(data.solutionCode())
                 .language(data.compiler().getName())
-                .submitTime(Instant.now())
+                .submitTime(submitTime)
                 .memoryUsage(submissionScrapedData.getMemory())
                 .timeUsage(submissionScrapedData.getTime())
                 .verdict((submissionScrapedData.getVerdict().equals("AC")? "Accepted" : submissionScrapedData.getVerdict()))
                 .submissionStatus("submitted")
                 .isOpen(data.isOpen() == null || data.isOpen())
+                .compiler(data.compiler())
                 .build();
     }
 }

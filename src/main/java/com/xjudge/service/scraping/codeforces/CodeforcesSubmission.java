@@ -35,11 +35,10 @@ public class CodeforcesSubmission implements SubmissionStrategy {
         WebDriverWrapper driverWrapper = driverPool.getDriverData();
         WebDriver driver= driverWrapper.getDriver();
         WebDriverWait wait = new WebDriverWait(driver , Duration.ofSeconds(10));
+        Instant submitTime = Instant.now();
         try {
-
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("submit-form")));
             submitHelper(driver , wait ,info , driverWrapper);
-
             String id = getSubmissionId(driver);
             SubmissionScrapedData data = scrapSubmissionResult(driver , wait , id);
             while (data == null || data.getVerdict().contains("queue") || data.getVerdict().contains("Running")) {
@@ -49,19 +48,31 @@ public class CodeforcesSubmission implements SubmissionStrategy {
                     logger.info(e.getMessage());
                 }
             }
-            Submission submission = setSubmissionData(data , info);
+            Submission submission = setSubmissionData(data , info , submitTime);
             driverPool.releaseDriver(driverWrapper);
             return submission;
         } catch (Exception exception) {
             logger.error(exception.getMessage());
             driverPool.releaseDriver(driverWrapper);
-            throw new XJudgeException(exception.getMessage(), CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return Submission.builder()
+                    .remoteRunId("0")
+                    .ojType(info.ojType())
+                    .solution(info.solutionCode())
+                    .language(info.compiler().getName())
+                    .submitTime(submitTime)
+                    .memoryUsage("0 KB")
+                    .timeUsage("0 ms")
+                    .verdict("Waiting Judge")
+                    .submissionStatus("unsubmitted")
+                    .isOpen(info.isOpen() == null || info.isOpen())
+                    .compiler(info.compiler())
+                    .build();
         }
     }
 
 
     private SubmissionScrapedData scrapSubmissionResult(WebDriver driver , WebDriverWait wait , String remoteId) {
-//        driver.navigate().refresh();
+        driver.navigate().refresh();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("status-frame-datatable")));
         List<WebElement> rows = driver.findElements(By.className("highlighted-row"));
         WebElement submissionRow = rows.stream()
@@ -115,17 +126,17 @@ public class CodeforcesSubmission implements SubmissionStrategy {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("status-frame-datatable")));
         } catch (Exception exception) {
             logger.error(exception.getMessage());
-            if(exception instanceof NoSuchElementException || exception instanceof TimeoutException || exception instanceof StaleElementReferenceException){
+            if(exception instanceof NoSuchElementException || exception instanceof StaleElementReferenceException){
                 submitHelper(driver , wait , info , driverWrapper);
             }
             else{
-                checkAlert(driver , wait , driverWrapper);
+                checkAlert(wait , driverWrapper);
             }
 
         }
     }
 
-    private void checkAlert(WebDriver driver , WebDriverWait wait ,WebDriverWrapper driverWrapper){
+    private void checkAlert(WebDriverWait wait ,WebDriverWrapper driverWrapper){
         try {
             WebElement webElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("shiftUp")));
             driverPool.releaseDriver(driverWrapper);
@@ -134,22 +145,23 @@ public class CodeforcesSubmission implements SubmissionStrategy {
         catch (Exception exception2) {
             logger.info(exception2.getMessage());
             driverPool.releaseDriver(driverWrapper);
-            throw new XJudgeException("Fail to submit", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new XJudgeException("Fail to submit !", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private Submission setSubmissionData(SubmissionScrapedData data , SubmissionInfoModel info){
+    private Submission setSubmissionData(SubmissionScrapedData data , SubmissionInfoModel info , Instant submitTime){
         return Submission.builder()
                 .remoteRunId(data.getRemoteId())
                 .ojType(info.ojType())
                 .solution(info.solutionCode())
                 .language(info.compiler().getName())
-                .submitTime(Instant.now())
+                .submitTime(submitTime)
                 .memoryUsage(data.getMemory())
                 .timeUsage(data.getTime())
                 .verdict(data.getVerdict())
                 .submissionStatus("submitted")
                 .isOpen(info.isOpen() == null || info.isOpen())
+                .compiler(info.compiler())
                 .build();
     }
 
