@@ -1,5 +1,6 @@
 package com.xjudge.service.problem;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
@@ -14,6 +15,7 @@ import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.user.Statistics;
 import com.xjudge.repository.ProblemRepository;
+import com.xjudge.service.compiler.CompilerService;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.submission.SubmissionService;
@@ -42,6 +44,7 @@ public class ProblemServiceImp implements ProblemService {
     private final SubmissionMapper submissionMapper;
     private final UserService userService;
     private final ProblemMapper problemMapper;
+    private final CompilerService compilerService;
 
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
@@ -89,9 +92,11 @@ public class ProblemServiceImp implements ProblemService {
     public Submission submit(SubmissionInfoModel info , Authentication authentication) {
         User user = userService.findUserByHandle(authentication.getName());
         Problem problem = getProblem(info.ojType().name(), info.code());
+        Compiler compiler = compilerService.getCompilerByIdValue(info.compiler().getIdValue());
         SubmissionStrategy strategy = submissionStrategies.get(info.ojType());
         Submission submission = strategy.submit(info);
         submission.setProblem(problem);
+        submission.setCompiler(compiler);
         user.setAttemptedCount(user.getAttemptedCount()+1);
         if(submission.getVerdict().equalsIgnoreCase("Accepted") && !hasUserSolvedProblem(user, problem)){
             user.setSolvedCount(user.getSolvedCount()+1);
