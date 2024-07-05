@@ -14,6 +14,7 @@ import com.xjudge.model.submission.SubmissionPageModel;
 import com.xjudge.repository.SubmissionRepo;
 import com.xjudge.service.contest.contestproblem.ContestProblemService;
 import com.xjudge.service.problem.ProblemService;
+import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -24,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SubmissionServiceImpl implements SubmissionService {
@@ -31,15 +33,15 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionRepo submissionRepo;
     private final SubmissionMapper submissionMapper;
     private final ContestProblemService contestProblemService;
-    private final ProblemService problemService;
+    private final Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies;
 
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService,@Lazy ProblemService problemService) {
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService, Compiler compiler, Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies) {
         this.submissionRepo = submissionRepo;
         this.submissionMapper = submissionMapper;
         this.contestProblemService = contestProblemService;
-        this.problemService = problemService;
+        this.submissionStrategies = submissionStrategies;
     }
 
     @Override
@@ -48,7 +50,9 @@ public class SubmissionServiceImpl implements SubmissionService {
         if(submission.getSubmissionStatus().equalsIgnoreCase("submitted")) {
           return determineSubmissionModel(submission , authentication);
         }
-        Submission updatedSubmission = problemService.submit(getSubmissionInfo(submission) , authentication);
+        SubmissionInfoModel submissionInfoModel = getSubmissionInfo(submission);
+        SubmissionStrategy strategy = submissionStrategies.get(submissionInfoModel.ojType());
+        Submission updatedSubmission = strategy.submit(submissionInfoModel);
         updateSubmissionStatus(submission, updatedSubmission);
         return determineSubmissionModel(submissionRepo.save(submission) , authentication);
     }
