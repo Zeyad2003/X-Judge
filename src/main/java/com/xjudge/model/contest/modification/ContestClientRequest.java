@@ -22,7 +22,6 @@ public class ContestClientRequest {
     @NotNull(message = "The contest title is required.")
     private String title;
 
-    @NotBlank(message = "The contest length is required.")
     @NotNull(message = "The contest length is required.")
     @Max(value = 31536000, message = "The contest length must be less than 1 year.")
     private Integer durationSeconds;
@@ -39,11 +38,9 @@ public class ContestClientRequest {
 
     private String description;
 
-    @NotBlank(message = "The contest begin time is required.")
     @NotNull(message = "The contest begin time is required.")
     private Instant beginTime;
 
-    @NotBlank(message = "The problem Set required.")
     @NotNull(message = "The problem Set required.")
     @Size(min = 1, message = "At least one problem is required to create a contest.")
     private List<ContestProblemset> problems;
