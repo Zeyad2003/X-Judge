@@ -76,7 +76,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Page<GroupModel> getGroupsByUserHandle(String handle, Pageable pageable) {
+    public Page<GroupModel> getGroupsByUserHandle(Principal connectedUser,String handle, Pageable pageable) {
         User user = userService.findUserByHandle(handle);
         Page<Group> groups = groupRepository.findGroupsByGroupUsersUser(user, pageable);
         return groups.map(group -> GroupModel.builder()
@@ -87,6 +87,7 @@ public class GroupServiceImpl implements GroupService {
                 .visibility(group.getVisibility())
                 .leaderHandle(group.getLeaderHandle())
                 .members(group.getGroupUsers().size())
+                .userGroupRole(userGroupService.findRoleByUserAndGroupId(connectedUser,group.getId()))
                 .build());
     }
 

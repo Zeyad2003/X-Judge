@@ -52,7 +52,7 @@ public class GroupController {
     ) {
         Pageable paging = PageRequest.of(pageNo, size);
         String userHandle=connectedUser.getName();
-        Page<GroupModel> paginatedData = groupService.getGroupsByUserHandle(userHandle, paging);
+        Page<GroupModel> paginatedData = groupService.getGroupsByUserHandle(connectedUser,userHandle, paging);
         Response response = Response.builder()
                 .success(true)
                 .data(paginatedData)
