@@ -49,6 +49,6 @@ public interface GroupService {
     boolean isPrivate(Group group);
     void acceptInvitation(Long invitationId, Principal connectedUser);
     void declineInvitation(Long invitationId, Principal connectedUser);
-    Page<GroupModel> getGroupsByUserHandle(String handle,Pageable pageable);
+    Page<GroupModel> getGroupsByUserHandle(Principal connectedUser,String handle,Pageable pageable);
     public Page<Group> searchGroupByName(String name, Pageable pageable);
 }

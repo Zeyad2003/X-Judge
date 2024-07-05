@@ -17,7 +17,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     Page<Group> findGroupsByGroupUsersUser(User user, Pageable pageable);
 
-    // Flexible search method for finding groups by a partial match on the name
-    Page<Group> searchGroupsByNameContainingIgnoreCase(String name, Pageable pageable);
+
     Page<Group> searchGroupsByNameContainingIgnoreCaseAndVisibility(String name, GroupVisibility groupVisibility, Pageable pageable);
 }
