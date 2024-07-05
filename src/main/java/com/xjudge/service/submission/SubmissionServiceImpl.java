@@ -153,6 +153,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         storedSubmission.setMemoryUsage(updatedSubmission.getMemoryUsage());
         storedSubmission.setVerdict(updatedSubmission.getVerdict());
         storedSubmission.setTimeUsage(updatedSubmission.getTimeUsage());
+        storedSubmission.setRemoteRunId(updatedSubmission.getRemoteRunId());
     }
 
     private SubmissionInfoModel getSubmissionInfo(Submission submission){
