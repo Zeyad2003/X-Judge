@@ -27,4 +27,12 @@ public class CompilerServiceImpl implements CompilerService{
 
         return compilerRepo.findByOnlineJudgeType(ojType);
     }
+
+    @Override
+    public Compiler getCompilerByIdValue(String idValue) {
+        return compilerRepo.findCompilerByIdValue(idValue)
+                .orElseThrow(() -> new XJudgeException("Invalid Compiler Id!" , CompilerService.class.getName() , HttpStatus.BAD_REQUEST));
+    }
+
+
 }
