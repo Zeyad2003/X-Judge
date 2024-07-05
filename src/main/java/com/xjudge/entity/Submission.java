@@ -66,6 +66,7 @@ public class Submission extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="compiler_id" , nullable = false)
+    @ToString.Exclude
     private Compiler compiler;
 
 }
