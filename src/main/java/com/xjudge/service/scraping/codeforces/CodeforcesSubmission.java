@@ -5,100 +5,100 @@ import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.scrap.SubmissionScrapedData;
 import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.service.scraping.strategy.SubmissionStrategy;
-
-import jakarta.annotation.PreDestroy;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.xjudge.util.driverpool.CodeforcesPool;
+import com.xjudge.util.driverpool.WebDriverWrapper;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
 @Service
 public class CodeforcesSubmission implements SubmissionStrategy {
-
-    private final WebDriver driver;
-    private final WebDriverWait wait;
+    private final CodeforcesPool driverPool;
     private static final Logger logger = LoggerFactory.getLogger(CodeforcesSubmission.class);
-    @Value("${CodeForces.username}")
-    private String USERNAME;
-    @Value("${CodeForces.password}")
-    private String PASSWORD;
 
-
-    public CodeforcesSubmission(WebDriver driver) {
-        this.driver = driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    }
-
-    @PreDestroy
-    public void destroyObject(){
-        driver.quit();
+    @Autowired
+    public CodeforcesSubmission(CodeforcesPool codeForcesPool) {
+        this.driverPool = codeForcesPool;
     }
 
     @Override
     public Submission submit(SubmissionInfoModel info) {
+        WebDriverWrapper driverWrapper = driverPool.getDriverData();
+        WebDriver driver= driverWrapper.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver , Duration.ofSeconds(10));
         try {
-            verifyLogin();
-            wait.until(driver -> driver.findElement(By.className("submit-form")));
-            submitHelper(info);
-            WebElement remoteId = driver.findElement(By.className("id-cell"));
-            String id = remoteId.getText();
 
-            SubmissionScrapedData data = scrapSubmissionResult(id);
-            while (data.getVerdict().contains("queue") || data.getVerdict().contains("Running")) {
-                data = scrapSubmissionResult(id);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("submit-form")));
+            submitHelper(driver , wait ,info , driverWrapper);
+
+            String id = getSubmissionId(driver);
+            SubmissionScrapedData data = scrapSubmissionResult(driver , wait , id);
+            while (data == null || data.getVerdict().contains("queue") || data.getVerdict().contains("Running")) {
+                try {
+                    data = scrapSubmissionResult(driver , wait , id);
+                }catch (Exception e){
+                    logger.info(e.getMessage());
+                }
             }
-
-            return Submission.builder()
-                    .remoteRunId(data.getRemoteId())
-                    .ojType(info.ojType())
-                    .solution(info.solutionCode())
-                    .language(info.compiler().getName())
-                    .submitTime(Instant.now())
-                    .memoryUsage(data.getMemory())
-                    .timeUsage(data.getTime())
-                    .verdict(data.getVerdict())
-                    .submissionStatus("submitted")
-                    .isOpen(info.isOpen() == null || info.isOpen())
-                    .build();
+            Submission submission = setSubmissionData(data , info);
+            driverPool.releaseDriver(driverWrapper);
+            return submission;
         } catch (Exception exception) {
             logger.error(exception.getMessage());
+            driverPool.releaseDriver(driverWrapper);
             throw new XJudgeException(exception.getMessage(), CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    private SubmissionScrapedData scrapSubmissionResult(String remoteId) {
-        driver.navigate().to("https://codeforces.com/problemset/status?my=on");
+    private SubmissionScrapedData scrapSubmissionResult(WebDriver driver , WebDriverWait wait , String remoteId) {
+//        driver.navigate().refresh();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("status-frame-datatable")));
         List<WebElement> rows = driver.findElements(By.className("highlighted-row"));
         WebElement submissionRow = rows.stream()
                 .filter(row -> row.getText().contains(remoteId))
                 .findFirst()
                 .orElseGet(()->null);
-        return SubmissionScrapedData
+        return(submissionRow != null)? SubmissionScrapedData
                 .builder()
                 .remoteId(remoteId)
                 .time(submissionRow.findElement(By.className("time-consumed-cell")).getText())
                 .memory(submissionRow.findElement(By.className("memory-consumed-cell")).getText())
                 .verdict(submissionRow.findElement(By.className("status-cell")).getText())
-                .build();
+                .build() : null;
     }
 
 
-    private void submitHelper(SubmissionInfoModel info) {
+    private String getSubmissionId(WebDriver driver){
+        String id = null;
+        while(id == null){
+            try {
+                id = scrapSubmissionId(driver);
+            }
+            catch (Exception e){
+                logger.error(e.getMessage());
+            }
+        }
+        return id;
+    }
+
+
+    private String scrapSubmissionId(WebDriver driver){
+        WebElement remoteId = driver.findElement(By.className("id-cell"));
+        return remoteId.getText();
+    }
+
+
+    private void submitHelper(WebDriver driver , WebDriverWait wait , SubmissionInfoModel info , WebDriverWrapper driverWrapper) {
         try {
             // get submission elements
             WebElement submittedProblemCode = driver.findElement(By.name("submittedProblemCode"));
@@ -115,42 +115,42 @@ public class CodeforcesSubmission implements SubmissionStrategy {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("status-frame-datatable")));
         } catch (Exception exception) {
             logger.error(exception.getMessage());
-            try {
-                WebElement webElement = driver.findElement(By.className("shiftUp"));
-                throw new XJudgeException(webElement.getText(), CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+            if(exception instanceof NoSuchElementException || exception instanceof TimeoutException || exception instanceof StaleElementReferenceException){
+                submitHelper(driver , wait , info , driverWrapper);
             }
-            catch (Exception exception2) {
-                logger.info(exception2.getMessage());
-                throw new XJudgeException("Fail to submit", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+            else{
+                checkAlert(driver , wait , driverWrapper);
             }
+
         }
     }
 
-
-    public void login() {
+    private void checkAlert(WebDriver driver , WebDriverWait wait ,WebDriverWrapper driverWrapper){
         try {
-            driver.get("https://codeforces.com/enter?back=/problemset/submit");
-            WebElement userName = driver.findElement(By.name("handleOrEmail"));
-            WebElement password = driver.findElement(By.name("password"));
-            WebElement loginButton = driver.findElement(By.className("submit"));
-            WebElement rememberMe = driver.findElement(By.id("remember"));
-            userName.sendKeys(USERNAME);
-            password.sendKeys(PASSWORD);
-            rememberMe.click();
-            loginButton.submit();
-        } catch (Exception exception) {
-            logger.error("FAIL TO LOGIN");
-            throw new XJudgeException("FAIL TO LOGIN", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+            WebElement webElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("shiftUp")));
+            driverPool.releaseDriver(driverWrapper);
+            throw new XJudgeException(webElement.getText(), CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch (Exception exception2) {
+            logger.info(exception2.getMessage());
+            driverPool.releaseDriver(driverWrapper);
+            throw new XJudgeException("Fail to submit", CodeforcesSubmission.class.getName(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void verifyLogin() {
-        if (!isLogin()) login();
-        else driver.get("https://codeforces.com/problemset/submit");
+    private Submission setSubmissionData(SubmissionScrapedData data , SubmissionInfoModel info){
+        return Submission.builder()
+                .remoteRunId(data.getRemoteId())
+                .ojType(info.ojType())
+                .solution(info.solutionCode())
+                .language(info.compiler().getName())
+                .submitTime(Instant.now())
+                .memoryUsage(data.getMemory())
+                .timeUsage(data.getTime())
+                .verdict(data.getVerdict())
+                .submissionStatus("submitted")
+                .isOpen(info.isOpen() == null || info.isOpen())
+                .build();
     }
 
-    private boolean isLogin() {
-        Cookie cookie = driver.manage().getCookieNamed("X-User-Sha1");
-        return cookie != null && !cookie.getValue().isEmpty();
-    }
 }

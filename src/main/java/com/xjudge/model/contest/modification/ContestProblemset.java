@@ -9,19 +9,19 @@ import jakarta.validation.constraints.NotBlank;
  * The model that come when selecting the problemset for a contest.
  */
 public record ContestProblemset(
-        @NotNull
-        @NotBlank
+        @NotNull(message = "The problem code is required.")
+        @NotBlank(message = "The problem code is required.")
         String code,
 
-        @NotNull
+        @NotNull(message = "The problem weight is required.")
         @Min(value = 1)
         Integer problemWeight,
 
-        @NotNull
+        @NotNull(message = "You must select the online judge of problem.")
         OnlineJudgeType ojType,
 
-        @NotNull
-        @NotBlank
+        @NotNull(message = "The problem hashtag is required.")
+        @NotBlank(message = "The problem hashtag is required.")
         String problemHashtag, // A, B, C, AA, AB, etc.
 
         String problemAlias

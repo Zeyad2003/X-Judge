@@ -9,6 +9,7 @@ import com.xjudge.model.group.GroupModel;
 import com.xjudge.model.group.GroupRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.BindingResult;
 
 import java.security.Principal;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface GroupService {
     Page<GroupModel> getAllPublicGroups(Principal connectedUser,Pageable pageable);
     GroupModel getSpecificGroup(Long id);
     GroupModel getGroupById(Long id, Principal connectedUser);
-    GroupModel create(GroupRequest groupRequest, Principal connectedUser);
+    GroupModel create(GroupRequest groupRequest, Principal connectedUser, BindingResult bindingResult);
 
     GroupModel update(Long groupId, GroupRequest groupRequest);
     void delete(Long groupId);
