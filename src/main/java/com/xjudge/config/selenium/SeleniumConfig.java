@@ -15,7 +15,7 @@ public class SeleniumConfig {
     @Scope(value = "prototype")
     public WebDriver getDriver(){
         FirefoxOptions options = new FirefoxOptions();
-        options.addArguments("--headless"); // This line enables headless mode
+         options.addArguments("--headless"); // This line enables headless mode
         return new FirefoxDriver(options);
     }
 
