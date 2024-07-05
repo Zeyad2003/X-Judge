@@ -37,7 +37,7 @@ public class SubmissionServiceImpl implements SubmissionService {
 
 
     @Autowired
-    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService, Compiler compiler, Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies) {
+    public SubmissionServiceImpl(SubmissionRepo submissionRepo, SubmissionMapper submissionMapper, ContestProblemService contestProblemService, Map<OnlineJudgeType, SubmissionStrategy> submissionStrategies) {
         this.submissionRepo = submissionRepo;
         this.submissionMapper = submissionMapper;
         this.contestProblemService = contestProblemService;
