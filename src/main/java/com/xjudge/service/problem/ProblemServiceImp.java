@@ -1,5 +1,6 @@
 package com.xjudge.service.problem;
 
+import com.xjudge.entity.Compiler;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Submission;
 import com.xjudge.entity.User;
@@ -14,6 +15,7 @@ import com.xjudge.model.submission.SubmissionInfoModel;
 import com.xjudge.model.submission.SubmissionModel;
 import com.xjudge.model.user.Statistics;
 import com.xjudge.repository.ProblemRepository;
+import com.xjudge.service.compiler.CompilerService;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import com.xjudge.service.scraping.strategy.SubmissionStrategy;
 import com.xjudge.service.submission.SubmissionService;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +45,7 @@ public class ProblemServiceImp implements ProblemService {
     private final SubmissionMapper submissionMapper;
     private final UserService userService;
     private final ProblemMapper problemMapper;
+    private final CompilerService compilerService;
 
     @Override
     public Page<ProblemsPageModel> getAllProblems(Pageable pageable) {
@@ -85,20 +89,20 @@ public class ProblemServiceImp implements ProblemService {
     }
 
     @Override
-    @Transactional
     public Submission submit(SubmissionInfoModel info , Authentication authentication) {
         User user = userService.findUserByHandle(authentication.getName());
         Problem problem = getProblem(info.ojType().name(), info.code());
+        Compiler compiler = compilerService.getCompilerByIdValue(info.compiler().getIdValue());
+        Submission submission = setSubmissionData(info , problem , user , compiler);;
+        submissionService.save(submission);
         SubmissionStrategy strategy = submissionStrategies.get(info.ojType());
-        Submission submission = strategy.submit(info);
-        submission.setProblem(problem);
+        Submission updatedSubmission = strategy.submit(info);
+        updateSubmissionStatus(submission , updatedSubmission);
         user.setAttemptedCount(user.getAttemptedCount()+1);
         if(submission.getVerdict().equalsIgnoreCase("Accepted") && !hasUserSolvedProblem(user, problem)){
             user.setSolvedCount(user.getSolvedCount()+1);
             problem.setSolvedCount(problem.getSolvedCount()+1);
         }
-        user = userService.save(user);
-        submission.setUser(user);
         return submissionService.save(submission);
     }
 
@@ -148,4 +152,29 @@ public class ProblemServiceImp implements ProblemService {
         return new Statistics(user.getSolvedCount(), user.getAttemptedCount());
     }
 
+    private void updateSubmissionStatus(Submission storedSubmission , Submission updatedSubmission){
+        storedSubmission.setSubmissionStatus(updatedSubmission.getSubmissionStatus());
+        storedSubmission.setMemoryUsage(updatedSubmission.getMemoryUsage());
+        storedSubmission.setVerdict(updatedSubmission.getVerdict());
+        storedSubmission.setTimeUsage(updatedSubmission.getTimeUsage());
+        storedSubmission.setRemoteRunId(updatedSubmission.getRemoteRunId());
+    }
+
+    private Submission setSubmissionData(SubmissionInfoModel info , Problem problem , User user , Compiler compiler){
+        return Submission.builder()
+                .remoteRunId("0")
+                .ojType(info.ojType())
+                .solution(info.solutionCode())
+                .language(info.compiler().getName())
+                .submitTime(Instant.now())
+                .memoryUsage("0 KB")
+                .timeUsage("0 ms")
+                .verdict("Waiting Judge")
+                .submissionStatus("unsubmitted")
+                .isOpen(info.isOpen() == null || info.isOpen())
+                .problem(problem)
+                .user(user)
+                .compiler(compiler)
+                .build();
+    }
 }

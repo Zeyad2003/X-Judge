@@ -33,4 +33,6 @@ public interface SubmissionService {
     Page<ContestStatusPageModel> filterSubmissionsInContest(Long contestId , String userHandle, String problemCode, String result ,String language, Pageable pageable);
 
     List<Submission> findByUserAndProblem(User user, Problem problem);
+
+    List<Submission> getSubmissionByStatus(String status);
 }

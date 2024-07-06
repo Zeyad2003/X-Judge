@@ -46,4 +46,5 @@ public interface SubmissionRepo extends JpaRepository<Submission, Long> {
             "order by s.submitTime DESC")
     Page<Submission> filterContestSubmissions(@Param("contestId") long contestId,@Param("userHandle") String userHandle, @Param("problemCode") String problemCode,@Param("result") String result , @Param("language") String language, Pageable pageable);
 
+    List<Submission> findSubmissionsBySubmissionStatus(String status);
 }
