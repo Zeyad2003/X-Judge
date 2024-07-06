@@ -60,15 +60,6 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public void resubmit(Submission submission) {
-        SubmissionInfoModel submissionInfoModel = getSubmissionInfo(submission);
-        SubmissionStrategy strategy = submissionStrategies.get(submissionInfoModel.ojType());
-        Submission updatedSubmission = strategy.submit(submissionInfoModel);
-        updateSubmissionStatus(submission, updatedSubmission);
-        submissionRepo.save(submission);
-    }
-
-    @Override
     public Page<SubmissionPageModel> getAllSubmissions(Pageable pageable) {
         Page<Submission> submissions = submissionRepo.findAll(pageable);
         return submissions.map(submission ->

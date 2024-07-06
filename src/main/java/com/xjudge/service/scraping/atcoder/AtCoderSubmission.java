@@ -68,6 +68,7 @@ public class AtCoderSubmission implements SubmissionStrategy {
             return submission;
         }
         catch (Exception e){
+            pool.releaseDriver(driverWrapper);
             logger.info(e.getMessage());
             return Submission.builder()
                     .remoteRunId("0")
@@ -165,7 +166,7 @@ public class AtCoderSubmission implements SubmissionStrategy {
         }catch (Exception e){
             try {
                 System.out.println(e.getMessage());
-                if(e instanceof NoSuchElementException || e instanceof TimeoutException || e instanceof StaleElementReferenceException){
+                if(e instanceof NoSuchElementException || e instanceof StaleElementReferenceException){
                      submitHelper(driver , wait ,data , driverWrapper);
                 }
             } catch (Exception ex) {
