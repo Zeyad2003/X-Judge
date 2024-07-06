@@ -16,6 +16,5 @@ public class InvitationRequest {
     @NotBlank(message = "Receiver handle is required")
     String receiverHandle;
     @NotNull(message = "Group id is required")
-    @NotBlank(message = "Group id is required")
     Long groupId;
 }
