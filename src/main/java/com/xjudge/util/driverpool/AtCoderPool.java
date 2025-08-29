@@ -9,11 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Lazy
 @Component
 public class AtCoderPool implements DriverPool{
     private final Map<WebDriverWrapper, DriverSessionData> pool;
@@ -41,10 +43,10 @@ public class AtCoderPool implements DriverPool{
 
     @PostConstruct
     public void initializeDrivers(){
-        atCoderLoginService.verifyLogin(driver1 , USERNAME1 , PASSWORD1);
-        atCoderLoginService.verifyLogin(driver2 , USERNAME2 , PASSWORD2);
-        pool.put(new WebDriverWrapper(1 , driver1) , new DriverSessionData(USERNAME1 , PASSWORD1 , false));
-        pool.put(new WebDriverWrapper(2 , driver2) , new DriverSessionData(USERNAME2 , PASSWORD2 , false));
+        // Phase 0: avoid failing startup due to missing/invalid credentials.
+        // Populate pool without forcing login; login will be verified lazily on first use.
+        pool.put(new WebDriverWrapper(1 , driver1) , new DriverSessionData(nullSafe(USERNAME1) , nullSafe(PASSWORD1) , false));
+        pool.put(new WebDriverWrapper(2 , driver2) , new DriverSessionData(nullSafe(USERNAME2) , nullSafe(PASSWORD2) , false));
     }
 
     @PreDestroy
@@ -92,7 +94,16 @@ public class AtCoderPool implements DriverPool{
 
     private void electDriver(WebDriverWrapper data){
         DriverSessionData metaData = pool.get(data);
-        atCoderLoginService.verifyLogin(data.getDriver() , metaData.getUserName(),  metaData.getPassword());
+        // Only verify login if we have non-empty credentials
+        if (!nullSafe(metaData.getUserName()).isEmpty() && !nullSafe(metaData.getPassword()).isEmpty()) {
+            try {
+                atCoderLoginService.verifyLogin(data.getDriver() , metaData.getUserName(),  metaData.getPassword());
+            } catch (Exception ex) {
+                logger.warn("[Phase0] Skipping AtCoder login on driver {} due to error: {}", data.getId(), ex.getMessage());
+            }
+        } else {
+            logger.warn("[Phase0] AtCoder credentials not provided. Proceeding without login for driver {}.", data.getId());
+        }
         metaData.setDriverActive(true);
         pool.put(data , metaData);
         numberOfBusyDriver++;
@@ -106,5 +117,9 @@ public class AtCoderPool implements DriverPool{
         String userName;
         String password;
         boolean driverActive;
+    }
+
+    private String nullSafe(String v){
+        return v == null ? "" : v;
     }
 }

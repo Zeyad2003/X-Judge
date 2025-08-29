@@ -7,6 +7,17 @@ This document outlines a detailed, phased development plan to transform the X-Ju
 ---
 
 ## Phase 0: Project Stabilization & Basic Setup
+    - Understand each feature separately and make it works fine.
+    - After making sure the existing features are working fine, and make sure you understand it, start refactoring the codebase (make it better).
+    - Disable anything that will block you and re-enable it later (e.g. security checks).
+    - Our flow for features that we are going to work on:
+        - Problem fetching from different websites (Codeforces & AtCoder)
+            - Make sure you understand the written logic well, and be critical to it, and see if there's a better approach to implement this feature, or not. (make use of AI tools to get up with good solutions. e.g. which is better and more stable (Jsoup or Selenium or maybe something else??).
+        - Then we go to the submission logic and make sure we are doing it right and use the suitable approach.
+        - Then we start with some security stuff (Authentication & Authorization)
+            - User can create account and verify it (via email) and then login, then he can fetch the problem (read it) then submit it to the origin source.
+        
+    
 
 **Goal:** Get the application into a stable, runnable, and easily testable state. This phase addresses the most critical issues that prevent reliable development and testing.
 

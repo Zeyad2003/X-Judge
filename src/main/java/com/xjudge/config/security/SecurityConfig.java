@@ -11,10 +11,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
-
 @Configuration
-@EnableMethodSecurity()
+//@EnableMethodSecurity()
 public class SecurityConfig {
 
     private final AuthenticationProvider authenticationProvider;
@@ -30,6 +28,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+/*
                 .authorizeHttpRequests(configure -> {
                             try {
                                 configure
@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // create session for each request
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+*/
         return httpSecurity.build();
     }
 
