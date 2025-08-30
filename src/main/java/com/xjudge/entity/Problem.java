@@ -48,7 +48,7 @@ public class Problem extends BaseEntity<Long> {
     @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @ToString.Exclude
-    Set<Submission> submissions;
+    private Set<Submission> submissions;
 
     @JsonIgnore
     @OneToMany(mappedBy = "problem", fetch = FetchType.LAZY)

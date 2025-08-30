@@ -14,7 +14,11 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
-    @OneToOne
-    private Value value;
+    private String format;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String content;
 }

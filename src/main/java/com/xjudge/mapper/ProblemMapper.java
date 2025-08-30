@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProblemMapper {
+
     @Mapping(target = "problemHashtag", source = "problemHashtag")
     @Mapping(target = "title", source = "alias")
     ProblemModel toModel(Problem problem, String problemHashtag, String alias);

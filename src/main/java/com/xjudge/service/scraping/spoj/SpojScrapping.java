@@ -3,12 +3,8 @@ package com.xjudge.service.scraping.spoj;
 import com.xjudge.entity.Problem;
 import com.xjudge.entity.Property;
 import com.xjudge.entity.Section;
-import com.xjudge.entity.Value;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.repository.PropertyRepository;
-import com.xjudge.repository.SectionRepository;
-import com.xjudge.repository.ValueRepository;
 import com.xjudge.service.scraping.codeforces.CodeforcesScrapping;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +25,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SpojScrapping implements ScrappingStrategy {
 
-    private final PropertyRepository propertyRepository;
-    private final SectionRepository sectionRepository;
-    private final ValueRepository valueRepository;
     private final SpojSplitting spojSplitting;
 
     @Override
@@ -41,7 +34,6 @@ public class SpojScrapping implements ScrappingStrategy {
         String problemId = splittedCode[0];
         String targetProblem = URL + "/problems/" + problemId;
         String contestName = "";
-        System.out.println(targetProblem);
         Document problemDocument;
 
         try {
@@ -59,7 +51,7 @@ public class SpojScrapping implements ScrappingStrategy {
             String title = td.getFirst().text();
             String content = td.get(1).text();
             if (title.contains("Resource")) contestName = content;
-            properties.add(propertyRepository.save(Property.builder().title(title).content(content).build()));
+            properties.add(Property.builder().title(title).content(content).build());
         }
 
         String title = problemDocument.select("#problem-name").text().split("-")[1];
@@ -76,11 +68,12 @@ public class SpojScrapping implements ScrappingStrategy {
             if (sectionTitle.contains("Example")) {
                 sectionContent = generateSampleTable(section.getSecond());
             }
-            Value value = valueRepository.save(Value.builder().format("HTML").content(sectionContent).build());
-            problemSections.add(Section.builder().title(sectionTitle).value(value).build());
+            problemSections.add(Section.builder()
+                    .title(sectionTitle)
+                    .format("HTML")
+                    .content(sectionContent)
+                    .build());
         }
-
-        sectionRepository.saveAll(problemSections);
 
         return Problem.builder()
                 .code(problemId)

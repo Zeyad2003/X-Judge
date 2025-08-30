@@ -4,16 +4,24 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/problem-description.css}">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <script th:href="@{/js/bootstrap.min.js}"></script>
-    <div th:utext="${problem.prependHtml}"></div>
     <title>Problem Description</title>
 </head>
 <body>
+<div th:utext="${problem.prependHtml}"></div>
 <div class="description p-5">
+    <div class="row mb-4" th:if="${problem.properties}">
+        <div class="col-12 col-md-6" th:each="prop : ${problem.properties}">
+            <div class="d-flex gap-2 align-items-start mb-2">
+                <span class="fw-bold" th:text="${prop.title} + ':'"></span>
+                <span th:utext="${prop.content}"></span>
+            </div>
+        </div>
+    </div>
     <div th:each="section : ${problem.sections}">
         <h4 class="fw-bolder" th:text="${section.title}"></h4>
-        <p th:utext="${section.value.content}" style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333;"></p>
+        <p th:utext="${section.content}" style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #333;"></p>
     </div>
 </div>
+<script th:src="@{/js/bootstrap.min.js}"></script>
 </body>
 </html>

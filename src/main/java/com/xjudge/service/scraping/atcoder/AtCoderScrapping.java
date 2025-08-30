@@ -3,9 +3,6 @@ package com.xjudge.service.scraping.atcoder;
 import com.xjudge.entity.*;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.repository.PropertyRepository;
-import com.xjudge.repository.SectionRepository;
-import com.xjudge.repository.ValueRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Connection;
@@ -22,9 +19,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AtCoderScrapping implements ScrappingStrategy {
 
-    private final PropertyRepository propertyRepository;
-    private final SectionRepository sectionRepository;
-    private final ValueRepository valueRepository;
     private final AtCoderSplitting atCoderSplitting;
 
     @Override
@@ -51,8 +45,6 @@ public class AtCoderScrapping implements ScrappingStrategy {
                 Property.builder().title("Memory Limit").content(tmLimit[1].substring(14)).spoiler(false).build()
         );
 
-        propertyRepository.saveAll(properties);
-
         Elements parts = problemDocument.select(".lang-en .part");
         List<Section> problemSections = new ArrayList<>();
         int counter = 0;
@@ -63,11 +55,12 @@ public class AtCoderScrapping implements ScrappingStrategy {
                 title = "Sample " + ++counter;
                 content = generateSampleTable(parts.get(i), parts.get(++i));
             }
-            Value value = valueRepository.save(Value.builder().format("HTML").content(content).build());
-            problemSections.add(Section.builder().title(title).value(value).build());
+            problemSections.add(Section.builder()
+                    .title(title)
+                    .format("HTML")
+                    .content(content)
+                    .build());
         }
-
-        sectionRepository.saveAll(problemSections);
 
         return Problem.builder()
                 .code(code)

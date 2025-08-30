@@ -38,7 +38,6 @@ public class CommandLineStartupRunner implements CommandLineRunner {
 
     private void addUser() {
         User user = User.builder()
-                .id(1L)
                 .role(UserRole.ADMIN)
                 .handle("xjudge")
                 .email("xjudge@gmail.com")

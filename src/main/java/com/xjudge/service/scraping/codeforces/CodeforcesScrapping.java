@@ -3,9 +3,6 @@ package com.xjudge.service.scraping.codeforces;
 import com.xjudge.entity.*;
 import com.xjudge.exception.XJudgeException;
 import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.repository.PropertyRepository;
-import com.xjudge.repository.SectionRepository;
-import com.xjudge.repository.ValueRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -23,9 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CodeforcesScrapping implements ScrappingStrategy {
 
-    private final PropertyRepository propertyRepository;
-    private final SectionRepository sectionRepository;
-    private final ValueRepository valueRepository;
     private final CodeForcesSplitting codeForcesSplitting;
 
     @Override
@@ -55,8 +49,6 @@ public class CodeforcesScrapping implements ScrappingStrategy {
                 Property.builder().title("Output").content(htmlSections.getFirst().select(".output-file").text().substring(7)).spoiler(false).build()
         );
 
-        propertyRepository.saveAll(properties);
-
         List<Section> problemSections = new ArrayList<>();
         for (int i = 1; i < htmlSections.size(); i++) {
             String title = htmlSections.get(i).select(".section-title").text();
@@ -64,11 +56,12 @@ public class CodeforcesScrapping implements ScrappingStrategy {
             if (title.contains("Example")) {
                 content = generateSampleTable(htmlSections.get(i));
             }
-            Value value = valueRepository.save(Value.builder().format("HTML").content(content).build());
-            problemSections.add(Section.builder().title(title).value(value).build());
+            problemSections.add(Section.builder()
+                    .title(title)
+                    .format("HTML")
+                    .content(content)
+                    .build());
         }
-
-        sectionRepository.saveAll(problemSections);
 
         return Problem.builder()
                 .code(contestId+problemId)

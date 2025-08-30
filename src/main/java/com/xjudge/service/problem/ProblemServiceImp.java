@@ -55,15 +55,17 @@ public class ProblemServiceImp implements ProblemService {
 
     @Override
     public Page<ProblemsPageModel> filterProblems(String source, String problemCode, String title, String contestName, Pageable pageable) {
-        Page<Problem> problemList = problemRepo.filterProblems(source, problemCode, title, contestName, pageable);
+        OnlineJudgeType sourceEnum = parseOjNullable(source);
+        Page<Problem> problemList = problemRepo.filterProblems(sourceEnum, problemCode, title, contestName, pageable);
         return problemList.map(problemMapper::toPageModel);
     }
 
     @Override
     @Transactional
     public Problem getProblem(String source, String code) {
-        Optional<Problem> problem = problemRepo.findByCodeAndOnlineJudge(code, OnlineJudgeType.valueOf(source.toLowerCase()));
-        return problem.orElseGet(() -> scrapProblem(source, code));
+        OnlineJudgeType oj = parseOj(source);
+        Optional<Problem> problem = problemRepo.findByCodeAndOnlineJudge(code, oj);
+        return problem.orElseGet(() -> scrapProblem(oj, code));
     }
 
     @Override
@@ -72,8 +74,8 @@ public class ProblemServiceImp implements ProblemService {
         return problemMapper.toModel(getProblem(source, code));
     }
 
-    private Problem scrapProblem(String source, String code) {
-        ScrappingStrategy strategy = scrappingStrategies.get(OnlineJudgeType.valueOf(source.toLowerCase()));
+    private Problem scrapProblem(OnlineJudgeType oj, String code) {
+        ScrappingStrategy strategy = scrappingStrategies.get(oj);
         Problem problem = strategy.scrap(code);
         return problemRepo.save(problem);
     }
@@ -81,10 +83,7 @@ public class ProblemServiceImp implements ProblemService {
     @Override
     @Transactional
     public ProblemDescription getProblemDescription(String source, String code) {
-        Problem problem = problemRepo.findByCodeAndOnlineJudge(code, OnlineJudgeType.valueOf(source.toLowerCase()))
-                .orElseThrow(
-                        () -> new XJudgeException("Problem not found", ProblemServiceImp.class.getName(), HttpStatus.NOT_FOUND)
-                );
+        Problem problem = getProblem(source, code);
         return problemMapper.toDescription(problem);
     }
 
@@ -93,7 +92,7 @@ public class ProblemServiceImp implements ProblemService {
         User user = userService.findUserByHandle(authentication.getName());
         Problem problem = getProblem(info.ojType().name(), info.code());
         Compiler compiler = compilerService.getCompilerByIdValue(info.compiler().getIdValue());
-        Submission submission = setSubmissionData(info , problem , user , compiler);;
+        Submission submission = setSubmissionData(info , problem , user , compiler);
         submissionService.save(submission);
         SubmissionStrategy strategy = submissionStrategies.get(info.ojType());
         Submission updatedSubmission = strategy.submit(info);
@@ -126,15 +125,16 @@ public class ProblemServiceImp implements ProblemService {
     public Page<ProblemsPageModel> searchByTitle(String title, Pageable pageable) {
         Page<Problem> problemList = problemRepo.findByTitleContaining(title, pageable);
         return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
+                problem, submissionService.getSolvedCount(problem.getCode(), problem.getOnlineJudge()))
         );
     }
 
     @Override
     public Page<ProblemsPageModel> searchBySource(String source, Pageable pageable) {
-        Page<Problem> problemList = problemRepo.findByOnlineJudgeContaining(OnlineJudgeType.valueOf(source), pageable);
+        OnlineJudgeType oj = parseOj(source);
+        Page<Problem> problemList = problemRepo.findByOnlineJudge(oj, pageable);
         return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
+                problem, submissionService.getSolvedCount(problem.getCode(), problem.getOnlineJudge()))
         );
     }
 
@@ -142,7 +142,7 @@ public class ProblemServiceImp implements ProblemService {
     public Page<ProblemsPageModel> searchByProblemCode(String problemCode, Pageable pageable) {
         Page<Problem> problemList = problemRepo.findByCodeContaining(problemCode, pageable);
         return problemList.map(problem -> problemMapper.toPageModel(
-                problem, submissionService.getSolvedCount(problem.getCode(), OnlineJudgeType.codeforces))
+                problem, submissionService.getSolvedCount(problem.getCode(), problem.getOnlineJudge()))
         );
     }
 
@@ -176,5 +176,25 @@ public class ProblemServiceImp implements ProblemService {
                 .user(user)
                 .compiler(compiler)
                 .build();
+    }
+
+    private OnlineJudgeType parseOj(String source) {
+        if (source == null || source.trim().isEmpty()) {
+            throw new XJudgeException("Source is required", ProblemServiceImp.class.getName(), HttpStatus.BAD_REQUEST);
+        }
+        try {
+            return OnlineJudgeType.valueOf(source.trim().toLowerCase());
+        } catch (IllegalArgumentException ex) {
+            throw new XJudgeException("Unsupported source: " + source, ProblemServiceImp.class.getName(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private OnlineJudgeType parseOjNullable(String source) {
+        if (source == null || source.trim().isEmpty()) return null;
+        try {
+            return OnlineJudgeType.valueOf(source.trim().toLowerCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 }
