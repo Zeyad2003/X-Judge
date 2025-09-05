@@ -1,0 +1,15 @@
+{
+  "name": "X-Judge Dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/workspace",
+  "settings": {
+    "java.home": "/usr/lib/jvm/java-21-openjdk"
+  },
+  "extensions": [
+    "vscjava.vscode-java-pack",
+    "ms-azuretools.vscode-docker"
+  ],
+  "forwardPorts": [8080, 3306],
+  "postCreateCommand": "./gradlew build"
+}

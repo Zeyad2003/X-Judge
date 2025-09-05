@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/X-Judge?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: judge
+      SPRING_DATASOURCE_PASSWORD: judge
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysqldb
+
+  mysqldb:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
