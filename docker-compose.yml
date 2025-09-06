@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   api:
     build: .
@@ -10,14 +9,26 @@ services:
       SPRING_DATASOURCE_PASSWORD: judge
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
 
   mysqldb:
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: X-Judge
+      MYSQL_USER: judge
+      MYSQL_PASSWORD: judge
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Changed from 3306:3306 to 3307:3306 to avoid conflicts
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql_data:

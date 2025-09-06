@@ -1,15 +1,84 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/java
 {
-  "name": "X-Judge Dev",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "api",
-  "workspaceFolder": "/workspace",
-  "settings": {
-    "java.home": "/usr/lib/jvm/java-21-openjdk"
-  },
-  "extensions": [
-    "vscjava.vscode-java-pack",
-    "ms-azuretools.vscode-docker"
-  ],
-  "forwardPorts": [8080, 3306],
-  "postCreateCommand": "./gradlew build"
+	"name": "Java",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/java:1-21",
+
+	"features": {
+		   "ghcr.io/devcontainers/features/java:1": {
+			   "version": "none",
+			   "installMaven": "false",
+			   "installGradle": "true",
+			   "gradleVersion": "8.7"
+		   },
+		   "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		   "ghcr.io/devcontainers/features/node:1": {
+			   "version": "lts"
+		   }
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"java.configuration.updateBuildConfiguration": "automatic",
+				"java.compile.nullAnalysis.mode": "automatic",
+				"java.saveActions.organizeImports": true,
+				"java.format.enabled": true,
+				"java.format.onType.enabled": true,
+				"java.refactor.renameFromFileExplorer": "autoApply",
+				"java.completion.importOrder": [
+					"java",
+					"javax",
+					"jakarta",
+					"org",
+					"com"
+				],
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+					"source.organizeImports": "explicit"
+				},
+				"files.exclude": {
+					"**/.gradle": true,
+					"**/build": true,
+					"**/.vscode": false
+				}
+			},
+			"extensions": [
+				"streetsidesoftware.code-spell-checker",
+				"vmware.vscode-boot-dev-pack",
+				"ms-azuretools.vscode-docker",
+				"richardwillis.vscode-gradle-extension-pack",
+				"cweijan.vscode-mysql-client2",
+				"ms-vscode-remote.vscode-remote-extensionpack",
+				"github.copilot",
+				"pkief.material-icon-theme",
+				"esbenp.prettier-vscode",
+				"eamodio.gitlens",
+				"formulahendry.code-runner",
+				"postman.postman-for-vscode"
+			]
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8080, 3307],
+	"portsAttributes": {
+		"8080": {
+			"label": "Spring Boot App",
+			"onAutoForward": "notify"
+		},
+		"3307": {
+			"label": "MySQL Database",
+			"onAutoForward": "silent"
+		}
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": ".devcontainer/setup-zsh.sh"
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }
