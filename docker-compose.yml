@@ -2,7 +2,7 @@ services:
   api:
     build: .
     ports:
-      - "8080:8080"
+      - "7070:8080" #external : internal
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/X-Judge?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: judge

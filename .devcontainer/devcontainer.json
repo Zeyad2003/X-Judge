@@ -64,9 +64,9 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8080, 3307],
+	"forwardPorts": [7070, 3307],
 	"portsAttributes": {
-		"8080": {
+		"7070": {
 			"label": "Spring Boot App",
 			"onAutoForward": "notify"
 		},
