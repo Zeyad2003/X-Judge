@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Enhanced zsh setup script for X-Judge dev container
+# Enhanced zsh setup script for X-Judge dev container and java symlink setup
 # Sets up zsh with Oh My Zsh and useful plugins for development
 
 set -euo pipefail
@@ -20,6 +20,20 @@ if [ "$EUID" -eq 0 ]; then
     SUDO=""
 else
     SUDO="sudo"
+fi
+
+# Ensure Java symlink exists for VS Code Gradle extension
+log "Setting up Java symlink for VS Code compatibility..."
+if [ ! -L "/usr/local/sdkman/candidates/java/current" ]; then
+    $SUDO mkdir -p /usr/local/sdkman/candidates/java/
+    if [ -d "/usr/lib/jvm/msopenjdk-current" ]; then
+        $SUDO ln -sf /usr/lib/jvm/msopenjdk-current /usr/local/sdkman/candidates/java/current
+        ok "Java symlink created: /usr/local/sdkman/candidates/java/current -> /usr/lib/jvm/msopenjdk-current"
+    else
+        warn "Microsoft OpenJDK not found at expected location"
+    fi
+else
+    ok "Java symlink already exists"
 fi
 
 # Install zsh if not present

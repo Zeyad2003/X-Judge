@@ -28,6 +28,16 @@
 				"java.saveActions.organizeImports": true,
 				"java.format.enabled": true,
 				"java.format.onType.enabled": true,
+				"java.jdt.ls.java.home": "/usr/local/sdkman/candidates/java/current",
+				"java.import.gradle.java.home": "/usr/local/sdkman/candidates/java/current",
+				"gradle.java.home": "/usr/local/sdkman/candidates/java/current",
+				"java.configuration.runtimes": [
+					{
+						"name": "JavaSE-21",
+						"path": "/usr/local/sdkman/candidates/java/current",
+						"default": true
+					}
+				],
 				"java.refactor.renameFromFileExplorer": "autoApply",
 				"java.completion.importOrder": [
 					"java",
@@ -78,7 +88,7 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": ".devcontainer/setup-zsh.sh"
+	"postCreateCommand": ".devcontainer/setup.sh"
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
