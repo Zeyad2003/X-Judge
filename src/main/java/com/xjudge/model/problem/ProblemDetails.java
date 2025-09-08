@@ -20,10 +20,7 @@ public class ProblemDetails {
     private String problemUrl;
     private String contestUrl;
 
-    // Concise constraints summary (e.g., time/memory/input/output)
-    private String constraints;
-
-    // Keep it simple - use Maps like the entity
     private Map<String, Object> sections;
     private Map<String, Object> samples;
+    private String constraints;
 }

@@ -12,8 +12,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "problems",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"code", "online_judge"}))
+@Table(name = "problems", uniqueConstraints = @UniqueConstraint(columnNames = { "code", "online_judge" }))
 public class Problem extends BaseEntity<Long> {
 
     @Id
@@ -38,19 +37,19 @@ public class Problem extends BaseEntity<Long> {
     @Column(name = "contest_url")
     private String contestUrl;
 
-     @Lob
-     @Convert(converter = MapToJsonConverter.class)
-     @Column(name = "sections")
-     private Map<String, Object> sections;
+    @Lob
+    @Column(name = "constraints")
+    private String constraints; // time/memory/input/output summary as a blob
 
-     @Lob
-     @Convert(converter = MapToJsonConverter.class)
-     @Column(name = "samples")
-     private Map<String, Object> samples;
+    @Lob
+    @Convert(converter = MapToJsonConverter.class)
+    @Column(name = "sections")
+    private Map<String, Object> sections;
 
-     @Lob
-     @Column(name = "constraints")
-     private String constraints; // time/memory/input/output summary as a blob
+    @Lob
+    @Convert(converter = MapToJsonConverter.class)
+    @Column(name = "samples")
+    private Map<String, Object> samples;
 
     @Override
     public Long getId() {

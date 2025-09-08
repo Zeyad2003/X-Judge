@@ -253,24 +253,24 @@ DEFAULT_USER="vscode"
 AGNOSTER_CONTEXT_BG="black"
 AGNOSTER_CONTEXT_FG="default"
 
-# Welcome message for X-Judge development
-echo ""
-echo "🚀 Welcome to X-Judge Development Environment"
-echo "├─ 💻 Container: $(uname -n)"
-echo "├─ 📁 Workspace: $(pwd)"
-if command -v java >/dev/null 2>&1; then
-    echo "├─ ☕ Java: $(java -version 2>&1 | head -n 1 | cut -d'"' -f2)"
-fi
-if command -v gradle >/dev/null 2>&1; then
-    echo "├─ 🐘 Gradle: $(gradle --version | grep Gradle | cut -d' ' -f3)"
-fi
-if command -v docker >/dev/null 2>&1; then
-    echo "├─ 🐳 Docker: $(docker --version | cut -d' ' -f3 | cut -d',' -f1)"
-fi
-echo "└─ 🎨 Theme: Agnoster with enhanced features"
-echo ""
-echo "💡 Quick commands: gw (gradlew), dc (docker compose), cls (clear)"
-echo ""
+# # Welcome message for X-Judge development
+# echo ""
+# echo "🚀 Welcome to X-Judge Development Environment"
+# echo "├─ 💻 Container: $(uname -n)"
+# echo "├─ 📁 Workspace: $(pwd)"
+# if command -v java >/dev/null 2>&1; then
+#     echo "├─ ☕ Java: $(java -version 2>&1 | head -n 1 | cut -d'"' -f2)"
+# fi
+# if command -v gradle >/dev/null 2>&1; then
+#     echo "├─ 🐘 Gradle: $(gradle --version | grep Gradle | cut -d' ' -f3)"
+# fi
+# if command -v docker >/dev/null 2>&1; then
+#     echo "├─ 🐳 Docker: $(docker --version | cut -d' ' -f3 | cut -d',' -f1)"
+# fi
+# echo "└─ 🎨 Theme: Agnoster with enhanced features"
+# echo ""
+# echo "💡 Quick commands: gw (gradlew), dc (docker compose), cls (clear)"
+# echo ""
 EOF
 
 # Set proper ownership
