@@ -1,11 +1,15 @@
 package com.xjudge.service.scraping.codeforces;
 
-import com.xjudge.entity.problem.*;
-import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.model.enums.SectionFormat;
-import com.xjudge.service.scraping.strategy.ScrappingStrategy;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,9 +17,16 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.regex.*;
+import com.xjudge.entity.problem.Problem;
+import com.xjudge.entity.problem.Property;
+import com.xjudge.entity.problem.SampleTestCase;
+import com.xjudge.entity.problem.Section;
+import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.enums.SectionFormat;
+import com.xjudge.service.scraping.strategy.ScrappingStrategy;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -24,11 +35,13 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
 
     private static final String BASE_URL = "https://codeforces.com";
     private static final List<String> USER_AGENTS = Arrays.asList(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
+                    + " Chrome/119.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko)"
+                    + " Chrome/119.0.0.0 Safari/537.36",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15"
-    );
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko)"
+                    + " Version/17.1 Safari/605.1.15");
 
     private static final int CONNECTION_TIMEOUT = 15000;
 
@@ -43,8 +56,7 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
 
         Document doc = fetchProblemPage(contestId, problemIndex);
         Element problemStatement = doc.selectFirst(".problem-statement");
-        if (problemStatement == null)
-            throw new IllegalArgumentException("Problem statement not found!");
+        if (problemStatement == null) throw new IllegalArgumentException("Problem statement not found!");
 
         String rawTitle = safeText(problemStatement.selectFirst(".title"));
 
@@ -83,9 +95,8 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
     private String[] splitProblemCode(String code) {
         String c = code == null ? "" : code.trim();
         Matcher matcher = CODE_PATTERN.matcher(c);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("Invalid Codeforces code: " + code);
-        return new String[]{matcher.group(1), matcher.group(2).toUpperCase()};
+        if (!matcher.matches()) throw new IllegalArgumentException("Invalid Codeforces code: " + code);
+        return new String[] {matcher.group(1), matcher.group(2).toUpperCase()};
     }
 
     private Document fetchProblemPage(String contestId, String problemIndex) {

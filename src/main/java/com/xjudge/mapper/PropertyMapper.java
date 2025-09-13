@@ -9,5 +9,4 @@ import com.xjudge.model.problem.PropertyDto;
 public interface PropertyMapper {
 
     PropertyDto toDto(Property property);
-
 }

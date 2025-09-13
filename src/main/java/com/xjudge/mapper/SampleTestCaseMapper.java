@@ -9,5 +9,4 @@ import com.xjudge.model.problem.SampleTestCaseDto;
 public interface SampleTestCaseMapper {
 
     SampleTestCaseDto toDto(SampleTestCase sampleTestCase);
-
 }

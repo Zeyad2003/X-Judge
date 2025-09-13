@@ -1,10 +1,25 @@
 package com.xjudge.entity.problem;
 
 import com.xjudge.entity.BaseEntity;
-import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.enums.SectionFormat;
-import jakarta.persistence.*;
-import lombok.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -13,7 +28,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "section")
-public class Section extends BaseEntity<Long> { // split every problem into a multiple section (statement, input, output, note, etc.)
+public class Section
+        extends BaseEntity<Long> { // split every problem into a multiple section (statement, input, output, note,
+    // etc.)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,5 +49,4 @@ public class Section extends BaseEntity<Long> { // split every problem into a mu
     private String content;
 
     private Integer sectionOrder; // To maintain the order of sections
-
 }

@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.xjudge.entity.BaseEntity;
+import com.xjudge.model.enums.OnlineJudgeType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,17 +22,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import com.xjudge.model.enums.OnlineJudgeType;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Getter;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Getter
@@ -35,7 +34,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "problems", uniqueConstraints = @UniqueConstraint(columnNames = { "code", "online_judge" }))
+@Table(name = "problems", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "online_judge"}))
 public class Problem extends BaseEntity<Long> {
 
     @Id
@@ -76,5 +75,4 @@ public class Problem extends BaseEntity<Long> {
     @Builder.Default
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Property> properties = new ArrayList<>();
-
 }

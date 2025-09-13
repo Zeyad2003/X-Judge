@@ -1,7 +1,7 @@
 plugins {
-	java
-	id("org.springframework.boot") version "3.5.5"
-	id("io.spring.dependency-management") version "1.1.7"
+    java
+    id("org.springframework.boot") version "3.5.5"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.xjudge"
@@ -39,18 +39,14 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
 	implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.4")
 
-    // MapStruct
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 
-	// Web scraping
 	implementation("org.jsoup:jsoup:1.21.2")
 
-	// Spring Retry for resilience
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework:spring-aspects")
 
-	// API Documentation
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 }
 

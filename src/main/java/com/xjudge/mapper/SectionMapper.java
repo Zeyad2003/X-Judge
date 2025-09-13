@@ -9,5 +9,4 @@ import com.xjudge.model.problem.SectionDto;
 public interface SectionMapper {
 
     SectionDto toDto(Section section);
-
 }

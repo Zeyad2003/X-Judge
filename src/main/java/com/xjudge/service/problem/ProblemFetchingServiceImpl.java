@@ -29,18 +29,17 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
     public ProblemDetails fetchByOriginAndCode(OnlineJudgeType ojType, String code) {
         log.info("Fetching problem: {} from {}", code, ojType);
 
-        if(problemRepository.findByCodeAndOnlineJudge(code, ojType).isPresent()) {
+        if (problemRepository.findByCodeAndOnlineJudge(code, ojType).isPresent()) {
             log.info("Problem {} already exists in database", code);
-            Problem problem = problemRepository.findByCodeAndOnlineJudge(code, ojType).get();
+            Problem problem =
+                    problemRepository.findByCodeAndOnlineJudge(code, ojType).get();
             return problemMapper.toDto(problem);
         }
 
         return scrapeAndSaveProblem(ojType, code);
     }
 
-    /**
-     * Scrapes a new problem from the online judge and saves it to our database
-     */
+    /** Scrapes a new problem from the online judge and saves it to our database */
     private ProblemDetails scrapeAndSaveProblem(OnlineJudgeType ojType, String code) {
         log.info("Problem {} not found in database, scraping from {}", code, ojType);
 
@@ -50,8 +49,10 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
 
         Problem savedProblem = problemRepository.save(scrapedProblem);
 
-        log.info("Successfully scraped and saved problem: {} - {} with {} sections, {} properties, {} samples",
-                code, savedProblem.getTitle(),
+        log.info(
+                "Successfully scraped and saved problem: {} - {} with {} sections, {} properties, {}" + " samples",
+                code,
+                savedProblem.getTitle(),
                 savedProblem.getSections().size(),
                 savedProblem.getProperties().size(),
                 savedProblem.getSampleTestCases().size());

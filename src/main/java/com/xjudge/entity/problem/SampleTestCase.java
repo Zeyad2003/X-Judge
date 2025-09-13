@@ -1,6 +1,7 @@
 package com.xjudge.entity.problem;
 
 import com.xjudge.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +12,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,5 +45,4 @@ public class SampleTestCase extends BaseEntity<Long> {
 
     @Column(name = "sample_order", nullable = false)
     private Integer sampleOrder;
-
 }

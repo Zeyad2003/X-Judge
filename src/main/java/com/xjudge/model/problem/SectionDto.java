@@ -1,6 +1,7 @@
 package com.xjudge.model.problem;
 
 import com.xjudge.model.enums.SectionFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
