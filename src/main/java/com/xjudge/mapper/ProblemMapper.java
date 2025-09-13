@@ -1,15 +1,13 @@
 package com.xjudge.mapper;
 
-import com.xjudge.entity.Problem;
-import com.xjudge.model.problem.ProblemDetails;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+import com.xjudge.entity.problem.Problem;
+import com.xjudge.model.problem.ProblemDetails;
+
+@Mapper(componentModel = "spring", uses = { SampleTestCaseMapper.class, SectionMapper.class, PropertyMapper.class })
 public interface ProblemMapper {
 
-    ProblemDetails toDetails(Problem problem);
+    ProblemDetails toDto(Problem problem);
 
-    @Mapping(target = "id", ignore = true)
-    Problem toEntity(ProblemDetails details);
 }

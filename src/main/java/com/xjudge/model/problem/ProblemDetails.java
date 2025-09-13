@@ -1,26 +1,45 @@
 package com.xjudge.model.problem;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.xjudge.model.enums.OnlineJudgeType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProblemDetails {
+    private Long id;
+
     private String code; // e.g., 2134C
+
     private OnlineJudgeType onlineJudge;
+
     private String title;
+
     private String contestName;
+
     private String problemUrl;
+
     private String contestUrl;
 
-    private Map<String, Object> sections;
-    private Map<String, Object> samples;
-    private String constraints;
+    private Integer solvedCount;
+
+    @Builder.Default
+    private List<SampleTestCaseDto> sampleTestCases = new ArrayList<>();
+
+    @Builder.Default
+    private List<SectionDto> sections = new ArrayList<>();
+
+    @Builder.Default
+    private List<PropertyDto> properties = new ArrayList<>();
+
+    private Map<String, Object> extraMetadata;
 }

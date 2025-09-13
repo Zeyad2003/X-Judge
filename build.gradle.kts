@@ -37,6 +37,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.4")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.6.3")
