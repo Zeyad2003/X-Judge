@@ -56,7 +56,8 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
 
         Document doc = fetchProblemPage(contestId, problemIndex);
         Element problemStatement = doc.selectFirst(".problem-statement");
-        if (problemStatement == null) throw new IllegalArgumentException("Problem statement not found!");
+        if (problemStatement == null)
+            throw new IllegalArgumentException("Problem statement not found!");
 
         String rawTitle = safeText(problemStatement.selectFirst(".title"));
 
@@ -81,9 +82,12 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
                 .extraMetadata(extraMeta)
                 .build();
 
-        for (Property property : properties) property.setProblem(problem);
-        for (Section section : sections) section.setProblem(problem);
-        for (SampleTestCase sample : samples) sample.setProblem(problem);
+        for (Property property : properties)
+            property.setProblem(problem);
+        for (Section section : sections)
+            section.setProblem(problem);
+        for (SampleTestCase sample : samples)
+            sample.setProblem(problem);
 
         problem.setProperties(properties);
         problem.setSections(sections);
@@ -95,8 +99,9 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
     private String[] splitProblemCode(String code) {
         String c = code == null ? "" : code.trim();
         Matcher matcher = CODE_PATTERN.matcher(c);
-        if (!matcher.matches()) throw new IllegalArgumentException("Invalid Codeforces code: " + code);
-        return new String[] {matcher.group(1), matcher.group(2).toUpperCase()};
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Invalid Codeforces code: " + code);
+        return new String[] { matcher.group(1), matcher.group(2).toUpperCase() };
     }
 
     private Document fetchProblemPage(String contestId, String problemIndex) {
@@ -183,31 +188,19 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
         Elements divs = statement.children();
         int order = 1;
         for (Element div : divs) {
+            if (div.hasClass("header"))
+                continue;
             Element sectionTitle = div.selectFirst(".section-title");
-            if (sectionTitle != null) {
-                String title = safeText(sectionTitle);
-                String content = div.select("*:not(.section-title)").outerHtml();
-                sections.add(Section.builder()
-                        .title(title)
-                        .sectionFormat(SectionFormat.HTML)
-                        .content(content)
-                        .sectionOrder(order++)
-                        .build());
-            } else if (div.hasClass("legend")) {
-                sections.add(Section.builder()
-                        .title("Statement")
-                        .sectionFormat(SectionFormat.HTML)
-                        .content(div.html())
-                        .sectionOrder(order++)
-                        .build());
-            } else if (div.hasClass("note")) {
-                sections.add(Section.builder()
-                        .title("Note")
-                        .sectionFormat(SectionFormat.HTML)
-                        .content(div.html())
-                        .sectionOrder(order++)
-                        .build());
-            }
+            String title = safeText(sectionTitle);
+            log.info("Extracting section: {}", title.isEmpty() ? "Statement" : title);
+            String content = div.children().not(".section-title").outerHtml();
+            log.info("Content length: {}", content.length());
+            sections.add(Section.builder()
+                    .title(title.isEmpty() ? "Statement" : title)
+                    .sectionFormat(SectionFormat.HTML)
+                    .content(content)
+                    .sectionOrder(order++)
+                    .build());
         }
         return sections;
     }
@@ -234,12 +227,14 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
 
     // Support div/pre formatting in sample inputs
     private String extractTextFromPre(Element preElement) {
-        if (preElement == null) return "";
+        if (preElement == null)
+            return "";
         Elements divs = preElement.select("div");
         if (!divs.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Element div : divs) {
-                if (!sb.isEmpty()) sb.append('\n');
+                if (!sb.isEmpty())
+                    sb.append('\n');
                 sb.append(div.text());
             }
             return sb.toString();
@@ -257,10 +252,13 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
         String difficulty = null;
         for (Element tag : tags) {
             String txt = tag.text().trim();
-            if (txt.startsWith("*")) difficulty = txt;
-            else if (!txt.isEmpty()) tagsList.add(txt);
+            if (txt.startsWith("*"))
+                difficulty = txt;
+            else if (!txt.isEmpty())
+                tagsList.add(txt);
         }
-        if (!tagsList.isEmpty()) meta.put("tags", tagsList);
+        if (!tagsList.isEmpty())
+            meta.put("tags", tagsList);
         if (difficulty != null) {
             meta.put("difficulty", difficulty);
             try {
@@ -279,8 +277,10 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
             if (href.contains("/blog/entry") && link.text().toLowerCase().contains("announcement"))
                 announcements.add(Map.of("title", link.text(), "url", href));
         }
-        if (!editorials.isEmpty()) meta.put("editorials", editorials);
-        if (!announcements.isEmpty()) meta.put("announcements", announcements);
+        if (!editorials.isEmpty())
+            meta.put("editorials", editorials);
+        if (!announcements.isEmpty())
+            meta.put("announcements", announcements);
         return meta;
     }
 }
