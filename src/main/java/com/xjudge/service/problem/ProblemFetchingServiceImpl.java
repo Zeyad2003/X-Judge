@@ -1,19 +1,18 @@
 package com.xjudge.service.problem;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
+import com.xjudge.exception.BadRequestException;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -29,10 +28,11 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
     public ProblemDetails fetchByOriginAndCode(OnlineJudgeType ojType, String code) {
         log.info("Fetching problem: {} from {}", code, ojType);
 
-        if (problemRepository.findByCodeAndOnlineJudge(code, ojType).isPresent()) {
+        // Return cached if exists
+        var existing = problemRepository.findByCodeAndOnlineJudge(code, ojType);
+        if (existing.isPresent()) {
             log.info("Problem {} already exists in database", code);
-            Problem problem =
-                    problemRepository.findByCodeAndOnlineJudge(code, ojType).get();
+            Problem problem = existing.get();
             return problemMapper.toDto(problem);
         }
 
@@ -44,13 +44,16 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
         log.info("Problem {} not found in database, scraping from {}", code, ojType);
 
         ScrappingStrategy strategy = scrappingStrategies.get(ojType);
+        if (strategy == null) {
+            throw new BadRequestException("Unsupported origin: " + ojType);
+        }
 
         Problem scrapedProblem = strategy.scrap(code);
 
         Problem savedProblem = problemRepository.save(scrapedProblem);
 
         log.info(
-                "Successfully scraped and saved problem: {} - {} with {} sections, {} properties, {}" + " samples",
+                "Successfully scraped and saved problem: {} - {} with {} sections, {} properties, {} samples",
                 code,
                 savedProblem.getTitle(),
                 savedProblem.getSections().size(),
@@ -60,3 +63,4 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
         return problemMapper.toDto(savedProblem);
     }
 }
+

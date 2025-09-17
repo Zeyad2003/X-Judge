@@ -1,5 +1,25 @@
 package com.xjudge.service.scraping.codeforces;
 
+import com.xjudge.entity.problem.Problem;
+import com.xjudge.entity.problem.Property;
+import com.xjudge.entity.problem.SampleTestCase;
+import com.xjudge.entity.problem.Section;
+import com.xjudge.exception.BadRequestException;
+import com.xjudge.exception.NotFoundException;
+import com.xjudge.exception.ScrapingException;
+import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.enums.SectionFormat;
+import com.xjudge.service.scraping.strategy.ScrappingStrategy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,23 +30,10 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-import org.jsoup.select.Elements;
-import org.springframework.stereotype.Service;
-
-import com.xjudge.entity.problem.Problem;
-import com.xjudge.entity.problem.Property;
-import com.xjudge.entity.problem.SampleTestCase;
-import com.xjudge.entity.problem.Section;
-import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.model.enums.SectionFormat;
-import com.xjudge.service.scraping.strategy.ScrappingStrategy;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+/**
+ * Scrapes problem details from Codeforces.
+ * Example problem URL: <a href="https://codeforces.com/problemset/problem/1000/A">...</a>
+ */
 
 @Slf4j
 @Service
@@ -56,8 +63,10 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
 
         Document doc = fetchProblemPage(contestId, problemIndex);
         Element problemStatement = doc.selectFirst(".problem-statement");
-        if (problemStatement == null)
-            throw new IllegalArgumentException("Problem statement not found!");
+
+        if (problemStatement == null) {
+            throw new NotFoundException("Scraping failed: Problem statement element not found.");
+        }
 
         String rawTitle = safeText(problemStatement.selectFirst(".title"));
 
@@ -99,9 +108,10 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
     private String[] splitProblemCode(String code) {
         String c = code == null ? "" : code.trim();
         Matcher matcher = CODE_PATTERN.matcher(c);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("Invalid Codeforces code: " + code);
-        return new String[] { matcher.group(1), matcher.group(2).toUpperCase() };
+        if (!matcher.matches()) {
+            throw new BadRequestException("Invalid Codeforces problem code format: " + code);
+        }
+        return new String[]{matcher.group(1), matcher.group(2).toUpperCase()};
     }
 
     private Document fetchProblemPage(String contestId, String problemIndex) {
@@ -113,8 +123,10 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
                     .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
                     .header("Accept-Language", "en-US,en;q=0.5")
                     .get();
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to fetch: " + url, ex);
+        } catch (HttpStatusException e) {
+            throw new NotFoundException("Received non-OK status code " + e.getStatusCode() + " from " + url, e);
+        } catch (IOException e) {
+            throw new ScrapingException("A network error occurred while fetching problem from " + url, e);
         }
     }
 
@@ -263,7 +275,8 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
             meta.put("difficulty", difficulty);
             try {
                 meta.put("difficultyRating", Integer.parseInt(difficulty.replaceFirst("^\\*", "")));
-            } catch (Exception ignored) {
+            } catch (NumberFormatException e) {
+                log.warn("Failed to parse difficulty rating: {}", difficulty, e);
             }
         }
 
