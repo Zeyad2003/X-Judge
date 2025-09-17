@@ -6,4 +6,6 @@ import com.xjudge.model.problem.ProblemDetails;
 public interface ProblemFetchingService {
 
     ProblemDetails fetchByOriginAndCode(OnlineJudgeType ojType, String code);
+
+    void triggerFetchOrUpdate(OnlineJudgeType ojType, String code);
 }

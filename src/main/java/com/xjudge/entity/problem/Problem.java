@@ -1,15 +1,7 @@
 package com.xjudge.entity.problem;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import com.xjudge.entity.BaseEntity;
 import com.xjudge.model.enums.OnlineJudgeType;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,14 +11,21 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.Setter;
-import lombok.Getter;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -34,7 +33,13 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "problems", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "online_judge"}))
+@Table(
+        name = "problems",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"code", "online_judge"}),
+        indexes = {
+                @Index(name = "idx_code_online_judge", columnList = "code, online_judge")
+        }
+)
 public class Problem extends BaseEntity<Long> {
 
     @Id
@@ -45,7 +50,7 @@ public class Problem extends BaseEntity<Long> {
     private String code; // e.g., 2134C
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "online_judge", nullable = false)
     private OnlineJudgeType onlineJudge;
 
     @Column(nullable = false)

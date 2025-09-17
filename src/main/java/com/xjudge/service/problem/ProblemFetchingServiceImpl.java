@@ -1,18 +1,14 @@
 package com.xjudge.service.problem;
 
-import com.xjudge.entity.problem.Problem;
+import com.xjudge.exception.NotFoundException;
 import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
-import com.xjudge.exception.BadRequestException;
 import com.xjudge.repository.ProblemRepository;
-import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -21,26 +17,32 @@ import java.util.Map;
 public class ProblemFetchingServiceImpl implements ProblemFetchingService {
 
     private final ProblemMapper problemMapper;
+    private final AsyncProblemScraper asyncProblemScraper;
     private final ProblemRepository problemRepository;
-    private final Map<OnlineJudgeType, ScrappingStrategy> scrappingStrategies;
 
     @Override
+    @Transactional(readOnly = true)
+
     public ProblemDetails fetchByOriginAndCode(OnlineJudgeType ojType, String code) {
-        log.info("Fetching problem: {} from {}", code, ojType);
+        log.info("Looking for problem: {} from {} within database", code, ojType);
 
-        // Return cached if exists
-        var existing = problemRepository.findByCodeAndOnlineJudge(code, ojType);
-        if (existing.isPresent()) {
-            log.info("Problem {} already exists in database", code);
-            Problem problem = existing.get();
-            return problemMapper.toDto(problem);
-        }
+        return problemRepository.findByCodeAndOnlineJudge(code, ojType)
+                .map(problemMapper::toDto)
+                .orElseThrow(() -> new NotFoundException("Problem not found in the database. Please fetch it first."));
+    }
 
-        return scrapeAndSaveProblem(ojType, code);
+    @Override
+    public void triggerFetchOrUpdate(OnlineJudgeType ojType, String code) {
+        log.info("Triggering async fetch/update for problem: {} from {}", code, ojType);
+        // Just delegate to the async worker. The worker can decide whether to
+        // create a new entity or update an existing one if you add that logic later.
+        // For now, it always fetches and saves, which effectively updates the content.
+        asyncProblemScraper.scrapeAndSave(ojType, code);
+        log.info("Async fetch/update for problem {} has been dispatched.", code);
     }
 
     /** Scrapes a new problem from the online judge and saves it to our database */
-    private ProblemDetails scrapeAndSaveProblem(OnlineJudgeType ojType, String code) {
+   /* private ProblemDetails scrapeAndSaveProblem(OnlineJudgeType ojType, String code) {
         log.info("Problem {} not found in database, scraping from {}", code, ojType);
 
         ScrappingStrategy strategy = scrappingStrategies.get(ojType);
@@ -61,6 +63,6 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
                 savedProblem.getSampleTestCases().size());
 
         return problemMapper.toDto(savedProblem);
-    }
+    }*/
 }
 
