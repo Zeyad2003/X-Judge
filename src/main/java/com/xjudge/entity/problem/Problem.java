@@ -1,6 +1,7 @@
 package com.xjudge.entity.problem;
 
 import com.xjudge.entity.BaseEntity;
+import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,7 +54,10 @@ public class Problem extends BaseEntity<Long> {
     @Column(name = "online_judge", nullable = false)
     private OnlineJudgeType onlineJudge;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fetching_status", nullable = false)
+    private FetchingStatus fetchingStatus;
+
     private String title;
 
     private String contestName; // may be null for some OJs

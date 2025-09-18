@@ -1,7 +1,9 @@
 package com.xjudge.service.problem;
 
+import com.xjudge.entity.problem.Problem;
 import com.xjudge.exception.NotFoundException;
 import com.xjudge.mapper.ProblemMapper;
+import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
 import com.xjudge.repository.ProblemRepository;
@@ -34,35 +36,22 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
     @Override
     public void triggerFetchOrUpdate(OnlineJudgeType ojType, String code) {
         log.info("Triggering async fetch/update for problem: {} from {}", code, ojType);
-        // Just delegate to the async worker. The worker can decide whether to
-        // create a new entity or update an existing one if you add that logic later.
-        // For now, it always fetches and saves, which effectively updates the content.
+        Problem problem = Problem.builder()
+                .code(code)
+                .onlineJudge(ojType)
+                .fetchingStatus(FetchingStatus.IN_PROGRESS)
+                .build();
+        problemRepository.save(problem);
+
         asyncProblemScraper.scrapeAndSave(ojType, code);
         log.info("Async fetch/update for problem {} has been dispatched.", code);
     }
 
-    /** Scrapes a new problem from the online judge and saves it to our database */
-   /* private ProblemDetails scrapeAndSaveProblem(OnlineJudgeType ojType, String code) {
-        log.info("Problem {} not found in database, scraping from {}", code, ojType);
-
-        ScrappingStrategy strategy = scrappingStrategies.get(ojType);
-        if (strategy == null) {
-            throw new BadRequestException("Unsupported origin: " + ojType);
-        }
-
-        Problem scrapedProblem = strategy.scrap(code);
-
-        Problem savedProblem = problemRepository.save(scrapedProblem);
-
-        log.info(
-                "Successfully scraped and saved problem: {} - {} with {} sections, {} properties, {} samples",
-                code,
-                savedProblem.getTitle(),
-                savedProblem.getSections().size(),
-                savedProblem.getProperties().size(),
-                savedProblem.getSampleTestCases().size());
-
-        return problemMapper.toDto(savedProblem);
-    }*/
+    @Override
+    public FetchingStatus getProblemFetchingStatus(OnlineJudgeType ojType, String code) {
+        return problemRepository.findByCodeAndOnlineJudge(code, ojType)
+                .map(Problem::getFetchingStatus)
+                .orElse(FetchingStatus.NOT_STARTED);
+    }
 }
 

@@ -7,6 +7,7 @@ import com.xjudge.entity.problem.Section;
 import com.xjudge.exception.BadRequestException;
 import com.xjudge.exception.NotFoundException;
 import com.xjudge.exception.ScrapingException;
+import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.enums.SectionFormat;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
@@ -84,6 +85,7 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
         Problem problem = Problem.builder()
                 .code(code)
                 .onlineJudge(OnlineJudgeType.codeforces)
+                .fetchingStatus(FetchingStatus.SUCCESSFUL)
                 .title(title)
                 .contestName(contestName)
                 .problemUrl(problemUrl)

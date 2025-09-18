@@ -1,13 +1,13 @@
 package com.xjudge.config.web;
 
-import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.stream.Stream;
 
 /**
  * CORS configuration for the X-Judge application. Allows cross-origin requests
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${spring.mvc.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
+    @Value("${spring.mvc.cors.allowed-origins:http://localhost:4200}")
     private String allowedOrigins;
 
     @Value("${spring.mvc.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")

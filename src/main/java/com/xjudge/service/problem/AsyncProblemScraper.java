@@ -1,13 +1,17 @@
 package com.xjudge.service.problem;
 
 import com.xjudge.entity.problem.Problem;
+import com.xjudge.exception.ApiBaseException;
 import com.xjudge.exception.BadRequestException;
+import com.xjudge.exception.ScrapingException;
+import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -25,7 +29,7 @@ public class AsyncProblemScraper {
 
     @Async
     @Transactional
-    @Retryable(backoff = @Backoff(delay = 2000, multiplier = 2))
+    @Retryable(retryFor = { ScrapingException.class, ApiBaseException.class }, backoff = @Backoff(delay = 2000, multiplier = 2))
     public void scrapeAndSave(OnlineJudgeType ojType, String code) {
         log.info("ASYNC: Starting scraping process for problem {} from {}", code, ojType);
 
@@ -36,23 +40,36 @@ public class AsyncProblemScraper {
             throw new BadRequestException("Unsupported origin: " + ojType);
         }
 
-        try {
-            Problem scrapedProblem = strategy.scrap(code);
-            scrapedProblem.setOnlineJudge(ojType);
-            scrapedProblem.setCode(code);
+        Problem scrapedProblem = strategy.scrap(code);
+        scrapedProblem.setOnlineJudge(ojType);
+        scrapedProblem.setCode(code);
 
-            // If already exists, reuse its id → save() will perform update
-            problemRepository.findByCodeAndOnlineJudge(code, ojType)
-                    .ifPresent(existing -> scrapedProblem.setId(existing.getId()));
+        // If already exists, reuse its id -> save() will perform update
+        problemRepository.findByCodeAndOnlineJudge(code, ojType)
+                .ifPresent(existing -> scrapedProblem.setId(existing.getId()));
 
-            Problem savedProblem = problemRepository.save(scrapedProblem);
+        Problem savedProblem = problemRepository.save(scrapedProblem);
 
-            log.info(
-                    "ASYNC: Successfully scraped and saved problem: {} - {}",
-                    code,
-                    savedProblem.getTitle());
-        } catch (Exception e) {
-            log.error("ASYNC: Failed to scrape and save problem {} from {}", code, ojType, e);
-        }
+        log.info("ASYNC: Successfully scraped and saved problem: {} - {}", code, savedProblem.getTitle());
+    }
+
+    @Recover
+    @Transactional
+    public void recover(ScrapingException ex, OnlineJudgeType ojType, String code) {
+        log.error("ASYNC: Scraping failed due to network error after retries for problem {} from {}: {}", code, ojType, ex.getMessage());
+        problemRepository.findByCodeAndOnlineJudge(code, ojType).ifPresent(problem -> {
+            problem.setFetchingStatus(FetchingStatus.FAILED);
+            problemRepository.save(problem);
+        });
+    }
+
+    @Recover
+    @Transactional
+    public void recover(ApiBaseException exception, OnlineJudgeType ojType, String code) {
+        log.error("ASYNC: Scraping failed due to API error after retries for problem {} from {}: {}", code, ojType, exception.getMessage());
+        problemRepository.findByCodeAndOnlineJudge(code, ojType).ifPresent(problem -> {
+            problem.setFetchingStatus(FetchingStatus.FAILED);
+            problemRepository.save(problem);
+        });
     }
 }
