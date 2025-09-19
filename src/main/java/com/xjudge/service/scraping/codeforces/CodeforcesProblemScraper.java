@@ -1,5 +1,8 @@
 package com.xjudge.service.scraping.codeforces;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,21 +20,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.entity.problem.Property;
 import com.xjudge.entity.problem.SampleTestCase;
 import com.xjudge.entity.problem.Section;
 import com.xjudge.exception.BadRequestException;
 import com.xjudge.exception.NotFoundException;
-import com.xjudge.exception.ScrapingException;
+import com.xjudge.exception.NetworkScrapingException;
 import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.enums.SectionFormat;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Scrapes problem details from Codeforces.
@@ -68,7 +67,7 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
         Element problemStatement = doc.selectFirst(".problem-statement");
 
         if (problemStatement == null) {
-            throw new NotFoundException("Scraping failed: Problem statement element not found.");
+            throw new NotFoundException("There's no Problem with this origin and code.");
         }
 
         String rawTitle = safeText(problemStatement.selectFirst(".title"));
@@ -130,7 +129,7 @@ public class CodeforcesProblemScraper implements ScrappingStrategy {
         } catch (HttpStatusException e) {
             throw new NotFoundException("Received non-OK status code " + e.getStatusCode() + " from " + url, e);
         } catch (IOException e) {
-            throw new ScrapingException("A network error occurred while fetching problem from " + url, e);
+            throw new NetworkScrapingException("A network error occurred while fetching problem from " + url, e);
         }
     }
 

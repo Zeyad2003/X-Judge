@@ -1,18 +1,5 @@
 package com.xjudge.controller.problem;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.xjudge.model.enums.FetchingStatus;
-import com.xjudge.model.enums.OnlineJudgeType;
-import com.xjudge.model.problem.ProblemDetails;
-import com.xjudge.service.problem.ProblemFetchingService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +7,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.xjudge.model.enums.FetchingStatus;
+import com.xjudge.model.enums.OnlineJudgeType;
+import com.xjudge.model.problem.ProblemDetails;
+import com.xjudge.service.problem.ProblemFetchingService;
 
 /**
  * REST endpoints to retrieve/scrap problem details from supported online judges.
@@ -59,7 +57,7 @@ public class ProblemFetchingController {
             String code) {
 
         ProblemDetails problemDetails = problemFetchingService.fetchByOriginAndCode(origin, code);
-        return new ResponseEntity<>(problemDetails, HttpStatus.ACCEPTED);
+        return ResponseEntity.ok(problemDetails);
     }
 
     /**
@@ -90,8 +88,8 @@ public class ProblemFetchingController {
             String code) {
 
         problemFetchingService.triggerFetchOrUpdate(origin, code);
-        return new ResponseEntity<>("Request to fetch/update problem from platform" + origin + "with code: " + code + " has been accepted.\n" +
-                "Wait a couple of seconds and check its status at the /problem/status/{origin}/{code} endpoint.", HttpStatus.ACCEPTED);
+        return ResponseEntity.accepted().body("Request to fetch/update problem from platform " + origin + " with code: " + code + " has been accepted.\n" +
+                "Wait a couple of seconds and check its status at the /problem/status/{origin}/{code} endpoint.");
     }
 
     /**
@@ -104,19 +102,17 @@ public class ProblemFetchingController {
      */
     @GetMapping(value = "/status/{ojType}/{code}")
     @Operation(
-            summary = "Check problem fetching status",
-            description = "Returns the current fetching status of a problem for a given online judge and code.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Fetching status returned",
-                            content = @Content(schema = @Schema(implementation = FetchingStatus.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid online judge type or code", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Problem not found", content = @Content)
-            })
+        summary = "Check problem fetching status",
+        description = "Returns the current fetching status of a problem for a given online judge and code.",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Fetching status returned",
+                content = @Content(schema = @Schema(implementation = FetchingStatus.class)))
+        })
     public ResponseEntity<FetchingStatus> checkProblemFetchingStatus(
-            @Parameter(description = "Online judge type (e.g., CODEFORCES)", required = true) @PathVariable("ojType") OnlineJudgeType ojType,
-            @Parameter(description = "Problem code/identifier on the origin site", required = true) @PathVariable("code") String code) {
-        return new ResponseEntity<>(problemFetchingService.getProblemFetchingStatus(ojType, code), HttpStatus.OK);
+        @Parameter(description = "Online judge type (e.g., CODEFORCES)", required = true) @PathVariable("ojType") OnlineJudgeType ojType,
+        @Parameter(description = "Problem code/identifier on the origin site", required = true) @PathVariable("code") String code) {
+        return ResponseEntity.ok(problemFetchingService.getProblemFetchingStatus(ojType, code));
     }
 }

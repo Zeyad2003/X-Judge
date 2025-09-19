@@ -1,6 +1,7 @@
 package com.xjudge.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.model.problem.ProblemDetails;
@@ -9,4 +10,6 @@ import com.xjudge.model.problem.ProblemDetails;
 public interface ProblemMapper {
 
     ProblemDetails toDto(Problem problem);
+
+    void updateProblemFromSource(Problem source, @MappingTarget Problem target);
 }
