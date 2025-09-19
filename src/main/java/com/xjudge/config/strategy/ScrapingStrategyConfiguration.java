@@ -12,6 +12,11 @@ import com.xjudge.service.scraping.strategy.ScrappingStrategy;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Configures and provides a mapping between online judge types and their scraping strategies
+ * (e.g. Codeforces), allowing the application to inject the correct scraper implementation.
+ */
+
 @Configuration
 @RequiredArgsConstructor
 public class ScrapingStrategyConfiguration {

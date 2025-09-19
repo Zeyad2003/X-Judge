@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Hold the sample test cases data (not HTML) for a problem.*/
+
 @Entity
 @Getter
 @Setter

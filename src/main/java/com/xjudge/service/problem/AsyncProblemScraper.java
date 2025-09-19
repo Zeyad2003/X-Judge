@@ -1,5 +1,16 @@
 package com.xjudge.service.problem;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Map;
+
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.exception.ApiBaseException;
 import com.xjudge.exception.BadRequestException;
@@ -8,16 +19,6 @@ import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.repository.ProblemRepository;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @Slf4j
 @Service

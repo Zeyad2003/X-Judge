@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Represents a property of a problem (e.g. time limit, memory limit, input/output format, etc.).*/
+
 @Entity
 @Getter
 @Setter
@@ -25,7 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "property")
-public class Property extends BaseEntity<Long> { // time limit, memory limit, tags
+public class Property extends BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

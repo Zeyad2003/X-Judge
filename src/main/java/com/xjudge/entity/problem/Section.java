@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Entity representing a section of a problem (e.g. statement, input, output, note).*/
+
 @Entity
 @Getter
 @Setter
@@ -28,8 +30,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "section")
-public class Section
-        extends BaseEntity<Long> { // split every problem into a multiple section (statement, input, output, note,
+public class Section extends BaseEntity<Long> {
     // etc.)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

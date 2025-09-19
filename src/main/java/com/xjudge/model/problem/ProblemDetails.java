@@ -1,7 +1,5 @@
 package com.xjudge.model.problem;
 
-import com.xjudge.model.enums.FetchingStatus;
-import com.xjudge.model.enums.OnlineJudgeType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.xjudge.model.enums.FetchingStatus;
+import com.xjudge.model.enums.OnlineJudgeType;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ProblemDetails {
     private Long id;
 
-    private String code; // e.g., 2134C
+    private String code;
 
     private OnlineJudgeType onlineJudge;
 

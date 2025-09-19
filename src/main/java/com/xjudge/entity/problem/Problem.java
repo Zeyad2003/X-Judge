@@ -1,8 +1,16 @@
 package com.xjudge.entity.problem;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import com.xjudge.entity.BaseEntity;
 import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,12 +29,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -60,7 +62,7 @@ public class Problem extends BaseEntity<Long> {
 
     private String title;
 
-    private String contestName; // may be null for some OJs
+    private String contestName;
 
     private String problemUrl;
 

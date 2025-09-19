@@ -1,6 +1,5 @@
 package com.xjudge.controller.problem;
 
-import com.xjudge.model.enums.FetchingStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
 import com.xjudge.service.problem.ProblemFetchingService;

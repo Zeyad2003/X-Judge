@@ -1,7 +1,12 @@
 package com.xjudge.exception;
 
 import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
+
+/**
+ * Base exception for all API exceptions.
+ */
 
 @Getter
 public abstract class ApiBaseException extends RuntimeException {
