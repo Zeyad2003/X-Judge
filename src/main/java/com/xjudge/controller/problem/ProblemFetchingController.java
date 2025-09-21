@@ -1,15 +1,20 @@
 package com.xjudge.controller.problem;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
+import com.xjudge.model.problem.ProblemPageModel;
 import com.xjudge.service.problem.ProblemFetchingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,99 +26,116 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
- * REST endpoints to retrieve/scrap problem details from supported online judges.
+ * REST endpoints to retrieve/scrap problem details from supported online
+ * judges.
  */
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Retrieve Problems", description = "Endpoints to fetch problem details from supported online judges")
 @RequestMapping("problem")
 public class ProblemFetchingController {
-    private final ProblemFetchingService problemFetchingService;
+        private final ProblemFetchingService problemFetchingService;
 
-    /**
-     * Fetch a problem by its origin/platform and problem code.
-     *
-     * @param origin the online judge origin (e.g., CODEFORCES)
-     * @param code   the problem code/identifier on the origin site (e.g., 231A)
-     * @return normalized problem details
-     */
-    @GetMapping(value = "/{origin}/{code}")
-    @Operation(
-            summary = "Fetch problem by origin and code",
-            description =
-                    "Returns normalized problem details by scraping/fetching from the specified online" + " judge.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Problem found",
-                            content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid origin or code", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Problem not found", content = @Content)
-            })
-    public ResponseEntity<ProblemDetails> fetchByOriginAndCode(
-            @Parameter(description = "Online judge origin (e.g., CODEFORCES)", required = true) @PathVariable("origin")
-            OnlineJudgeType origin,
-            @Parameter(description = "Problem code/identifier on the origin site (e.g. 231A)", required = true)
-            @PathVariable("code")
-            String code) {
-
-        ProblemDetails problemDetails = problemFetchingService.fetchByOriginAndCode(origin, code);
-        return ResponseEntity.ok(problemDetails);
-    }
-
-    /**
-     * Initiates a background job to fetch and update a problem by its origin/platform and code.
-     * This is an idempotent operation that either creates or updates the problem details.
-     *
-     * @param origin the online judge origin (e.g., CODEFORCES)
-     * @param code   the problem code/identifier on the origin site (e.g., 231A)
-     * @return ResponseEntity with status 202 if the request is accepted for processing
-     */
-    @PutMapping(value = "/{origin}/{code}")
-    @Operation(
-            summary = "Fetch or update a problem",
-            description =
-                    "Initiates a background job to scrape and save (or update) a problem from an online judge. " +
-                            "This is an idempotent operation.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "202",
-                            description = "Request accepted for processing."),
-                    @ApiResponse(responseCode = "400", description = "Invalid origin or code", content = @Content)
-            })
-    public ResponseEntity<String> fetchOrUpdateProblem(
-            @Parameter(description = "Online judge origin (e.g., CODEFORCES)", required = true) @PathVariable("origin")
-            OnlineJudgeType origin,
-            @Parameter(description = "Problem code/identifier on the origin site (e.g. 231A)", required = true)
-            @PathVariable("code")
-            String code) {
-
-        problemFetchingService.triggerFetchOrUpdate(origin, code);
-        return ResponseEntity.accepted().body("Request to fetch/update problem from platform " + origin + " with code: " + code + " has been accepted.\n" +
-                "Wait a couple of seconds and check its status at the /problem/status/{origin}/{code} endpoint.");
-    }
-
-    /**
-     * Returns the fetching status of a problem for a given online judge and code.
-     * Used by clients to check if the problem has been fetched or is still being processed.
-     *
-     * @param ojType the online judge type (e.g., CODEFORCES)
-     * @param code   the problem code/identifier on the origin site
-     * @return ResponseEntity containing the current FetchingStatus
-     */
-    @GetMapping(value = "/status/{ojType}/{code}")
-    @Operation(
-        summary = "Check problem fetching status",
-        description = "Returns the current fetching status of a problem for a given online judge and code.",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Fetching status returned",
-                content = @Content(schema = @Schema(implementation = FetchingStatus.class)))
+        /**
+         * Retrieve all problems available in the system with optional filtering and
+         * pagination.
+         *
+         * @param source      (Optional) the online judge source/origin (e.g.,
+         *                    Codeforces)
+         * @param code        (Optional) the problem code/identifier
+         * @param title       (Optional) the problem title
+         * @param contestName (Optional) the contest name
+         * @param pageNo      the page number to retrieve (default is 0)
+         * @param size        the number of problems per page (default is 25)
+         * @return paginated list of problems (filtered if any filter is provided)
+         */
+        @GetMapping
+        @Operation(summary = "Retrieve or filter problems", description = "Get all problems available in the system with optional filtering options", responses = {
+                        @ApiResponse(responseCode = "200", description = "Paginated list of problems returned", content = @Content(schema = @Schema(implementation = ProblemPageModel.class)))
         })
-    public ResponseEntity<FetchingStatus> checkProblemFetchingStatus(
-        @Parameter(description = "Online judge type (e.g., CODEFORCES)", required = true) @PathVariable("ojType") OnlineJudgeType ojType,
-        @Parameter(description = "Problem code/identifier on the origin site", required = true) @PathVariable("code") String code) {
-        return ResponseEntity.ok(problemFetchingService.getProblemFetchingStatus(ojType, code));
-    }
+        public ResponseEntity<Page<ProblemPageModel>> getProblems(
+                        @Parameter(description = "Online judge source/origin (e.g., Codeforces)", example = "Codeforces") @RequestParam(required = false) OnlineJudgeType source,
+                        @Parameter(description = "Problem code/identifier", example = "231A") @RequestParam(required = false, defaultValue = "") String code,
+                        @Parameter(description = "Problem title", example = "Team") @RequestParam(required = false, defaultValue = "") String title,
+                        @Parameter(description = "Contest name", example = "Codeforces Round 143 (Div. 2)") @RequestParam(required = false, defaultValue = "") String contestName,
+                        @Parameter(description = "Page number to retrieve (default is 0)", example = "0") @RequestParam(defaultValue = "0") Integer pageNo,
+                        @Parameter(description = "Number of problems per page (default is 25)", example = "25") @RequestParam(defaultValue = "25") Integer size) {
+
+                Pageable paging = PageRequest.of(pageNo, size);
+
+                Page<ProblemPageModel> paginatedData = problemFetchingService.getFilteredProblems(
+                                source, code, title, contestName, paging);
+
+                return ResponseEntity.ok(paginatedData);
+
+        }
+
+        /**
+         * Fetch a problem by its origin/platform and problem code.
+         *
+         * @param origin the online judge origin (e.g., codeforces)
+         * @param code   the problem code/identifier on the origin site (e.g., 231A)
+         * @return normalized problem details
+         */
+        @GetMapping(value = "/{origin}/{code}")
+        @Operation(summary = "Fetch problem by origin and code", description = "Returns normalized problem details by scraping/fetching from the specified online"
+                        + " judge.", responses = {
+                                        @ApiResponse(responseCode = "200", description = "Problem found", content = @Content(schema = @Schema(implementation = ProblemDetails.class))),
+                                        @ApiResponse(responseCode = "400", description = "Invalid origin or code", content = @Content),
+                                        @ApiResponse(responseCode = "404", description = "Problem not found", content = @Content)
+                        })
+        public ResponseEntity<ProblemDetails> fetchByOriginAndCode(
+                        @Parameter(description = "Online judge origin (e.g., codeforces)", required = true) @PathVariable OnlineJudgeType origin,
+                        @Parameter(description = "Problem code/identifier on the origin site (e.g. 231A)", required = true) @PathVariable String code) {
+
+                ProblemDetails problemDetails = problemFetchingService.fetchByOriginAndCode(origin, code);
+                return ResponseEntity.ok(problemDetails);
+        }
+
+        /**
+         * Initiates a background job to fetch and update a problem by its
+         * origin/platform and code.
+         * This is an idempotent operation that either creates or updates the problem
+         * details.
+         *
+         * @param origin the online judge origin (e.g., codeforces)
+         * @param code   the problem code/identifier on the origin site (e.g., 231A)
+         * @return ResponseEntity with status 202 if the request is accepted for
+         *         processing
+         */
+        @PutMapping(value = "/{origin}/{code}")
+        @Operation(summary = "Fetch or update a problem", description = "Initiates a background job to scrape and save (or update) a problem from an online judge. "
+                        +
+                        "This is an idempotent operation.", responses = {
+                                        @ApiResponse(responseCode = "202", description = "Request accepted for processing."),
+                                        @ApiResponse(responseCode = "400", description = "Invalid origin or code", content = @Content)
+                        })
+        public ResponseEntity<String> fetchOrUpdateProblem(
+                        @Parameter(description = "Online judge origin (e.g., codeforces)", required = true) @PathVariable OnlineJudgeType origin,
+                        @Parameter(description = "Problem code/identifier on the origin site (e.g. 231A)", required = true) @PathVariable String code) {
+
+                problemFetchingService.triggerFetchOrUpdate(origin, code);
+                return ResponseEntity.accepted().body("Request to fetch/update problem from platform " + origin
+                                + " with code: " + code + " has been accepted.\n" +
+                                "Wait a couple of seconds and check its status at the /problem/status/{origin}/{code} endpoint.");
+        }
+
+        /**
+         * Returns the fetching status of a problem for a given online judge and code.
+         * Used by clients to check if the problem has been fetched or is still being
+         * processed.
+         *
+         * @param ojType the online judge type (e.g., codeforces)
+         * @param code   the problem code/identifier on the origin site
+         * @return ResponseEntity containing the current FetchingStatus
+         */
+        @GetMapping(value = "/status/{ojType}/{code}")
+        @Operation(summary = "Check problem fetching status", description = "Returns the current fetching status of a problem for a given online judge and code.", responses = {
+                        @ApiResponse(responseCode = "200", description = "Fetching status returned", content = @Content(schema = @Schema(implementation = FetchingStatus.class)))
+        })
+        public ResponseEntity<FetchingStatus> checkProblemFetchingStatus(
+                        @Parameter(description = "Online judge type (e.g., codeforces)", required = true) @PathVariable OnlineJudgeType ojType,
+                        @Parameter(description = "Problem code/identifier on the origin site", required = true) @PathVariable String code) {
+                return ResponseEntity.ok(problemFetchingService.getProblemFetchingStatus(ojType, code));
+        }
 }

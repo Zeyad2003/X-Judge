@@ -2,6 +2,8 @@ package com.xjudge.service.problem;
 
 import java.time.Instant;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import com.xjudge.mapper.ProblemMapper;
 import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
+import com.xjudge.model.problem.ProblemPageModel;
 import com.xjudge.repository.ProblemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,19 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
     private final ProblemMapper problemMapper;
     private final AsyncProblemScraper asyncProblemScraper;
     private final ProblemRepository problemRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProblemPageModel> getAllProblems(Pageable pageable) {
+        Page<ProblemPageModel> problemsPage = problemRepository.findAllForPageModel(pageable);
+        return problemsPage;
+    }
+
+    @Override
+    public Page<ProblemPageModel> getFilteredProblems(OnlineJudgeType ojType, String code, String title,
+            String contestName, Pageable pageable) {
+        return problemRepository.findProblemsByFiltration(ojType, code, title, contestName, pageable);
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -44,10 +60,10 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
 
         if (!exists) {
             Problem problem = Problem.builder()
-                .code(code)
-                .onlineJudge(ojType)
-                .fetchingStatus(FetchingStatus.IN_PROGRESS)
-                .build();
+                    .code(code)
+                    .onlineJudge(ojType)
+                    .fetchingStatus(FetchingStatus.IN_PROGRESS)
+                    .build();
 
             problemRepository.save(problem);
         } else {
@@ -55,7 +71,7 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
             Instant lastModifiedDate = problemRepository.getLastModifiedDate(code, ojType).get();
 
             if (status == FetchingStatus.IN_PROGRESS ||
-                (status == FetchingStatus.SUCCESSFUL && lastModifiedDate.isAfter(Instant.now().minusSeconds(10)))) {
+                    (status == FetchingStatus.SUCCESSFUL && lastModifiedDate.isAfter(Instant.now().minusSeconds(10)))) {
 
                 log.info("Problem {} was fetched recently. Skipping fetch/update.", code);
                 return;
@@ -69,6 +85,6 @@ public class ProblemFetchingServiceImpl implements ProblemFetchingService {
     @Override
     public FetchingStatus getProblemFetchingStatus(OnlineJudgeType ojType, String code) {
         return problemRepository.getFetchingStatus(code, ojType)
-            .orElse(FetchingStatus.NOT_STARTED);
+                .orElse(FetchingStatus.NOT_STARTED);
     }
 }
