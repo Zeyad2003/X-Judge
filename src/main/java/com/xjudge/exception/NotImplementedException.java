@@ -12,4 +12,3 @@ public class NotImplementedException extends ApiBaseException {
         super(message, HttpStatus.NOT_IMPLEMENTED, cause);
     }
 }
-

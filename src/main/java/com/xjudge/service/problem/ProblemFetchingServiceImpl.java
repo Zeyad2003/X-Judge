@@ -1,12 +1,10 @@
 package com.xjudge.service.problem;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.exception.NotFoundException;
 import com.xjudge.mapper.ProblemMapper;
@@ -14,6 +12,9 @@ import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.problem.ProblemDetails;
 import com.xjudge.repository.ProblemRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service

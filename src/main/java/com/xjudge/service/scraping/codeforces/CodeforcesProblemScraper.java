@@ -1,8 +1,5 @@
 package com.xjudge.service.scraping.codeforces;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,17 +17,21 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+
 import com.xjudge.entity.problem.Problem;
 import com.xjudge.entity.problem.Property;
 import com.xjudge.entity.problem.SampleTestCase;
 import com.xjudge.entity.problem.Section;
 import com.xjudge.exception.BadRequestException;
-import com.xjudge.exception.NotFoundException;
 import com.xjudge.exception.NetworkScrapingException;
+import com.xjudge.exception.NotFoundException;
 import com.xjudge.model.enums.FetchingStatus;
 import com.xjudge.model.enums.OnlineJudgeType;
 import com.xjudge.model.enums.SectionFormat;
 import com.xjudge.service.scraping.strategy.ScrappingStrategy;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Scrapes problem details from Codeforces.

@@ -2,12 +2,15 @@ services:
   api:
     build: .
     ports:
-      - "7070:8080" #external : internal
+      - "7070:8080" # App port
+      - "5005:5005" # Debug port
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/X-Judge?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: judge
       SPRING_DATASOURCE_PASSWORD: judge
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+
     depends_on:
       mysqldb:
         condition: service_healthy

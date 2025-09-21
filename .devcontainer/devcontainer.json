@@ -75,7 +75,7 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [7070, 3307],
+	"forwardPorts": [7070, 3307, 5005],
 	"portsAttributes": {
 		"7070": {
 			"label": "Spring Boot App",
@@ -84,6 +84,10 @@
 		"3307": {
 			"label": "MySQL Database",
 			"onAutoForward": "silent"
+		},
+		"5005": {
+			"label": "Java Debugger",
+			"onAutoForward": "notify"
 		}
 	},
 
