@@ -15,6 +15,11 @@
 		   "ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		   "ghcr.io/devcontainers/features/node:1": {
 			   "version": "lts"
+		   },
+		   "ghcr.io/devcontainers/features/desktop-lite:1": {
+			   "password": "vscode",
+			   "webPort": "6080",
+			   "vncPort": "5901"
 		   }
 	},
 
@@ -75,7 +80,7 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [7070, 3307, 5005],
+	"forwardPorts": [7070, 3307, 5005, 6080, 9222],
 	"portsAttributes": {
 		"7070": {
 			"label": "Spring Boot App",
@@ -88,6 +93,14 @@
 		"5005": {
 			"label": "Java Debugger",
 			"onAutoForward": "notify"
+		},
+		"6080": {
+			"label": "noVNC - Browser UI",
+			"onAutoForward": "openBrowser"
+		},
+		"9222": {
+			"label": "Chrome DevTools",
+			"onAutoForward": "silent"
 		}
 	},
 

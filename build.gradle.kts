@@ -2,12 +2,11 @@ plugins {
     java
     id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
-    id("com.diffplug.spotless") version "6.25.0"
 }
 
-group = "com.xjudge"
+group = "com.scraping"
 version = "0.0.1-SNAPSHOT"
-description = "An interface for most online judges, to keep the user in one place"
+description = "ScrapingDemo"
 
 java {
     toolchain {
@@ -26,46 +25,43 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
+    compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    runtimeOnly("com.mysql:mysql-connector-j")
-    testRuntimeOnly("com.h2database:h2")
-    implementation("org.flywaydb:flyway-mysql")
-
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
-    implementation("org.springframework.retry:spring-retry")
-    implementation("org.springframework:spring-aspects")
-
-    // External libs
-    implementation("io.hypersistence:hypersistence-utils-hibernate-60:3.9.4")
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-    implementation("org.jsoup:jsoup:1.21.2")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    // https://mvnrepository.com/artifact/com.microsoft.playwright/playwright
+    implementation("com.microsoft.playwright:playwright:1.55.0")
+    
+    // Jackson for JSON processing
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-spotless {
-    java {
-        importOrder("java", "javax", "org", "com") // no wildcard imports
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-        indentWithSpaces(4)
-    }
-    kotlinGradle {
-        ktlint()
-    }
+tasks.register<JavaExec>("playwrightInstallDeps") {
+    group = "playwright"
+    description = "Install system dependencies required by Playwright"
+    mainClass.set("com.microsoft.playwright.CLI")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = listOf("install-deps")
+}
+
+tasks.register<JavaExec>("playwrightInstall") {
+    group = "playwright"
+    description = "Install Playwright browsers"
+    mainClass.set("com.microsoft.playwright.CLI")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = listOf("install")
+}
+
+// Hook into Gradle build lifecycle so it always runs once before build/tests
+tasks.named("build") {
+    dependsOn("playwrightInstallDeps", "playwrightInstall")
 }
