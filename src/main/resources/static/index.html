@@ -280,7 +280,14 @@
     </div>
 
     <script>
+      // API base URL
       const API_BASE = "/api/browser-demo";
+
+      // Generate noVNC URL by replacing port in current URL
+      const VNC_URL = window.location.origin.replace(
+        /-\d+\.app\.github\.dev/,
+        "-6080.app.github.dev"
+      );
 
       function showLoading() {
         document.getElementById("loading").classList.add("show");
@@ -370,7 +377,7 @@
       }
 
       function openVNC() {
-        window.open("http://localhost:6080", "_blank", "width=1280,height=800");
+        window.open(VNC_URL, "_blank");
       }
 
       // Check service health on load

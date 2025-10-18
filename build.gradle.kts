@@ -47,18 +47,18 @@ tasks.withType<Test> {
 
 tasks.register<JavaExec>("playwrightInstallDeps") {
     group = "playwright"
-    description = "Install system dependencies required by Playwright"
+    description = "Install system dependencies required by Playwright (Chromium only)"
     mainClass.set("com.microsoft.playwright.CLI")
     classpath = sourceSets.main.get().runtimeClasspath
-    args = listOf("install-deps")
+    args = listOf("install-deps", "chromium")
 }
 
 tasks.register<JavaExec>("playwrightInstall") {
     group = "playwright"
-    description = "Install Playwright browsers"
+    description = "Install Playwright Chromium browser only"
     mainClass.set("com.microsoft.playwright.CLI")
     classpath = sourceSets.main.get().runtimeClasspath
-    args = listOf("install")
+    args = listOf("install", "chromium")
 }
 
 // Hook into Gradle build lifecycle so it always runs once before build/tests
